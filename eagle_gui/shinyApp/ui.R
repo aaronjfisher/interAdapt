@@ -34,8 +34,23 @@ my_headerPanel <- function (title, windowTitle = title, h=h3)
 #Load csv's with info about the input sliders & boxes
 #then build lists of input sliders & boxes
 #slider table & box table
-st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
-bt<-read.csv(file= "boxTable.csv",header=TRUE)
+
+#Get the csv file either online or locally
+getItOnline<-TRUE
+try({
+  st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
+  bt<-read.csv(file= "boxTable.csv",header=TRUE)
+  getItOnline<-FALSE #if we haven't gotten an error yet!
+},silent=TRUE)
+try({
+  if(getItOnline){
+    library(devtools)
+    library(RCurl)
+    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
+    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
+  }
+},silent=TRUE)
+
 
 sliderList<-list()
 boxList<-list()

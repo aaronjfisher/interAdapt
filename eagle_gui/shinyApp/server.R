@@ -1,8 +1,26 @@
 cat("source'ing code...", file=stderr())
-source("Adaptive_Group_Sequential_Design.R", local=TRUE)
 
-st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
-bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
+#Get the csv file either online or locally
+getItOnline<-TRUE
+try({
+  source("Adaptive_Group_Sequential_Design.R", local=TRUE)
+  st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
+  bt<-read.csv(file= "boxTable.csv",header=TRUE)
+  getItOnline<-FALSE #if we haven't gotten an error yet!
+},silent=TRUE)
+try({
+  if(getItOnline){
+    library(devtools)
+    library(RCurl)
+    library(digest)
+    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
+    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
+    source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
+  }
+},silent=TRUE)
+
+cat("...got code!...", file=stderr())
+
 allVarNames<-c(st[,'inputId'],bt[,'inputId'])
 
 # T.adaptive <- NULL
