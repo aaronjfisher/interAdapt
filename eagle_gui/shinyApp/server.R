@@ -64,7 +64,7 @@ cat("making table...")
   T.fixed_H0S<<-
 	fixed_H0S_design_sample_sizes_and_boundaries_table()
 
-  T.performance_table <<- performance_table()
+  T.performance_table <<- transpose_performance_table(performance_table())
 
 cat("Done\n")
 })
