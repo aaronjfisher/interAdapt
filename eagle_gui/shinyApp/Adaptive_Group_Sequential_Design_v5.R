@@ -602,6 +602,17 @@ colnames(output_df_formatted) <- c("Subpop.1 Tx. Effect","AD:SS","AD:DUR","AD:Po
 return(list(output_df_formatted,digits=c(0,1,0,1,0,0,0,0,1,0,0,1,0),caption="Comparison of avg sample size (SS), avg duration (DUR), and power (as a percent), for the following designs: the Adaptive Design (AD), the Fixed Design Enrolling Combined Population (FC), and the Fixed Design Enrolling Subpop. 1 Only (FS). All designs strongly control the familywise Type I error rate at level FWER set using slider onleft."))
 }
 
+transpose_performance_table<-function(ptable){
+	#make a matrix of digit values for each cell
+	#take off the 1st entry (=0) from the digits vector (for the head col names)
+	#and add a zero column for the new row names
+	dpt<-dim(ptable[[1]])
+	digitMatPre<-matrix(ptable$digits[-1],nrow=dpt[2],ncol=dpt[1],byrow=FALSE)
+	digitMat<-cbind(0,digitMatPre) #add a column of zeros for the row names
+	return(list( t(ptable[[1]]), digits=digitMat, caption=ptable$caption))
+}
+
+
 adaptive_design_sample_sizes_and_boundaries_table <- function()
 {
 k <- last_stage_subpop_2_enrolled_adaptive_design
