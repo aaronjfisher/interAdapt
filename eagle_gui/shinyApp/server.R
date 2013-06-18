@@ -39,7 +39,7 @@ allVarNames<-c(st[,'inputId'],bt[,'inputId'])
 
 
 shinyServer(function(input, output) {
-
+#useless comment
 regen <-reactive({
 
   for(i in 1:length(allVarNames)){
