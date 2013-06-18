@@ -1,5 +1,3 @@
-library(shiny)
-
 ## Subpopulation 1 proportion (Range: 0 to 1)
 p1 <- 0.61
 
@@ -15,6 +13,24 @@ p11_user_defined<- 0.33 + 0.125
 ## for Subpop. 2 (Range: 0 to 1)
 p21_user_defined<- 0.12 + 0.125
 
+################ action buttons
+## No reason for all the action buttons to do the same thing, so
+## we add the resource here once. 
+# Maybe we should test that ./actionbutton/actionbutton.js exists.
+# We have stolen this file from shinyIncubator.
+suppressMessages(addResourcePath(
+    prefix='actionbutton', 
+    directoryPath=file.path(getwd(), 'actionbutton')
+))  
+    
+# adapted from shinyIncubator, so we don't require that package
+my_actionButton <- function(inputId, label) {
+  tagList(
+    singleton(tags$head(tags$script(src = 'actionbutton/actionbutton.js'))),
+    tags$button(id=inputId, type="button", class="btn action-button", label)
+  )
+}
+################################
 
 # non-standard plot dimensions
 width <- "90%"          # narrower
@@ -34,23 +50,8 @@ my_headerPanel <- function (title, windowTitle = title, h=h3)
 #Load csv's with info about the input sliders & boxes
 #then build lists of input sliders & boxes
 #slider table & box table
-
-#Get the csv file either online or locally
-getItOnline<-TRUE
-try({
-  st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
-  bt<-read.csv(file= "boxTable.csv",header=TRUE)
-  getItOnline<-FALSE #if we haven't gotten an error yet!
-},silent=TRUE)
-try({
-  if(getItOnline){
-    library(devtools)
-    library(RCurl)
-    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
-    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
-  }
-},silent=TRUE)
-
+st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
+bt<-read.csv(file= "boxTable.csv",header=TRUE)
 
 sliderList<-list()
 boxList<-list()
@@ -67,8 +68,6 @@ for(i in 1:dim(bt)[1]){
 boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=bt[i,'value'], step=bt[i,'step'])
 }
 names(boxList)<-bt[,'inputId']
-
-
 ################################
 
 shinyUI(pageWithSidebar(
@@ -76,14 +75,24 @@ shinyUI(pageWithSidebar(
   my_headerPanel("Multi-stage design tool"),
   
   sidebarPanel(
+	selectInput("Batch", "", c("Batch mode" = "1", Interactive = "2")),
+	conditionalPanel(condition = "input.Batch == '1'",
+		textOutput("params"),
+		my_actionButton("Parameters", "Apply"),
+		br()),
+	br(),
 	sliderList,
 	br(),
 	boxList
   ),
 
   mainPanel(
-    em(strong("Designs")),
-    br(), br(),
+  radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
+	c(Designs = "1", Performance = "2")),	
+  br(),
+  conditionalPanel(condition = "input.ComparisonCriterion == '1'",
+    #em(strong("Designs")),
+    #br(), br(),
     tabsetPanel(
 	tabPanel("Adaptive",
 		tableOutput("adaptive_design_sample_sizes_and_boundaries_table")),
@@ -92,11 +101,16 @@ shinyUI(pageWithSidebar(
 		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table")),
 	tabPanel("Fixed, Subpop. 1 only",
 		br(), br(), br(), br(), br(),
-		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table"))
-    ),
-    HTML("<hr>"),
-    em(strong("Performance comparisons")),
-    br(), br(),
+		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table")),
+	tabPanel("All designs",
+		tableOutput("adaptive_design_sample_sizes_and_boundaries_table.2"),
+		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.2"),
+		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.2"))
+    )),
+    #HTML("<hr>"),
+    #em(strong("Performance comparisons")),
+    #br(), br(),
+  conditionalPanel(condition = "input.ComparisonCriterion == '2'",
     tabsetPanel(
 	tabPanel("Power", my_plotOutput("power_curve_plot")),
 	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot")),
@@ -104,6 +118,6 @@ shinyUI(pageWithSidebar(
 	tabPanel("Overrunns", my_plotOutput("overruns"))
     ),
     br(),
-    tableOutput("performance_table")
+    tableOutput("performance_table"))
   )
 ))
