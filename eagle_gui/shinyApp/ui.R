@@ -77,7 +77,7 @@ shinyUI(pageWithSidebar(
   sidebarPanel(
 	selectInput("Batch", "", c("Batch mode" = "1", Interactive = "2")),
 	conditionalPanel(condition = "input.Batch == '1'",
-		textOutput("params"),
+		#textOutput("params"),
 		my_actionButton("Parameters", "Apply"),
 		br()),
 	br(),

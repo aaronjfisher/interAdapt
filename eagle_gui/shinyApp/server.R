@@ -7,7 +7,7 @@ allVarNames<-c(st[,'inputId'],bt[,'inputId'])
 
 shinyServer(function(input, output) {
 
-  Apply_button <- 0
+  Apply_button <- -1
 
   # In interactive mode, we re-export the parameters and rebuild table1
   # every time.  In batch, only on the first call for a given push of the
@@ -33,15 +33,15 @@ shinyServer(function(input, output) {
 		Apply_button <<- apply_button_value
   }
 
-apply_button <- quote({
-	val <- input$Parameters
-	if (val == 0)
-		return("")
-	regen(val)
-	#as.character(val)
-	""
-})
-output$params <- renderText(apply_button, quoted=TRUE)
+# apply_button <- quote({
+# 	val <- input$Parameters
+# 	if (val == 0)
+# 		return("")
+# 	regen(val)
+# 	#as.character(val)
+# 	""
+# })
+# output$params <- renderText(apply_button, quoted=TRUE)
 
   output$power_curve_plot <- renderPlot({
 	regen(input$Parameters)
