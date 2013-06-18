@@ -13,24 +13,6 @@ p11_user_defined<- 0.33 + 0.125
 ## for Subpop. 2 (Range: 0 to 1)
 p21_user_defined<- 0.12 + 0.125
 
-################ action buttons
-## No reason for all the action buttons to do the same thing, so
-## we add the resource here once. 
-# Maybe we should test that ./actionbutton/actionbutton.js exists.
-# We have stolen this file from shinyIncubator.
-suppressMessages(addResourcePath(
-    prefix='actionbutton', 
-    directoryPath=file.path(getwd(), 'actionbutton')
-))  
-    
-# adapted from shinyIncubator, so we don't require that package
-my_actionButton <- function(inputId, label) {
-  tagList(
-    singleton(tags$head(tags$script(src = 'actionbutton/actionbutton.js'))),
-    tags$button(id=inputId, type="button", class="btn action-button", label)
-  )
-}
-################################
 
 # non-standard plot dimensions
 width <- "90%"          # narrower
@@ -50,8 +32,62 @@ my_headerPanel <- function (title, windowTitle = title, h=h3)
 #Load csv's with info about the input sliders & boxes
 #then build lists of input sliders & boxes
 #slider table & box table
-st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
-bt<-read.csv(file= "boxTable.csv",header=TRUE)
+
+
+#Get the csv file either online or locally
+getItOnline<-TRUE
+try({
+  source("Adaptive_Group_Sequential_Design.R", local=TRUE)
+  st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
+  bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
+  cat("found code locally...", file=stderr())
+  
+  ################ action buttons
+  ## No reason for all the action buttons to do the same thing, so
+  ## we add the resource here once. 
+  # Maybe we should test that ./actionbutton/actionbutton.js exists.
+  # We have stolen this file from shinyIncubator.
+  suppressMessages(addResourcePath(
+      prefix='actionbutton', 
+      directoryPath=file.path(getwd(), 'actionbutton')
+  ))  
+      
+  # adapted from shinyIncubator, so we don't require that package
+  my_actionButton <- function(inputId, label) {
+    tagList(
+      singleton(tags$head(tags$script(src = 'actionbutton/actionbutton.js'))),
+      tags$button(id=inputId, type="button", class="btn action-button", label)
+    )
+  }
+  ################
+  getItOnline<-FALSE #if we haven't gotten an error yet!
+
+},silent=TRUE)
+try({
+  if(getItOnline){
+
+    library(devtools)
+    library(RCurl)
+    library(digest) #some reason this is a dependency not auto-loaded by devtools?
+    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
+    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
+    source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
+    
+    # adapted from shinyIncubator, so we don't require that package
+    my_actionButton <- function(inputId, label) {
+      tagList(
+        singleton(tags$head(tags$script(src = 'https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/actionbutton/actionbutton.js'))),
+        tags$button(id=inputId, type="button", class="btn action-button", label)
+      )
+    }
+
+    cat("found code online...", file=stderr())
+  }
+},silent=TRUE)
+
+
+allVarNames<-c(st[,'inputId'],bt[,'inputId'])
+
 
 sliderList<-list()
 boxList<-list()
