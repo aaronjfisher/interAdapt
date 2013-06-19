@@ -117,6 +117,7 @@ shinyUI(pageWithSidebar(
   my_headerPanel("Multi-stage design tool"),
   
   sidebarPanel(
+  textOutput('dummyText'),
 	selectInput("Batch", "", c("Batch mode" = "1", Interactive = "2")),
 	conditionalPanel(condition = "input.Batch == '1'",
 		#textOutput("params"),

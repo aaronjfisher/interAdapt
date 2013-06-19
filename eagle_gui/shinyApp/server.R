@@ -31,26 +31,39 @@ allVarNames<-c(st[,'inputId'],bt[,'inputId'])
 shinyServer(function(input, output) {
 
   Apply_button <- -1
+  totalcalls<-0 #a place keeper to watch when we cat to stderr
+  regenCalls<-0
 
   # In interactive mode, we re-export the parameters and rebuild table1
   # every time.  In batch, only on the first call for a given push of the
   # Apply button.
-  regen <- function(apply_button_value) {
+  regen <- function(apply_button_value,caller='no caller specified') {
 #cat("regen:", input$Batch, "\n", file=stderr())
+
+  totalcalls<<-totalcalls+1
+  print(paste('total calls =',totalcalls))
+  print(paste('regenCalls =',regenCalls))
+  print(paste('caller =',caller))
+
 	if (input$Batch == "1" && apply_button_value <= Apply_button)
 	    return()
+  if (input$Batch == "2" && regenCalls>0 ){
+      return()
+  }
 
 	if (input$Batch == "1")
-	    isolate(for(i in 1:length(allVarNames))
-		assign(allVarNames[i], input[[allVarNames[i]]], inherits=TRUE)
-	    )
-	else
-	    for(i in 1:length(allVarNames))
-		assign(allVarNames[i], input[[allVarNames[i]]], inherits=TRUE)
+    isolate(for(i in 1:length(allVarNames))
+  		assign(allVarNames[i], input[[allVarNames[i]]], inherits=TRUE)
+    )
+	else{
+    for(i in 1:length(allVarNames)){
+	    assign(allVarNames[i], input[[allVarNames[i]]], inherits=TRUE)
+    }
+  }
 
-#cat("making table1 ...")
-	table1 <<- table_constructor()
-#cat("Done\n")
+  cat("making table1 ...")
+  table1 <<- table_constructor()
+  cat("Done\n")
 
 	if (input$Batch == "1")
 		Apply_button <<- apply_button_value
@@ -65,25 +78,49 @@ shinyServer(function(input, output) {
 # 	""
 # })
 # output$params <- renderText(apply_button, quoted=TRUE)
+  
+  refresh<-function(){
+    if(input$Batch == "2"){
+      storeInputChar<<-rep('',length=length(allVarNames))
+      for(i in 1:length(allVarNames)){
+            storeInputChar[i]<<-as.character(input[[allVarNames[i] ]])
+      }
+      return(paste(storeInputChar,collapse=' '))
+    }
+  }
+
+  output$dummyText<-renderText({
+    print('resetting regenCalls')
+    regenCalls<<-0
+    regen(input$Parameters,caller='dummy')
+    print('adding to regenCalls')
+    regenCalls<<-1
+    substr(refresh(),0,0)
+  })
+
 
   output$power_curve_plot <- renderPlot({
-	regen(input$Parameters)
+	regen(input$Parameters,caller='power_curve_plot')
+  refresh()
 	power_curve_plot()
   })
 
   output$expected_sample_size_plot <- renderPlot({
-	regen(input$Parameters)
+	regen(input$Parameters,caller='expected_sample_size_plot')
+  refresh()
 	expected_sample_size_plot()
   })
 
   output$expected_duration_plot <- renderPlot({
-	regen(input$Parameters)
+	regen(input$Parameters,caller='expected_duration_plot')
+  refresh()
 	expected_duration_plot()
   })
 
   overruns <- function() plot(1:2, main="Overruns")
   output$overruns <- renderPlot({
-	regen(input$Parameters)
+	regen(input$Parameters,caller='overruns')
+  refresh()
 	overruns()
   })
 
@@ -116,24 +153,28 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 
   output$adaptive_design_sample_sizes_and_boundaries_table.2 <-
   output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable({
-	regen(input$Parameters)
+	regen(input$Parameters,caller='adaptive_table')
+  refresh()
 	adaptive_design_sample_sizes_and_boundaries_table()
   })
 
   output$fixed_H0C_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
-	regen(input$Parameters)
+	regen(input$Parameters,caller='HOC_table')
+  refresh()
 	fixed_H0C_design_sample_sizes_and_boundaries_table()
   })
 
   output$fixed_H0S_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0S_design_sample_sizes_and_boundaries_table <-renderTable({
-	regen(input$Parameters)
+	regen(input$Parameters,caller='HOS_table')
+  refresh()
 	fixed_H0S_design_sample_sizes_and_boundaries_table()
   })
 
   output$performance_table <- renderTable({
-	regen(input$Parameters)
+	regen(input$Parameters,caller='performance_table')
+  refresh()
 	transpose_performance_table(performance_table())
     })
 
