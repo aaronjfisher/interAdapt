@@ -216,7 +216,7 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 	# not including pipeline
 	variance_component1 <- (p1^2)*outcome_variance_subpop_1/cum_sample_sizes_subpop_1
 	if(p2!=0){variance_component2 <- (p2^2)*outcome_variance_subpop_2/cum_sample_sizes_subpop_2}else{variance_component2 <- 0*variance_component1}
-	correlation_Z_subpop_1_with_Z_mixture <- sqrt(variance_component1/(variance_component1+variance_component2))
+	correlation_Z_subpop_1_with_Z_mixture <- sqrt(variance_component1/(variance_component1+variance_component2)) 
 	correlation_Z_subpop_2_with_Z_mixture <- sqrt(variance_component2/(variance_component1+variance_component2))
 	Z_mixture_cumulative <- (correlation_Z_subpop_1_with_Z_mixture*Z_subpop_1_cumulative + correlation_Z_subpop_2_with_Z_mixture*Z_subpop_2_cumulative)
 
@@ -507,8 +507,10 @@ counter_adaptive <- 1
 for(percent_benefit_subpop_2 in rev(risk_difference_list))
 {
 	## Compute ss., duration, power at fixed design
-	p21 <- p20 + percent_benefit_subpop_2 
-	cv_large <- (p21-p20)/sqrt(p21*(1-p21)/r20+p20*(1-p20)/(1-r20))
+	p21 <- p20 + percent_benefit_subpop_2 #need to max sure min & max are .001 & .999, see next two lines
+	p21<-max(p21,.001)
+	p21<-min(p21,.999)
+	cv_large <- (p21-p20)/sqrt(p21*(1-p21)/r20+p20*(1-p20)/(1-r20)) 
 	#print(c(percent_benefit_subpop_2,cv_large,cv_small))
     outcome_variance_subpop_2 <- p21*(1-p21)/r20+p20*(1-p20)/(1-r20)
 
