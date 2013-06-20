@@ -616,6 +616,7 @@ transpose_performance_table<-function(ptable){
 
 adaptive_design_sample_sizes_and_boundaries_table <- function()
 {
+	
 k <- last_stage_subpop_2_enrolled_adaptive_design
 p1 <- p1_user_defined
 p2 <- 1-p1
@@ -628,11 +629,19 @@ combined_pop_futility_boundaries_adaptive_design <<- c(rep(H0C_futility_boundary
 
 subpop_1_futility_boundaries_adaptive_design <<-c(H0S_futility_boundary_proportionality_constant_adaptive_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),subpop_1_efficacy_boundaries[total_number_stages])
 
+if(k<total_number_stages){
 row1 <- c(p1*per_stage_sample_size_combined_adaptive_design_user_defined*(1:k),p1*per_stage_sample_size_combined_adaptive_design_user_defined*k+per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined*(1:(total_number_stages-k)))
 
 row2 <- c(p2*per_stage_sample_size_combined_adaptive_design_user_defined*(1:k),rep(p2*per_stage_sample_size_combined_adaptive_design_user_defined*k,total_number_stages-k))
 
 row3 <- c(per_stage_sample_size_combined_adaptive_design_user_defined*(1:k),per_stage_sample_size_combined_adaptive_design_user_defined*k+per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined*(1:(total_number_stages-k)))
+}else{
+row1 <- c(p1*per_stage_sample_size_combined_adaptive_design_user_defined*(1:k))
+
+row2 <- c(p2*per_stage_sample_size_combined_adaptive_design_user_defined*(1:k))
+
+row3 <- c(per_stage_sample_size_combined_adaptive_design_user_defined*(1:k))
+}
 
 H0C_efficacy <-  H0C_efficacy_boundaries
 #H0C_efficacy[H0C_efficacy==Inf] <- rep(0,5-k)

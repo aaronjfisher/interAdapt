@@ -26,24 +26,118 @@ cat("...got code!...", file=stderr())
 allVarNames<-c(st[,'inputId'],bt[,'inputId'])
 
 
-allVarNames<-c(st[,'inputId'],bt[,'inputId'])
+
+for(i in 1:dim(st)[1]){
+  assign(allVarNames[i], st[i,'value'], inherits=TRUE)
+}
+for(i in 1:dim(bt)[1]){
+  assign(allVarNames[i], bt[i,'value'], inherits=TRUE)
+}
+
+
+
+
+
 
 shinyServer(function(input, output) {
-
   Apply_button <- -1
   totalcalls<-0 #a place keeper to watch when we cat to stderr
   regenCalls<-0
 
+  #LOADING DATA
+
+        # }
+        # #building numerical input boxes
+        # for(i in 1:dim(bt)[1]){
+        # boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=bt[i,'value'], step=bt[i,'step'])
+        # }
+
+  output$uptable<-renderTable({
+    upFile <- input$uploadData
+        if (is.null(upFile))
+      return(NULL)
+
+    x<-c(read.csv(file=upFile$datapath, row.names=1, header=FALSE))[[1]]
+    names(x)<-allVarNames
+    #print(x)
+    data.frame(x)
+    })
+
+  #a reactive chunk to feed to the dynamicBoxes & dynamicSliders
+  inValues<-reactive({
+    upFile <- input$uploadData
+    x<-NULL
+    if (!is.null(upFile)){
+      x<-c(read.csv(file=upFile$datapath, row.names=1, header=FALSE))[[1]]
+      names(x)<-allVarNames
+      #regenCalls<-0
+    }
+    x
+  })
+
+
+  output$dynamicSliders <- renderUI({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
+    sliderList<-list()
+    animate<-FALSE
+    if(input$Batch=='2') animate<-TRUE
+    for(i in 1:dim(st)[1]){
+      value_i<-st[i,'value']
+      if(!is.null(inValues() )) value_i<-inValues()[st[i,'inputId']]
+      sliderList[[i]]<-sliderInput(inputId=st[i,'inputId'], label=st[i,'label'], min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'], animate=animate)
+    }
+    sliderList
+  })
+
+  output$dynamicBoxes <- renderUI({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
+    boxList<-list()
+    for(i in 1:dim(bt)[1]){
+      value_i<-bt[i,'value']
+      if(!is.null(inValues() )){browser(); value_i<-inValues()[bt[i,'inputId']]}
+      boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
+      print(value_i)
+    }
+    print(boxList)
+    boxList
+  })
+
+    # boxList<-list()
+    # for(i in 1:dim(bt)[1]){
+    #   value_i<-bt[i,'value']
+    #   if(!is.null(inValues() )) value_i<-inValues()[bt[i,'inputId']]
+    #   boxList[[i]]<-sliderInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
+    # }
+    # boxList
+  
+
+# # Partial example
+# output$cityControls <- renderUI({
+#   # cities <- input$iter
+#   # list(numericInput("cities", "Choose Cities", value=inValues()[11])  ,numericInput("cities", "Choose Cities", value=inValues()[12])  )
+#     i<-1
+#     value_i<-bt[i,'value']
+#     if(!is.null(inValues() )) value_i<-inValues()[bt[i,'inputId']]
+#     boxList<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
+#     boxList
+# })
+
+  # output$actionButton<-renderUI({
+  #   actionButton("Parameters", "Apply")
+  #   })
+
+
+
   # In interactive mode, we re-export the parameters and rebuild table1
   # every time.  In batch, only on the first call for a given push of the
   # Apply button.
-  regen <- function(apply_button_value,caller='no caller specified') {
+  regen <- function(apply_button_value, caller='no caller specified') {
 #cat("regen:", input$Batch, "\n", file=stderr())
 
   totalcalls<<-totalcalls+1
   print(paste('total calls =',totalcalls))
   print(paste('regenCalls =',regenCalls))
   print(paste('caller =',caller))
+
+  if(is.null(apply_button_value)) {print('regen out') ; return()}
 
 	if (input$Batch == "1" && apply_button_value <= Apply_button)
 	    return()
@@ -60,7 +154,6 @@ shinyServer(function(input, output) {
 	    assign(allVarNames[i], input[[allVarNames[i]]], inherits=TRUE)
     }
   }
-
   cat("making table1 ...")
   table1 <<- table_constructor()
   cat("Done\n")
@@ -79,28 +172,34 @@ shinyServer(function(input, output) {
 # })
 # output$params <- renderText(apply_button, quoted=TRUE)
   
-  refresh<-function(){
-    if(input$Batch == "2"){
+  refresh<-function(){ # a function requires use of all inputs. This is meant to be used to make a code chunk reactive to everything
+    #in interactive mode, I think the code shiny sees for regen isn't "reactive enough" but adding this function to a plot call makes the plot update as desired (in interactive mode).
+    #if(input$Batch == "2"){
+      if( any(is.null(input))) return()
+
       storeInputChar<<-rep('',length=length(allVarNames))
       for(i in 1:length(allVarNames)){
+            if(allVarNames[i] %in% c())
             storeInputChar[i]<<-as.character(input[[allVarNames[i] ]])
       }
       return(paste(storeInputChar,collapse=' '))
-    }
+    #}
   }
 
-  output$dummyText<-renderText({
+  output$dummyText<-renderText({ #We want to call regen only once.
+    #I'm not sure what it means that this reactive chunk always seems to be "evaluated first"
     print('resetting regenCalls')
     regenCalls<<-0
     regen(input$Parameters,caller='dummy')
     print('adding to regenCalls')
     regenCalls<<-1
-    substr(refresh(),0,0)
+    #substr(refresh(),0,0)
+    refresh()
   })
 
 
   output$power_curve_plot <- renderPlot({
-	regen(input$Parameters,caller='power_curve_plot')
+	regen(input$Parameters,caller='power_curve_plot') #NOTE! adding a "if(input$Batch=='1')" qualifier to this regen call appears to not change anything, since regen exists under anyother conditions thanks for the regenCalls resetting
   refresh()
 	power_curve_plot()
   })
@@ -177,5 +276,16 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   refresh()
 	transpose_performance_table(performance_table())
     })
+
+
+  #SAVE DATA:
+  output$downloadData <- downloadHandler(
+    filename =  'inputs.csv',
+    content = function(file) {
+      inputCsv<-rep('',length=length(allVarNames))
+      for(i in 1:length(allVarNames)) inputCsv[i]<- input[[ allVarNames[i] ]]
+      write.table(inputCsv, file, row.names=allVarNames, col.names=FALSE, sep=',')
+    }
+  )
 
 })

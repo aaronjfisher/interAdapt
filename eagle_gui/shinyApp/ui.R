@@ -95,6 +95,7 @@ try({
 
 
 allVarNames<-c(st[,'inputId'],bt[,'inputId'])
+
 sliderList<-list()
 boxList<-list()
 
@@ -112,25 +113,84 @@ boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[
 names(boxList)<-bt[,'inputId']
 ################################
 
+
+  animationOptions(interval = 5000, loop = FALSE,
+  playButton = NULL, pauseButton = NULL)
+
 shinyUI(pageWithSidebar(
-    
-  my_headerPanel("Multi-stage design tool"),
-  
+
+
+  my_headerPanel("Multi-stage design tool"),  
+
+
+
+ #  sidebarPanel(
+ #  uiOutput("cityControls"),
+ #  textOutput('dummyText'),
+	# selectInput("Batch", "", c("Batch mode" = "1", Interactive = "2")),
+ #  uiOutput('actionButton'),
+ #  #actionButton("Parameters", "Apply"),
+	# 	br(),
+	# br(),
+ #  br(),
+ #  downloadButton('downloadData', 'Save current inputs'),
+ #  fileInput('uploadData', 'Load saved inputs from file',
+ #          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
+
+	# uiOutput('dynamicSliders'),
+ #  #sliderList,
+ #  br(),
+	# br(),
+	# #boxList
+ #  uiOutput('dynamicBoxes')
+ #  ),
+
+  # "Advanced" forces batch mode
   sidebarPanel(
-  textOutput('dummyText'),
-	selectInput("Batch", "", c("Batch mode" = "1", Interactive = "2")),
-	conditionalPanel(condition = "input.Batch == '1'",
-		#textOutput("params"),
-		#my_actionButton("Parameters", "Apply"),
-    actionButton("Parameters", "Apply"),
-		br()),
-	br(),
-	sliderList,
-	br(),
-	boxList
+        textOutput('dummyText'),
+
+        selectInput("Which_params", "", c("Basic parameters" = "1",
+                "Advanced parameters" = "2")),
+        conditionalPanel(condition = "input.Which_params == '1'",
+                selectInput("Batch", "", c("Batch mode" = "1",
+                        "Interactive mode" = "2")),
+                conditionalPanel(condition = "input.Batch == '1'",
+                        actionButton("Parameters", "Apply"),
+                        #uiOutput('actionButton'),
+                        br(), br()),
+                uiOutput('dynamicSliders')),
+        conditionalPanel(condition = "input.Which_params == '2'",
+                actionButton("Parameters", "Apply"),
+                #uiOutput('actionButton'),
+                br(), br(),
+                boxList)
   ),
 
+
+  # # "Advanced" forces batch mode
+  # sidebarPanel(
+  #       selectInput("Which_params", "", c("Basic parameters" = "1",
+  #               "Advanced parameters" = "2")),
+  #       conditionalPanel(condition = "input.Which_params == '1'",
+  #               selectInput("Batch", "", c("Batch mode" = "1",
+  #                       "Interactive mode" = "2")),
+  #               conditionalPanel(condition = "input.Batch == '1'",
+  #                       my_actionButton("Parameters", "Apply"),
+  #                       br(), br()),
+  #               sliderList),
+  #       conditionalPanel(condition = "input.Which_params == '2'",
+  #               my_actionButton("Parameters", "Apply"),
+  #               br(), br(),
+  #               boxList)
+  # ),
+
+
   mainPanel(
+    #tableOutput('uptable'),
+  downloadButton('downloadData', 'Save current inputs'),
+  fileInput('uploadData', 'Load saved inputs from file',
+          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
+
   radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
 	c(Designs = "1", Performance = "2")),	
   br(),
