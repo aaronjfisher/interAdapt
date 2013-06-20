@@ -155,15 +155,15 @@ shinyUI(pageWithSidebar(
                 selectInput("Batch", "", c("Batch mode" = "1",
                         "Interactive mode" = "2")),
                 conditionalPanel(condition = "input.Batch == '1'",
-                        actionButton("Parameters", "Apply"),
+                        actionButton("Parameters1", "Apply"),
                         #uiOutput('actionButton'),
                         br(), br()),
                 uiOutput('dynamicSliders')),
         conditionalPanel(condition = "input.Which_params == '2'",
-                actionButton("Parameters", "Apply"),
+                actionButton("Parameters2", "Apply"),
                 #uiOutput('actionButton'),
                 br(), br(),
-                boxList)
+                uiOutput('dynamicBoxes'))
   ),
 
 

@@ -28,10 +28,10 @@ allVarNames<-c(st[,'inputId'],bt[,'inputId'])
 
 
 for(i in 1:dim(st)[1]){
-  assign(allVarNames[i], st[i,'value'], inherits=TRUE)
+  assign(st[i,'inputId'], st[i,'value'])
 }
 for(i in 1:dim(bt)[1]){
-  assign(allVarNames[i], bt[i,'value'], inherits=TRUE)
+  assign(bt[i,'inputId'], bt[i,'value']) 
 }
 
 
@@ -43,6 +43,8 @@ shinyServer(function(input, output) {
   Apply_button <- -1
   totalcalls<-0 #a place keeper to watch when we cat to stderr
   regenCalls<-0
+
+  params<-reactive({input$Parameters1 + input$Parameters2})
 
   #LOADING DATA
 
@@ -78,8 +80,9 @@ shinyServer(function(input, output) {
 
   output$dynamicSliders <- renderUI({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
     sliderList<-list()
+    #browser()
     animate<-FALSE
-    if(input$Batch=='2') animate<-TRUE
+    isolate(if(input$Batch=='2') animate<-TRUE)
     for(i in 1:dim(st)[1]){
       value_i<-st[i,'value']
       if(!is.null(inValues() )) value_i<-inValues()[st[i,'inputId']]
@@ -89,10 +92,12 @@ shinyServer(function(input, output) {
   })
 
   output$dynamicBoxes <- renderUI({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
+    #browser()
+    dummy<-input$uploadData
     boxList<-list()
     for(i in 1:dim(bt)[1]){
       value_i<-bt[i,'value']
-      if(!is.null(inValues() )){browser(); value_i<-inValues()[bt[i,'inputId']]}
+      if(!is.null(inValues() )){ value_i<-inValues()[bt[i,'inputId']]}
       boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
       print(value_i)
     }
@@ -136,8 +141,14 @@ shinyServer(function(input, output) {
   print(paste('total calls =',totalcalls))
   print(paste('regenCalls =',regenCalls))
   print(paste('caller =',caller))
+  print(paste('apply_button_value =',apply_button_value))
 
-  if(is.null(apply_button_value)) {print('regen out') ; return()}
+  if(is.null(input$Batch) || is.null(apply_button_value))
+    {print('regen out') ; return()}
+
+  for(name in allVarNames){
+     if(is.null(input[[name]])) {print('null regen Input');return()}
+  }
 
 	if (input$Batch == "1" && apply_button_value <= Apply_button)
 	    return()
@@ -145,15 +156,18 @@ shinyServer(function(input, output) {
       return()
   }
 
-	if (input$Batch == "1")
+	if (input$Batch == "1"){
     isolate(for(i in 1:length(allVarNames))
   		assign(allVarNames[i], input[[allVarNames[i]]], inherits=TRUE)
     )
-	else{
+  } else {
     for(i in 1:length(allVarNames)){
 	    assign(allVarNames[i], input[[allVarNames[i]]], inherits=TRUE)
+      print(input[[allVarNames[i]]])
     }
   }
+
+  #browser()
   cat("making table1 ...")
   table1 <<- table_constructor()
   cat("Done\n")
@@ -163,7 +177,7 @@ shinyServer(function(input, output) {
   }
 
 # apply_button <- quote({
-# 	val <- input$Parameters
+# 	val <- params()
 # 	if (val == 0)
 # 		return("")
 # 	regen(val)
@@ -175,50 +189,51 @@ shinyServer(function(input, output) {
   refresh<-function(){ # a function requires use of all inputs. This is meant to be used to make a code chunk reactive to everything
     #in interactive mode, I think the code shiny sees for regen isn't "reactive enough" but adding this function to a plot call makes the plot update as desired (in interactive mode).
     #if(input$Batch == "2"){
-      if( any(is.null(input))) return()
-
+      for(name in allVarNames) if(is.null(input[[name]])) return()
+      
+      #browser()
       storeInputChar<<-rep('',length=length(allVarNames))
       for(i in 1:length(allVarNames)){
-            if(allVarNames[i] %in% c())
             storeInputChar[i]<<-as.character(input[[allVarNames[i] ]])
       }
       return(paste(storeInputChar,collapse=' '))
     #}
   }
 
+
   output$dummyText<-renderText({ #We want to call regen only once.
     #I'm not sure what it means that this reactive chunk always seems to be "evaluated first"
     print('resetting regenCalls')
     regenCalls<<-0
-    regen(input$Parameters,caller='dummy')
+    regen(params(),caller='dummy')
     print('adding to regenCalls')
     regenCalls<<-1
-    #substr(refresh(),0,0)
-    refresh()
+    substr(refresh(),0,0)
+    #refresh()
   })
 
 
   output$power_curve_plot <- renderPlot({
-	regen(input$Parameters,caller='power_curve_plot') #NOTE! adding a "if(input$Batch=='1')" qualifier to this regen call appears to not change anything, since regen exists under anyother conditions thanks for the regenCalls resetting
+	regen(params(),caller='power_curve_plot') #NOTE! adding a "if(input$Batch=='1')" qualifier to this regen call appears to not change anything, since regen exists under anyother conditions thanks for the regenCalls resetting
   refresh()
 	power_curve_plot()
   })
 
   output$expected_sample_size_plot <- renderPlot({
-	regen(input$Parameters,caller='expected_sample_size_plot')
+	regen(params(),caller='expected_sample_size_plot')
   refresh()
 	expected_sample_size_plot()
   })
 
   output$expected_duration_plot <- renderPlot({
-	regen(input$Parameters,caller='expected_duration_plot')
+	regen(params(),caller='expected_duration_plot')
   refresh()
 	expected_duration_plot()
   })
 
   overruns <- function() plot(1:2, main="Overruns")
   output$overruns <- renderPlot({
-	regen(input$Parameters,caller='overruns')
+	regen(params(),caller='overruns')
   refresh()
 	overruns()
   })
@@ -251,28 +266,28 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 }
 
   output$adaptive_design_sample_sizes_and_boundaries_table.2 <-
-  output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable({
-	regen(input$Parameters,caller='adaptive_table')
-  refresh()
+  output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable({    
+	regen(params(),caller='adaptive_table')
+  refresh()  
 	adaptive_design_sample_sizes_and_boundaries_table()
   })
 
   output$fixed_H0C_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
-	regen(input$Parameters,caller='HOC_table')
+	regen(params(),caller='HOC_table')
   refresh()
 	fixed_H0C_design_sample_sizes_and_boundaries_table()
   })
 
   output$fixed_H0S_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0S_design_sample_sizes_and_boundaries_table <-renderTable({
-	regen(input$Parameters,caller='HOS_table')
+	regen(params(),caller='HOS_table')
   refresh()
 	fixed_H0S_design_sample_sizes_and_boundaries_table()
   })
 
   output$performance_table <- renderTable({
-	regen(input$Parameters,caller='performance_table')
+	regen(params(),caller='performance_table')
   refresh()
 	transpose_performance_table(performance_table())
     })
