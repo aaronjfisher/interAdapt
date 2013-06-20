@@ -155,15 +155,15 @@ shinyUI(pageWithSidebar(
                 selectInput("Batch", "", c("Batch mode" = "1",
                         "Interactive mode" = "2")),
                 conditionalPanel(condition = "input.Batch == '1'",
-                        actionButton("Parameters", "Apply"),
+                        actionButton("Parameters1", "Apply"),
                         #uiOutput('actionButton'),
                         br(), br()),
                 uiOutput('dynamicSliders')),
         conditionalPanel(condition = "input.Which_params == '2'",
-                actionButton("Parameters", "Apply"),
+                actionButton("Parameters2", "Apply"),
                 #uiOutput('actionButton'),
                 br(), br(),
-                boxList)
+                uiOutput('dynamicBoxes'))
   ),
 
 
@@ -187,8 +187,11 @@ shinyUI(pageWithSidebar(
 
   mainPanel(
     #tableOutput('uptable'),
-  downloadButton('downloadData', 'Save current inputs'),
-  fileInput('uploadData', 'Load saved inputs from file',
+  strong('Save current parameters to file:'),br(),
+  downloadButton('downloadData', 'Save'),
+  br(),br(),
+  strong('Load previous parameters from file:'),
+  fileInput('uploadData', '',
           accept=c('text/csv', 'text/comma-separated-values,text/plain')),
 
   radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
