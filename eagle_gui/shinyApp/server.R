@@ -43,6 +43,7 @@ shinyServer(function(input, output) {
   Apply_button <- -1
   totalcalls<-0 #a place keeper to watch when we cat to stderr
   regenCalls<-0
+  uploadFileTicker<-0
 
   params<-reactive({input$Parameters1 + input$Parameters2})
 
@@ -73,21 +74,31 @@ shinyServer(function(input, output) {
       x<-c(read.csv(file=upFile$datapath, row.names=1, header=FALSE))[[1]]
       names(x)<-allVarNames
       #regenCalls<-0
+      uploadFileTicker<<-0
     }
     x
   })
 
+  allVars<-reactive({
+      x<-c()
+      for(i in 1:length(allVarNames)) x[allVarNames[i]]<- input[[allVarNames[i] ]]
+      x
+    })
 
+  #update for error: if you isolate the animate change, the animate won't change until you add a new file :/. Here we fix it by adding a uploadFileTicker that tracks if it's the first time the sliders have been updated since the last time we uploaded a file. Only if it's the first time do we change the sliders to the uploaded values. If it's not the first time, we use the current value of the variable, taken from allVars.
   output$dynamicSliders <- renderUI({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
+    dummy<-input$uploadData
     sliderList<-list()
-    #browser()
     animate<-FALSE
-    isolate(if(input$Batch=='2') animate<-TRUE)
+    if(input$Batch=='2') animate<-TRUE 
     for(i in 1:dim(st)[1]){
       value_i<-st[i,'value']
       if(!is.null(inValues() )) value_i<-inValues()[st[i,'inputId']]
+      if(uploadFileTicker>0) value_i<-allVars()[st[i,'inputId']]
       sliderList[[i]]<-sliderInput(inputId=st[i,'inputId'], label=st[i,'label'], min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'], animate=animate)
     }
+    uploadFileTicker<<-uploadFileTicker+1
+    print('sliders updating!!!!!!')
     sliderList
   })
 
@@ -99,9 +110,8 @@ shinyServer(function(input, output) {
       value_i<-bt[i,'value']
       if(!is.null(inValues() )){ value_i<-inValues()[bt[i,'inputId']]}
       boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
-      print(value_i)
+      #print(value_i)
     }
-    print(boxList)
     boxList
   })
 
