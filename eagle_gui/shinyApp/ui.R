@@ -190,7 +190,7 @@ shinyUI(pageWithSidebar(
   #strong('Save current parameters to file:'),br(),
   downloadButton('downloadData', 'Save'),
   br(),br(),
-  #strong('Load previous parameters from file:'),
+  strong('Load previous parameters from file:'),
   fileInput('uploadData', '',
           accept=c('text/csv', 'text/comma-separated-values,text/plain')),
 
@@ -198,7 +198,7 @@ shinyUI(pageWithSidebar(
 	c(Designs = "1", Performance = "2")),	
   br(),
   conditionalPanel(condition = "input.ComparisonCriterion == '1'",
-    #em(strong("Designs")),
+    em(strong("Designs")),
     #br(), br(),
     tabsetPanel(
 	tabPanel("Adaptive",
