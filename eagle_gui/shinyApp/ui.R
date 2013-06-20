@@ -187,10 +187,10 @@ shinyUI(pageWithSidebar(
 
   mainPanel(
     #tableOutput('uptable'),
-  strong('Save current parameters to file:'),br(),
+  #strong('Save current parameters to file:'),br(),
   downloadButton('downloadData', 'Save'),
   br(),br(),
-  strong('Load previous parameters from file:'),
+  #strong('Load previous parameters from file:'),
   fileInput('uploadData', '',
           accept=c('text/csv', 'text/comma-separated-values,text/plain')),
 
