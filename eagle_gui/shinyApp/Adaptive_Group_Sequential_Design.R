@@ -553,7 +553,7 @@ lines(x=rev(risk_difference_list),y=table1[,9],lty=4,col=3,lwd=3)
 
 # H0S fixed
 lines(x=rev(risk_difference_list),y=table1[,13],lty=5,col=4,lwd=3)
-legend("bottomright",legend=c("Adaptive, Power H0C or H0S","Adaptive, Power H0C","Adaptive, Power H0S","Fixed Design Total Pop. (H0C)","Fixed Design Subpop. 1 Only (H0S)"),lty=c(1,2,3,4,5),col=c(1,1,1,3,4),lwd=c(3,3,3,3,3))
+legend("bottomright",legend=c("Adaptive, Power H0C or H01","Adaptive, Power H0C","Adaptive, Power H01","Fixed Design Total Pop. (H0C)","Fixed Design Subpop. 1 Only (H01)"),lty=c(1,2,3,4,5),col=c(1,1,1,3,4),lwd=c(3,3,3,3,3))
 }
 
 expected_sample_size_plot <- function()
@@ -600,7 +600,7 @@ output_df <- cbind(as.matrix(table1))
 output_df_formatted <- cbind(100*output_df[,1],output_df[,2],output_df[,3],100*output_df[,4],100*output_df[,5],100*output_df[,6],output_df[,7],output_df[,8],100*output_df[,9],
 #100*output_df[,10],
 output_df[,11],output_df[,12],100*output_df[,13])
-colnames(output_df_formatted) <- c("Subpop.1 Tx. Effect","AD:SS","AD:DUR","AD:Power H0C","AD:Power H0S","AD:Power H0C or H0S","FC:SS","FC:DUR","FC:Power H0C","FS:SS","FS:DUR","FS:Power H0S")
+colnames(output_df_formatted) <- c("Subpop.1 Tx. Effect","AD:SS","AD:DUR","AD:Power H0C","AD:Power H01","AD:Power H0C or H01","FC:SS","FC:DUR","FC:Power H0C","FS:SS","FS:DUR","FS:Power H01")
 return(list(output_df_formatted,digits=c(0,1,0,1,0,0,0,0,1,0,0,1,0),caption="Comparison of avg sample size (SS), avg duration (DUR), and power (as a percent), for the following designs: the Adaptive Design (AD), the Fixed Design Enrolling Combined Population (FC), and the Fixed Design Enrolling Subpop. 1 Only (FS). All designs strongly control the familywise Type I error rate at level FWER set using slider onleft."))
 }
 
@@ -650,7 +650,7 @@ H0S_efficacy <- subpop_1_efficacy_boundaries
 H0S_futility <- subpop_1_futility_boundaries_adaptive_design
 
 output_df <- rbind(row1,row2,row3,H0C_efficacy,H0C_futility,H0S_efficacy,H0S_futility)
-row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","H0C futility Boundary","H0S Efficacy Boundary","H0S Futility Boundary")
+row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","H0C futility Boundary","H01 Efficacy Boundary","H01 Futility Boundary")
 colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(7,(total_number_stages+1)))
 #dig_array[4:7,] <- array(2,c(4,(total_number_stages+1)))
@@ -709,7 +709,7 @@ H0S_efficacy <-  H0S_efficacy_boundaries
 H0S_futility <- futility_boundaries_fixed_design_H0S
 
 output_df <- rbind(row1,H0S_efficacy,H0S_futility)
-row.names(output_df) <- c("Cum. Sample Size","H0S Efficacy Boundary","H0S futility Boundary")
+row.names(output_df) <- c("Cum. Sample Size","H01 Efficacy Boundary","H01 futility Boundary")
 colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(3,(total_number_stages+1)))
 #dig_array[4:7,] <- array(2,c(4,(total_number_stages+1)))
