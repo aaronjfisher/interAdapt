@@ -500,6 +500,7 @@ risk_difference_list <<- sort(unique(c(0,seq(min(c(lower_bound_treatment_effect_
 fixed_mixture_df <- array(0,c(length(risk_difference_list),4))
 fixed_small_only_df <- array(0,c(length(risk_difference_list),3))
 adaptive_df <- array(0,c(length(risk_difference_list),5))
+overrun_df <- array(0,c(length(risk_difference_list),3))
 counter_mixture <- 1
 counter_small <- 1
 counter_adaptive <- 1
@@ -517,10 +518,12 @@ for(percent_benefit_subpop_2 in rev(risk_difference_list))
 power_vec <- get_power(p1=p1_user_defined,total_number_stages,k=last_stage_subpop_2_enrolled_adaptive_design,combined_pop_futility_boundaries_adaptive_design,subpop_1_futility_boundaries_adaptive_design,n1=per_stage_sample_size_combined_adaptive_design_user_defined,n2=per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined,b_C=H0C_efficacy_boundary_proportionality_constant_adaptive_design,b_S=H0S_efficacy_boundary_proportionality_constant_adaptive_design,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
 
 adaptive_df[counter_adaptive,] <- c(power_vec[4]+power_vec[7],power_vec[c(5,1,2,6)])
+overrun_df[counter_adaptive,1] <- power_vec[7]
 counter_adaptive <- counter_adaptive + 1
 
 power_vec <- get_power(p1=p1_user_defined,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_fixed_design_H0C,subpop_1_futility_boundaries=subpop_1_futility_boundaries_fixed_design_H0C,n1=per_stage_sample_size_combined_fixed_design_H0C,n2=0,b_C=H0C_efficacy_boundary_proportionality_constant_fixed_design,b_S=Inf,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
 fixed_mixture_df[counter_mixture,] <- c(power_vec[9] + power_vec[10],power_vec[c(8,1)],power_vec[11])
+overrun_df[counter_mixture,2] <- power_vec[10]
 counter_mixture <- counter_mixture +1
 
 
@@ -529,11 +532,12 @@ counter_mixture <- counter_mixture +1
 
 power_vec <- get_power(p1=1,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_fixed_design_H0S,subpop_1_futility_boundaries=subpop_1_futility_boundaries_fixed_design_H0S,n1=per_stage_sample_size_combined_fixed_design_H0S,n2=0,b_C=H0S_efficacy_boundary_proportionality_constant_fixed_design,b_S=Inf,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
 fixed_small_only_df[counter_small,] <- c(power_vec[9] + power_vec[10],power_vec[c(8,1)])
+overrun_df[counter_small,3] <- power_vec[10]
 
 counter_small <- counter_small +1
 
 }
-return(data.frame(cbind(rev(risk_difference_list),adaptive_df,fixed_mixture_df,fixed_small_only_df)))
+return(data.frame(cbind(rev(risk_difference_list),adaptive_df,fixed_mixture_df,fixed_small_only_df,overrun_df)))
 }
 
 
@@ -593,6 +597,26 @@ lines(x=rev(risk_difference_list),y=table1[,12],lty=3,col=4,lwd=3)
 legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(2,3,4),lwd=c(3,3,3))
 
 }
+
+overrun_plot <- function()
+{
+## Avg. Overrunning Patients
+min_ess <- 0
+max_ess <- max(c(table1[,14],table1[,15],table1[,16]))
+plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_ess,max_ess),main="Expected Number of Overrunning (Pipeline) Patients at End of Trial")
+
+# adaptive
+lines(x=rev(risk_difference_list),y=table1[,14],lty=1,col=2,lwd=3)
+
+# H0C fixed
+lines(x=rev(risk_difference_list),y=table1[,15],lty=2,col=3,lwd=3)
+
+# H0S fixed
+lines(x=rev(risk_difference_list),y=table1[,16],lty=3,col=4,lwd=3)
+legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(2,3,4),lwd=c(3,3,3))
+
+}
+
 
 performance_table <- function()
 {
