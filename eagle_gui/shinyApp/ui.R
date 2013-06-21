@@ -187,13 +187,18 @@ shinyUI(pageWithSidebar(
 
   mainPanel(
     #tableOutput('uptable'),
-  #strong('Save current parameters to file:'),br(),
+  strong('Save current parameters to file:'),br(),
   downloadButton('downloadData', 'Save'),
   br(),br(),
   strong('Load previous parameters from file:'),
   fileInput('uploadData', '',
           accept=c('text/csv', 'text/comma-separated-values,text/plain')),
-
+  conditionalPanel(condition='true', #need to make this actually contional!?
+    strong('Reset parameters to uploaded file:'),br(),
+    actionButton(inputId='loadReset',label='Reset')
+  ),
+  
+  br(),br(),
   radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
 	c(Designs = "1", Performance = "2")),	
   br(),

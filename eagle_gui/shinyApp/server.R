@@ -218,7 +218,7 @@ shinyServer(function(input, output) {
     regen(params(),caller='dummy')
     print('adding to regenCalls')
     regenCalls<<-1
-    substr(refresh(),0,0)
+    substr(refresh(),0,0) #ADDING EXTRA STUFF HERE TO MAKE IT VISIBLE.
     #refresh()
   })
 
@@ -241,11 +241,11 @@ shinyServer(function(input, output) {
 	expected_duration_plot()
   })
 
-  overruns <- function() plot(1:2, main="Overruns")
+  #overruns <- function() plot(1:2, main="Overruns")
   output$overruns <- renderPlot({
 	regen(params(),caller='overruns')
   refresh()
-	overruns()
+	overrun_plot()
   })
 
 # HJ - x must be a list of length 3, with a digits and caption
