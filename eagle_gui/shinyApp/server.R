@@ -1,3 +1,8 @@
+#BUGS!
+#When you load new data, the back boxes and sliders don't finish updating until you look at both of them!
+  #Add some form of the inValues to the dummyText?
+
+
 cat("source'ing code...", file=stderr())
 
 #Get the csv file either online or locally
@@ -44,41 +49,56 @@ shinyServer(function(input, output) {
   totalcalls<-0 #a place keeper to watch when we cat to stderr
   regenCalls<-0
   uploadFileTicker<-0
+  lastLoadReset<-0
 
   params<-reactive({input$Parameters1 + input$Parameters2})
 
+
   #LOADING DATA
-
-        # }
-        # #building numerical input boxes
-        # for(i in 1:dim(bt)[1]){
-        # boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=bt[i,'value'], step=bt[i,'step'])
-        # }
-
-  output$uptable<-renderTable({
-    upFile <- input$uploadData
-        if (is.null(upFile))
-      return(NULL)
-
-    x<-c(read.csv(file=upFile$datapath, row.names=1, header=FALSE))[[1]]
-    names(x)<-allVarNames
-    #print(x)
-    data.frame(x)
-    })
-
   #a reactive chunk to feed to the dynamicBoxes & dynamicSliders
+  percievedInValues<-reactive({
+    input$uploadData
+  })
+
   inValues<-reactive({
-    upFile <- input$uploadData
+    upFile <- percievedInValues()
     x<-NULL
     if (!is.null(upFile)){
       x<-c(read.csv(file=upFile$datapath, row.names=1, header=FALSE))[[1]]
       names(x)<-allVarNames
       #regenCalls<-0
       uploadFileTicker<<-0
+      output$uploadTime<<-renderText({as.character(Sys.time())})
+      print('resetting upload')
+      resettingData<<-TRUE
     }
     x
   })
 
+  resettingData<-FALSE
+  resetText1<-reactive({
+    print('resettext1-1-----------')
+    if(lastLoadReset!=input$loadReset){
+      print('resettext1-2------------')
+      percievedInValues<<-reactive({NULL})
+    }
+    input$loadReset
+  })
+
+  resetText2<-reactive({
+    print('resettext2-1-----------')
+    if(is.null(percievedInValues()) & resettingData) {
+      print('resettext2-2------------')
+      lastLoadReset<<-input$loadReset
+      percievedInValues<<-input$uploadData
+    }
+    input$loadReset
+  })
+  output$resetText<-renderText({paste(resetText1(),resetText2())})
+
+
+
+  #current value of all the data, need to store this if we want to change the sliders to all be animated in interactive mode, but not change their values.
   allVars<-reactive({
       x<-c()
       for(i in 1:length(allVarNames)) x[allVarNames[i]]<- input[[allVarNames[i] ]]
@@ -87,33 +107,50 @@ shinyServer(function(input, output) {
 
   #update for error: if you isolate the animate change, the animate won't change until you add a new file :/. Here we fix it by adding a uploadFileTicker that tracks if it's the first time the sliders have been updated since the last time we uploaded a file. Only if it's the first time do we change the sliders to the uploaded values. If it's not the first time, we use the current value of the variable, taken from allVars.
   output$dynamicSliders <- renderUI({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
+    print('sliders')
+    #print(c(input$loadReset, lastLoadReset))
+    #browser()
     dummy<-input$uploadData
+    #dummy2<-input$loadReset
     sliderList<-list()
     animate<-FALSE
     if(input$Batch=='2') animate<-TRUE 
     for(i in 1:dim(st)[1]){
       value_i<-st[i,'value']
-      if(!is.null(inValues() )) value_i<-inValues()[st[i,'inputId']]
-      if(uploadFileTicker>0) value_i<-allVars()[st[i,'inputId']]
+      if((!is.null(inValues())) ) value_i<-inValues()[st[i,'inputId']]
+      if(uploadFileTicker>0)    value_i<-allVars()[st[i,'inputId']]
+      #if( input$loadReset>lastLoadReset & (!is.null(inValues())) ) value_i<-inValues()[st[i,'inputId']]
       sliderList[[i]]<-sliderInput(inputId=st[i,'inputId'], label=st[i,'label'], min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'], animate=animate)
     }
     uploadFileTicker<<-uploadFileTicker+1
-    print('sliders updating!!!!!!')
+    #lastLoadReset<<-input$loadReset
+    print('           sliders updating!!!!!!')
+    print(sliderList[[1]])
     sliderList
   })
 
   output$dynamicBoxes <- renderUI({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
+    print('                    boxes')
     #browser()
     dummy<-input$uploadData
+    #dummy2<-input$loadReset
     boxList<-list()
     for(i in 1:dim(bt)[1]){
       value_i<-bt[i,'value']
-      if(!is.null(inValues() )){ value_i<-inValues()[bt[i,'inputId']]}
+      if( (!is.null(inValues())) ){ value_i<-inValues()[bt[i,'inputId']]}
       boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
       #print(value_i)
     }
+    #browser()
     boxList
   })
+
+  # output$showReset<-reactive({
+  #     x<-0
+  #     if(!is.null(inValues())) x<-1
+  #     browser()
+  #     x
+  #   })
 
     # boxList<-list()
     # for(i in 1:dim(bt)[1]){
@@ -206,6 +243,10 @@ shinyServer(function(input, output) {
       for(i in 1:length(allVarNames)){
             storeInputChar[i]<<-as.character(input[[allVarNames[i] ]])
       }
+      #if(!is.null(input$uploadData)) storeInputChar[length(storeInputChar)+1] <- as.character(input$uploadData)
+      storeInputChar[length(storeInputChar)+1] <- as.character(input$loadReset)
+      storeInputChar[length(storeInputChar)+1] <- as.character(lastLoadReset)
+      storeInputChar[length(storeInputChar)+1] <- input$loadReset>lastLoadReset
       return(paste(storeInputChar,collapse=' '))
     #}
   }
@@ -218,8 +259,8 @@ shinyServer(function(input, output) {
     regen(params(),caller='dummy')
     print('adding to regenCalls')
     regenCalls<<-1
-    substr(refresh(),0,0) #ADDING EXTRA STUFF HERE TO MAKE IT VISIBLE.
-    #refresh()
+    #substr(refresh(),0,0) #ADDING EXTRA STUFF HERE TO MAKE IT VISIBLE.
+    refresh()
   })
 
 

@@ -73,13 +73,23 @@ try({
     bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
     source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
     
+    ##################
+    #TO USE SHINY 0.5 instead of 0.6
+    # Stolen from shinyIncubator
+    # needs actionbutton/actionbutton.js
+    # suppressMessages(addResourcePath(
+    #     prefix='actionbutton',
+    #     directoryPath=file.path(getwd(), 'actionbutton')
+    # ))
     # # adapted from shinyIncubator, so we don't require that package
     # my_actionButton <- function(inputId, label) {
     #   tagList(
-    #     singleton(tags$head(tags$script(src = 'https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/actionbutton/actionbutton.js'))),
+    #     singleton(tags$head(tags$script(src = 'actionbutton/actionbutton.js'))),
     #     tags$button(id=inputId, type="button", class="btn action-button", label)
     #   )
     # }
+    # actionButton <- my_actionButton
+    ##################
 
     cat("found code online...", file=stderr())
   }
@@ -186,7 +196,6 @@ shinyUI(pageWithSidebar(
 
 
   mainPanel(
-    #tableOutput('uptable'),
   strong('Save current parameters to file:'),br(),
   downloadButton('downloadData', 'Save'),
   br(),br(),
@@ -197,6 +206,7 @@ shinyUI(pageWithSidebar(
     strong('Reset parameters to uploaded file:'),br(),
     actionButton(inputId='loadReset',label='Reset')
   ),
+  br(),textOutput('uploadTime'), textOutput('resetText'),
   
   br(),br(),
   radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
