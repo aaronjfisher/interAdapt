@@ -621,11 +621,11 @@ legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed
 performance_table <- function()
 {
 output_df <- cbind(as.matrix(table1))
-output_df_formatted <- cbind(100*output_df[,1],output_df[,2],output_df[,3],100*output_df[,4],100*output_df[,5],100*output_df[,6],output_df[,7],output_df[,8],100*output_df[,9],
+output_df_formatted <- cbind(output_df[,1],output_df[,2],output_df[,3],100*output_df[,4],100*output_df[,5],100*output_df[,6],output_df[,7],output_df[,8],100*output_df[,9],
 #100*output_df[,10],
 output_df[,11],output_df[,12],100*output_df[,13])
 colnames(output_df_formatted) <- c("Subpop.1 Tx. Effect","AD:SS","AD:DUR","AD:Power H0C","AD:Power H01","AD:Power H0C or H01","FC:SS","FC:DUR","FC:Power H0C","FS:SS","FS:DUR","FS:Power H01")
-return(list(output_df_formatted,digits=c(0,1,0,1,0,0,0,0,1,0,0,1,0),caption="Comparison of avg sample size (SS), avg duration (DUR), and power (as a percent), for the following designs: the Adaptive Design (AD), the Fixed Design Enrolling Combined Population (FC), and the Fixed Design Enrolling Subpop. 1 Only (FS). All designs strongly control the familywise Type I error rate at level FWER set using slider onleft."))
+return(list(output_df_formatted,digits=c(0,2,0,1,0,0,0,0,1,0,0,1,0),caption="Comparison of avg sample size (SS), avg duration (DUR), and power (as a percent), for the following designs: the Adaptive Design (AD), the Fixed Design Enrolling Combined Population (FC), and the Fixed Design Enrolling Subpop. 1 Only (FS). All designs strongly control the familywise Type I error rate at level FWER set using slider onleft."))
 }
 
 transpose_performance_table<-function(ptable){
