@@ -1,6 +1,6 @@
 inputId,label,min,max,value,step
 Delta,Delta,-0.5,0.5,-0.5,0.1
-iter,# of Iterations for simulation,0,100000,1000,1
+iter,# of Iterations for simulation,0,100000,10000,1
 total_number_stages,Total number of stages,1,20,5,1
 recruitment_rate_subpop_1,Recruitment rate (sub-population 1),0,1000,140,1
 recruitment_rate_subpop_2,Recruitment rate (sub-population 2),0,1000,140,1
