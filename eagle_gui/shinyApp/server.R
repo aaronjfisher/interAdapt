@@ -38,6 +38,9 @@ for(i in 1:dim(st)[1]){
 for(i in 1:dim(bt)[1]){
   assign(bt[i,'inputId'], bt[i,'value']) 
 }
+table1 <- table_constructor()
+
+cat("...initialized variables & table1...", file=stderr())
 
 
 
