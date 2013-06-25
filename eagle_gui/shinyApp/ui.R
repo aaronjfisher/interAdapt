@@ -152,15 +152,17 @@ shinyUI(pageWithSidebar(
  #  br(),
 	# br(),
 	# #boxList
- #  uiOutput('dynamicBoxes')
+ #  uiOutput('fullBoxes')
  #  ),
 
   # "Advanced" forces batch mode
   sidebarPanel(
-        textOutput('dummyText'),
+        #TOP PANEL
+        textOutput('dummyText'),textOutput('smallBoxes'),textOutput('smallSliders'),
 
         selectInput("Which_params", "", c("Basic parameters" = "1",
                 "Advanced parameters" = "2")),
+        #BASIC SLIDERS
         conditionalPanel(condition = "input.Which_params == '1'",
                 selectInput("Batch", "", c("Batch mode" = "1",
                         "Interactive mode" = "2")),
@@ -168,12 +170,13 @@ shinyUI(pageWithSidebar(
                         actionButton("Parameters1", "Apply"),
                         #uiOutput('actionButton'),
                         br(), br()),
-                uiOutput('dynamicSliders')),
+                uiOutput('fullSliders')),
+        #ADVANCED BOXES
         conditionalPanel(condition = "input.Which_params == '2'",
                 actionButton("Parameters2", "Apply"),
                 #uiOutput('actionButton'),
                 br(), br(),
-                uiOutput('dynamicBoxes'))
+                uiOutput('fullBoxes'))
   ),
 
 
@@ -196,6 +199,7 @@ shinyUI(pageWithSidebar(
 
 
   mainPanel(
+  #SAVE & LOAD
   strong('Save current parameters to file:'),br(),
   downloadButton('downloadData', 'Save'),
   br(),br(),
@@ -206,8 +210,9 @@ shinyUI(pageWithSidebar(
     strong('Reset parameters to uploaded file:'),br(),
     actionButton(inputId='loadReset',label='Reset')
   ),
-  br(),textOutput('uploadTime'), textOutput('resetText'),
+  br(),textOutput('uploadTime'),textOutput('loadReset'),
   
+  #OUTPUT
   br(),br(),
   radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
 	c(Designs = "1", Performance = "2")),	

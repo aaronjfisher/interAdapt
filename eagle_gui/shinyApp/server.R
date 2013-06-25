@@ -50,18 +50,15 @@ shinyServer(function(input, output) {
   regenCalls<-0
   uploadFileTicker<-0
   lastLoadReset<-0
+  inValues<-NULL
 
   params<-reactive({input$Parameters1 + input$Parameters2})
 
 
   #LOADING DATA
   #a reactive chunk to feed to the dynamicBoxes & dynamicSliders
-  percievedInValues<-reactive({
-    input$uploadData
-  })
-
-  inValues<-reactive({
-    upFile <- percievedInValues()
+  regenUpload<-reactive({
+    upFile <- input$uploadData
     x<-NULL
     if (!is.null(upFile)){
       x<-c(read.csv(file=upFile$datapath, row.names=1, header=FALSE))[[1]]
@@ -70,31 +67,13 @@ shinyServer(function(input, output) {
       uploadFileTicker<<-0
       output$uploadTime<<-renderText({as.character(Sys.time())})
       print('resetting upload')
-      resettingData<<-TRUE
     }
-    x
+    inValues<<-x
   })
 
-  resettingData<-FALSE
-  resetText1<-reactive({
-    print('resettext1-1-----------')
-    if(lastLoadReset!=input$loadReset){
-      print('resettext1-2------------')
-      percievedInValues<<-reactive({NULL})
-    }
-    input$loadReset
+  regenLoadReset<-reactive({
+    dummy<-input$loadReset
   })
-
-  resetText2<-reactive({
-    print('resettext2-1-----------')
-    if(is.null(percievedInValues()) & resettingData) {
-      print('resettext2-2------------')
-      lastLoadReset<<-input$loadReset
-      percievedInValues<<-input$uploadData
-    }
-    input$loadReset
-  })
-  output$resetText<-renderText({paste(resetText1(),resetText2())})
 
 
 
@@ -106,43 +85,51 @@ shinyServer(function(input, output) {
     })
 
   #update for error: if you isolate the animate change, the animate won't change until you add a new file :/. Here we fix it by adding a uploadFileTicker that tracks if it's the first time the sliders have been updated since the last time we uploaded a file. Only if it's the first time do we change the sliders to the uploaded values. If it's not the first time, we use the current value of the variable, taken from allVars.
-  output$dynamicSliders <- renderUI({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
+  sliders <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
     print('sliders')
-    #print(c(input$loadReset, lastLoadReset))
+    regenUpload()
     #browser()
-    dummy<-input$uploadData
-    #dummy2<-input$loadReset
     sliderList<-list()
     animate<-FALSE
     if(input$Batch=='2') animate<-TRUE 
     for(i in 1:dim(st)[1]){
       value_i<-st[i,'value']
-      if((!is.null(inValues())) ) value_i<-inValues()[st[i,'inputId']]
+      if((!is.null(inValues)) ) value_i<-inValues[st[i,'inputId']]
       if(uploadFileTicker>0)    value_i<-allVars()[st[i,'inputId']]
-      #if( input$loadReset>lastLoadReset & (!is.null(inValues())) ) value_i<-inValues()[st[i,'inputId']]
       sliderList[[i]]<-sliderInput(inputId=st[i,'inputId'], label=st[i,'label'], min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'], animate=animate)
     }
     uploadFileTicker<<-uploadFileTicker+1
-    #lastLoadReset<<-input$loadReset
     print('           sliders updating!!!!!!')
     print(sliderList[[1]])
     sliderList
   })
+  #Need to make a small version to ensure that both update immediately.
+  output$fullSliders<-renderUI({sliders()})
+  output$smallSliders<-renderText({
+    as.character(sliders())
+  })
 
-  output$dynamicBoxes <- renderUI({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
+
+  boxes <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
     print('                    boxes')
     #browser()
-    dummy<-input$uploadData
+    regenUpload()
+    #dummy<-input$uploadData
     #dummy2<-input$loadReset
     boxList<-list()
     for(i in 1:dim(bt)[1]){
       value_i<-bt[i,'value']
-      if( (!is.null(inValues())) ){ value_i<-inValues()[bt[i,'inputId']]}
+      if( (!is.null(inValues)) ){ value_i<-inValues[bt[i,'inputId']]}
       boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
       #print(value_i)
     }
     #browser()
     boxList
+  })
+  #Need to make a small version to ensure that both update immediately.
+  output$fullBoxes<-renderUI({boxes()})
+  output$smallBoxes<-renderText({
+    as.character(boxes())
   })
 
   # output$showReset<-reactive({
