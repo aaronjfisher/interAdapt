@@ -48,7 +48,7 @@ cat("...initialized variables & table1...", file=stderr())
 
 
 shinyServer(function(input, output) {
-  Apply_button <- -1
+  Apply_button <- 0 #note, this means the table1 will NOT be recalculated until the apply button is hit once, or we go into interactive mode.
   totalcalls<-0 #a place keeper to watch when we cat to stderr
   regenCalls<-0
   uploadFileTicker<-0
