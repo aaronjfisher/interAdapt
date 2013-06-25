@@ -493,7 +493,7 @@ print_ss_and_boundaries_flag <- 1
 cv_small <- (p11-p10)/sqrt(p11*(1-p11)/r10+p10*(1-p10)/(1-r10))
 outcome_variance_subpop_1 <- p11*(1-p11)/r10+p10*(1-p10)/(1-r10)
 
-risk_difference_list <<- sort(unique(c(0,seq(min(c(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,0)),max(c(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,p21_user_defined-p20_user_defined,0)),length=6))))
+risk_difference_list <<- sort(unique(c(0,seq(max(c(min(c(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,0)),-p20)),min(c(max(c(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,p21_user_defined-p20_user_defined,0)),1-p20)),length=6))))
 
 
 
