@@ -635,7 +635,10 @@ transpose_performance_table<-function(ptable){
 	dpt<-dim(ptable[[1]])
 	digitMatPre<-matrix(ptable$digits[-1],nrow=dpt[2],ncol=dpt[1],byrow=FALSE)
 	digitMat<-cbind(0,digitMatPre) #add a column of zeros for the row names
-	return(list( t(ptable[[1]]), digits=digitMat, caption=ptable$caption))
+	orderedTab<-t(ptable[[1]])[,(dpt[1]:1)] #reverse the col order
+	outTab<-data.frame(orderedTab)
+	colnames(outTab)<-rep('',times=dpt[1]) #this turns out to be not nessecary if we say include.colnames=FALSE in our custom renderTable function
+	return(list( outTab, digits=digitMat, caption=ptable$caption ) )
 }
 
 adaptive_design_sample_sizes_and_boundaries_table <- function()

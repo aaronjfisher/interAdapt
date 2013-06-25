@@ -73,23 +73,23 @@ try({
     bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
     source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
     
-    ##################
-    #TO USE SHINY 0.5 instead of 0.6
+    #################
+    # TO USE SHINY 0.5 instead of 0.6
     # Stolen from shinyIncubator
     # needs actionbutton/actionbutton.js
-    # suppressMessages(addResourcePath(
-    #     prefix='actionbutton',
-    #     directoryPath=file.path(getwd(), 'actionbutton')
-    # ))
-    # # adapted from shinyIncubator, so we don't require that package
-    # my_actionButton <- function(inputId, label) {
-    #   tagList(
-    #     singleton(tags$head(tags$script(src = 'actionbutton/actionbutton.js'))),
-    #     tags$button(id=inputId, type="button", class="btn action-button", label)
-    #   )
-    # }
-    # actionButton <- my_actionButton
-    ##################
+    suppressMessages(addResourcePath(
+        prefix='actionbutton',
+        directoryPath=file.path(getwd(), 'actionbutton')
+    ))
+    # adapted from shinyIncubator, so we don't require that package
+    my_actionButton <- function(inputId, label) {
+      tagList(
+        singleton(tags$head(tags$script(src = 'actionbutton/actionbutton.js'))),
+        tags$button(id=inputId, type="button", class="btn action-button", label)
+      )
+    }
+    actionButton <- my_actionButton
+    #################
 
     cat("found code online...", file=stderr())
   }
@@ -158,21 +158,39 @@ shinyUI(pageWithSidebar(
   # "Advanced" forces batch mode
   sidebarPanel(
         #TOP PANEL
-        textOutput('dummyText'),textOutput('smallBoxes'),textOutput('smallSliders'),
+        textOutput('dummyText'),#textOutput('smallBoxes'),textOutput('smallSliders'), #smallBoxes & smallSliders were used for debugging, don't seem to do what we wanted though. Now using a "show all inputs" option istead.
+        selectInput("Which_params", "", c("Show basic parameters" = "1",
+                "Show advanced parameters" = "2", "Save/load parameters" = "3") ),
 
-        selectInput("Which_params", "", c("Basic parameters" = "1",
-                "Advanced parameters" = "2")),
+        #SAVE & LOAD
+        conditionalPanel(condition="input.Which_params == '3'",
+            br(),
+            strong('Save current parameters to file:'),br(),
+            downloadButton('downloadData', 'Save'),
+            br(),br(),
+            strong('Load previous parameters from file:'),
+            fileInput('uploadData', '',
+                    accept=c('text/csv', 'text/comma-separated-values,text/plain')),
+            conditionalPanel(condition='false', #need to make this actually contional!?
+              strong('Reset parameters to uploaded file:'),br(),
+              actionButton(inputId='loadReset',label='Reset')
+            ),
+            strong("Current Parameters:")
+          ),
+
         #BASIC SLIDERS
-        conditionalPanel(condition = "input.Which_params == '1'",
+        conditionalPanel(condition = "input.Which_params == '1' || input.Which_params == '3'",
                 selectInput("Batch", "", c("Batch mode" = "1",
                         "Interactive mode" = "2")),
+                #show apply button if you're in batch mode
                 conditionalPanel(condition = "input.Batch == '1'",
                         actionButton("Parameters1", "Apply"),
                         #uiOutput('actionButton'),
                         br(), br()),
                 uiOutput('fullSliders')),
         #ADVANCED BOXES
-        conditionalPanel(condition = "input.Which_params == '2'",
+        conditionalPanel(condition = "input.Which_params == '2' || input.Which_params == '3'",
+                #always show apply button
                 actionButton("Parameters2", "Apply"),
                 #uiOutput('actionButton'),
                 br(), br(),
@@ -199,21 +217,8 @@ shinyUI(pageWithSidebar(
 
 
   mainPanel(
-  #SAVE & LOAD
-  strong('Save current parameters to file:'),br(),
-  downloadButton('downloadData', 'Save'),
-  br(),br(),
-  strong('Load previous parameters from file:'),
-  fileInput('uploadData', '',
-          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
-  conditionalPanel(condition='true', #need to make this actually contional!?
-    strong('Reset parameters to uploaded file:'),br(),
-    actionButton(inputId='loadReset',label='Reset')
-  ),
-  br(),textOutput('uploadTime'),textOutput('loadReset'),
-  
+
   #OUTPUT
-  br(),br(),
   radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
 	c(Designs = "1", Performance = "2")),	
   br(),
@@ -246,5 +251,6 @@ shinyUI(pageWithSidebar(
     ),
     br(),
     tableOutput("performance_table"))
+  #,br(),textOutput('uploadTime'),textOutput('loadReset')
   )
 ))

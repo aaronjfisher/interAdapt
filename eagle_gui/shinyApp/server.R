@@ -246,8 +246,8 @@ shinyServer(function(input, output) {
     regen(params(),caller='dummy')
     print('adding to regenCalls')
     regenCalls<<-1
-    #substr(refresh(),0,0) #ADDING EXTRA STUFF HERE TO MAKE IT VISIBLE.
-    refresh()
+    substr(refresh(),0,0) #ADDING EXTRA STUFF HERE TO MAKE IT VISIBLE.
+    #refresh()
   })
 
 
@@ -278,11 +278,11 @@ shinyServer(function(input, output) {
 
 # HJ - x must be a list of length 3, with a digits and caption
 xtable <- function(x) {
-	xtable::xtable(x[[1]], digits=x$digits, caption=x$caption)
+	xtable::xtable(x[[1]], digits=x$digits, caption=x$caption) #NEED TO EXPAND HERE!!
 }
 
 # HJ - see shiny:::htmlEscape (why is this necessary?)
-renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func = NULL) 
+renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func = NULL, include.colnames=TRUE) 
 {
     if (!is.null(func)) {
         shinyDeprecated(msg = "renderTable: argument 'func' is deprecated. Please use 'expr' instead.")
@@ -295,7 +295,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
         data <- func()
         if (is.null(data) || identical(data, data.frame())) 
             return("")
-        return(paste(capture.output(print(xtable(data, ...), 
+        return(paste(capture.output(print(xtable(data, ...), include.colnames=include.colnames, 
             type = "html", html.table.attributes = paste("class=\"", 
                 #htmlEscape(classNames, TRUE), "\"", sep = ""), 
                 shiny:::htmlEscape(classNames, TRUE), "\"", sep = ""), 
@@ -324,11 +324,11 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 	fixed_H0S_design_sample_sizes_and_boundaries_table()
   })
 
-  output$performance_table <- renderTable({
+  output$performance_table <- renderTable(expr={
 	regen(params(),caller='performance_table')
   refresh()
 	transpose_performance_table(performance_table())
-    })
+    },include.colnames=FALSE)
 
 
   #SAVE DATA:
