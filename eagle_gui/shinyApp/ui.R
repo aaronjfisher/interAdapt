@@ -158,9 +158,9 @@ shinyUI(pageWithSidebar(
   # "Advanced" forces batch mode
   sidebarPanel(
         #TOP PANEL
-        textOutput('dummyText'),#textOutput('smallBoxes'),textOutput('smallSliders'), #smallBoxes & smallSliders were used for debugging, don't seem to do what we wanted though. Now using a "show all inputs" option istead.
+
         selectInput("Which_params", "", c("Show basic parameters" = "1",
-                "Show advanced parameters" = "2", "Save/load parameters" = "3") ),
+                "Show advanced parameters" = "2", "Show all parameters" = "3") ),
 
         #SAVE & LOAD
         conditionalPanel(condition="input.Which_params == '3'",
@@ -178,23 +178,28 @@ shinyUI(pageWithSidebar(
             strong("Current Parameters:")
           ),
 
+        #INTERACTIVE MODE ONLY IF JUST SLIDERS
+          #Note interactive mode is auto-disabled if you're not in the "just sliders" view
+        conditionalPanel(condition= "input.Which_params== '1'",
+          selectInput("Batch", "", c("Batch mode" = "1",
+                "Interactive mode" = "2"))
+        ),
         #BASIC SLIDERS
         conditionalPanel(condition = "input.Which_params == '1' || input.Which_params == '3'",
-                selectInput("Batch", "", c("Batch mode" = "1",
-                        "Interactive mode" = "2")),
-                #show apply button if you're in batch mode
-                conditionalPanel(condition = "input.Batch == '1'",
-                        actionButton("Parameters1", "Apply"),
-                        #uiOutput('actionButton'),
-                        br(), br()),
-                uiOutput('fullSliders')),
+          #show apply button if you're in batch mode, or showing all inputs and batch mode is enforced
+          conditionalPanel(condition='input.Batch== "1" || input.Which_params== "3" ',
+            actionButton("Parameters1", "Apply")),
+          #uiOutput('actionButton'),
+          br(), br(),
+          uiOutput('fullSliders')
+        ),
         #ADVANCED BOXES
         conditionalPanel(condition = "input.Which_params == '2' || input.Which_params == '3'",
-                #always show apply button
-                actionButton("Parameters2", "Apply"),
-                #uiOutput('actionButton'),
-                br(), br(),
-                uiOutput('fullBoxes'))
+          #always show apply button
+          actionButton("Parameters2", "Apply"),
+          #uiOutput('actionButton'),
+          br(), br(),
+          uiOutput('fullBoxes'))
   ),
 
 
@@ -217,6 +222,10 @@ shinyUI(pageWithSidebar(
 
 
   mainPanel(
+  #WARNINGS
+  h4(textOutput('warn1')),
+  h4(textOutput('warn2')),
+  br(),br(),
 
   #OUTPUT
   radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),

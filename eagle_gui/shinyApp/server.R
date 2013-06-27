@@ -1,6 +1,12 @@
 #BUGS!
-#When you load new data, the back boxes and sliders don't finish updating until you look at both of them!
-  #Add some form of the inValues to the dummyText?
+# Add Michael's Warnings
+# Add a checkbox to autoupdate new parameters, or a warning saying they're not yet applied.
+
+#############################################
+#############################################
+# PREAMBLE
+#############################################
+#############################################
 
 
 cat("source'ing code...", file=stderr())
@@ -29,33 +35,83 @@ try({
 cat("...got code!...", file=stderr())
 
 allVarNames<-c(st[,'inputId'],bt[,'inputId'])
-
-
+lastAllVars<-rep(0,length(allVarNames))
+names(lastAllVars)<-allVarNames
 
 for(i in 1:dim(st)[1]){
   assign(st[i,'inputId'], st[i,'value'])
+  lastAllVars[st[i,'inputId']] <- st[i,'value']
 }
 for(i in 1:dim(bt)[1]){
   assign(bt[i,'inputId'], bt[i,'value']) 
+  lastAllVars[bt[i,'inputId']] <- bt[i,'value']
 }
 
 
 
+#############################################
+#############################################
+# END OF PREAMBLE
+#############################################
+#############################################
 
 
 
 shinyServer(function(input, output) {
-  Apply_button <- -1
-  totalcalls<-0 #a place keeper to watch when we cat to stderr
-  regenCalls<-0
+
+
+  #############################################
+  #############################################
+  # Initialize some static & reactive variables
+  #############################################
+  #############################################
+
+
+  lastApplyValue <- 0
+  totalCalls<-0 #a place keeper to watch when we cat to stderr
   uploadFileTicker<-0
-  lastLoadReset<-0
   inValues<-NULL
+
+  #current value of all the data, need to store this if we want to change the sliders to all be animated in interactive mode, but not change their values.
+    #all used a comparison against static lastAllVars
+  allVars<-reactive({
+    x<-c()
+    for(i in 1:length(allVarNames)) x[allVarNames[i]]<- input[[allVarNames[i] ]]
+    warn2<-""
+    if(x['total_number_stages']<x['last_stage_subpop_2_enrolled_adaptive_design']){
+        x['last_stage_subpop_2_enrolled_adaptive_design']<-x['total_number_stages']
+        warn2<-paste("Warning: the last stage sub population 2 is enrolled must be less than the total number of stages. Here the last stage in which sub population 2 is enrolled is set to",x['total_number_stages'],"the total number of stages")
+    }
+    output$warn2<-renderText({warn2})
+    x
+  })
 
   params<-reactive({input$Parameters1 + input$Parameters2})
 
+  #when we're not just looking at basic parameters, we force batch mode.
+  effectivelyBatch<- reactive({input$Batch == "1" | input$Which_params != "1"})
 
-  #LOADING DATA
+
+  #############################################
+  #############################################
+  # Warnings
+  #############################################
+  #############################################
+  output$warn1<-renderText({ #STILL NEED TO MAKE WORK!
+    x<-""
+    if(input$Which_params!="1" & input$Batch=="2")x<-"Note: interactive mode not enabled for advanced parameters, defaulting to batch mode."
+    x    
+  })
+#See also the allVars() for other errors
+  
+
+
+  #############################################
+  #############################################
+  # LOADING DATA
+  #############################################
+  #############################################
+
   #a reactive chunk to feed to the dynamicBoxes & dynamicSliders
   regenUpload<-reactive({
     upFile <- input$uploadData
@@ -71,210 +127,175 @@ shinyServer(function(input, output) {
     inValues<<-x
   })
 
-  regenLoadReset<-reactive({
-    dummy<-input$loadReset
-  })
 
 
 
-  #current value of all the data, need to store this if we want to change the sliders to all be animated in interactive mode, but not change their values.
-  allVars<-reactive({
-      x<-c()
-      for(i in 1:length(allVarNames)) x[allVarNames[i]]<- input[[allVarNames[i] ]]
-      x
-    })
 
-  #update for error: if you isolate the animate change, the animate won't change until you add a new file :/. Here we fix it by adding a uploadFileTicker that tracks if it's the first time the sliders have been updated since the last time we uploaded a file. Only if it's the first time do we change the sliders to the uploaded values. If it's not the first time, we use the current value of the variable, taken from allVars.
+
+
+  #############################################
+  #############################################
+  # SLIDERS & BOXES
+  #############################################
+  #############################################
+
+
+  #NOTE - June 26: When sliders update, regen thinks it needs to be called again because sliders have updated values and you're now in interactive mode.
+        #solution -- added lastAllVars (nonreactive) variable that cancels this out.
+  #explanation of uploadFileTicker: Only if it's the first time do we change the sliders to the uploaded values. If it's not the first time, we use the current value of the variable, taken from allVars.
   sliders <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
     print('sliders')
-    regenUpload()
-    #browser()
+    print(uploadFileTicker)
+    regenUpload() #reactive input to uploaded file
     sliderList<-list()
     animate<-FALSE
-    if(input$Batch=='2') animate<-TRUE 
+    if(input$Batch=='2' & input$Which_params=='1' ) animate<-TRUE # reactive input
     for(i in 1:dim(st)[1]){
+      #case1: null upfile & zero uploadFileTicker (sliders haven't changed yet)
       value_i<-st[i,'value']
-      if((!is.null(inValues)) ) value_i<-inValues[st[i,'inputId']]
-      if(uploadFileTicker>0)    value_i<-allVars()[st[i,'inputId']]
+      #case2: something uploaded, and hasn't been called yet (uploadFileTicker==0)
+      if(!is.null(inValues)) value_i<-inValues[st[i,'inputId']]
+      #case3: whatever's there has been called already, ignore uploaded data.
+      if(uploadFileTicker>0) isolate(value_i<-allVars()[st[i,'inputId']])
       sliderList[[i]]<-sliderInput(inputId=st[i,'inputId'], label=st[i,'label'], min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'], animate=animate)
     }
     uploadFileTicker<<-uploadFileTicker+1
     print('           sliders updating!!!!!!')
-    print(sliderList[[1]])
     sliderList
   })
-  #Need to make a small version to ensure that both update immediately.
   output$fullSliders<-renderUI({sliders()})
-  output$smallSliders<-renderText({
-    as.character(sliders())
-  })
+  #   #Need to make a small version to ensure that both update immediately.
+  # output$smallSliders<-renderText({
+  #   as.character(sliders())
+  # })
+
 
 
   boxes <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
     print('                    boxes')
-    #browser()
     regenUpload()
-    #dummy<-input$uploadData
-    #dummy2<-input$loadReset
     boxList<-list()
     for(i in 1:dim(bt)[1]){
       value_i<-bt[i,'value']
       if( (!is.null(inValues)) ){ value_i<-inValues[bt[i,'inputId']]}
       boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
-      #print(value_i)
     }
-    #browser()
     boxList
   })
-  #Need to make a small version to ensure that both update immediately.
   output$fullBoxes<-renderUI({boxes()})
-  output$smallBoxes<-renderText({
-    as.character(boxes())
-  })
+  # #Need to make a small version to ensure that both update immediately.
+  # output$smallBoxes<-renderText({
+  #   as.character(boxes())
+  # })
 
-  # output$showReset<-reactive({
-  #     x<-0
-  #     if(!is.null(inValues())) x<-1
-  #     browser()
-  #     x
-  #   })
 
-    # boxList<-list()
-    # for(i in 1:dim(bt)[1]){
-    #   value_i<-bt[i,'value']
-    #   if(!is.null(inValues() )) value_i<-inValues()[bt[i,'inputId']]
-    #   boxList[[i]]<-sliderInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
-    # }
-    # boxList
-  
 
-# # Partial example
-# output$cityControls <- renderUI({
-#   # cities <- input$iter
-#   # list(numericInput("cities", "Choose Cities", value=inValues()[11])  ,numericInput("cities", "Choose Cities", value=inValues()[12])  )
-#     i<-1
-#     value_i<-bt[i,'value']
-#     if(!is.null(inValues() )) value_i<-inValues()[bt[i,'inputId']]
-#     boxList<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
-#     boxList
-# })
 
-  # output$actionButton<-renderUI({
-  #   actionButton("Parameters", "Apply")
-  #   })
 
+
+
+
+
+  #############################################
+  #############################################
+  # REGEN
+  #############################################
+  #############################################
 
 
   # In interactive mode, we re-export the parameters and rebuild table1
   # every time.  In batch, only on the first call for a given push of the
   # Apply button.
-  regen <- function(apply_button_value, caller='no caller specified') {
-#cat("regen:", input$Batch, "\n", file=stderr())
+  #argument applyValue is usally fed in as params(), the sum of the two apply buttons
 
-  totalcalls<<-totalcalls+1
-  print(paste('total calls =',totalcalls))
-  print(paste('regenCalls =',regenCalls))
-  print(paste('caller =',caller))
-  print(paste('apply_button_value =',apply_button_value))
 
-  if(is.null(input$Batch) || is.null(apply_button_value))
-    {print('regen out') ; return()}
 
-  for(name in allVarNames){
-     if(is.null(input[[name]])) {print('null regen Input');return()}
-  }
-
-	if (input$Batch == "1" && apply_button_value <= Apply_button)
-	    return()
-  if (input$Batch == "2" && regenCalls>0 ){
-      return()
-  }
-
-	if (input$Batch == "1"){
-    isolate(for(i in 1:length(allVarNames))
-  		assign(allVarNames[i], input[[allVarNames[i]]], inherits=TRUE)
-    )
-  } else {
-    for(i in 1:length(allVarNames)){
-	    assign(allVarNames[i], input[[allVarNames[i]]], inherits=TRUE)
-      print(input[[allVarNames[i]]])
+  regen <- reactive({
+    applyValue<-params()
+    totalCalls<<-totalCalls+1
+    print(paste('total calls =',totalCalls))
+    browser()
+    #ESCAPE --
+    #escape if it's called when dynamic sliders/buttons are still loading
+    if(is.null(input$Batch) || is.null(applyValue))
+      {print('regen out') ; return()}
+    for(name in allVarNames){
+      isolate(if(is.null(input[[name]])) {print('null regen Input');return()})
     }
-  }
-
-  #browser()
-  cat("making table1 ...")
-  table1 <<- table_constructor()
-  cat("Done\n")
-
-	if (input$Batch == "1")
-		Apply_button <<- apply_button_value
-  }
-
-# apply_button <- quote({
-# 	val <- params()
-# 	if (val == 0)
-# 		return("")
-# 	regen(val)
-# 	#as.character(val)
-# 	""
-# })
-# output$params <- renderText(apply_button, quoted=TRUE)
-  
-  refresh<-function(){ # a function requires use of all inputs. This is meant to be used to make a code chunk reactive to everything
-    #in interactive mode, I think the code shiny sees for regen isn't "reactive enough" but adding this function to a plot call makes the plot update as desired (in interactive mode).
-    #if(input$Batch == "2"){
-      for(name in allVarNames) if(is.null(input[[name]])) return()
-      
-      #browser()
-      storeInputChar<<-rep('',length=length(allVarNames))
-      for(i in 1:length(allVarNames)){
-            storeInputChar[i]<<-as.character(input[[allVarNames[i] ]])
-      }
-      #if(!is.null(input$uploadData)) storeInputChar[length(storeInputChar)+1] <- as.character(input$uploadData)
-      storeInputChar[length(storeInputChar)+1] <- as.character(input$loadReset)
-      storeInputChar[length(storeInputChar)+1] <- as.character(lastLoadReset)
-      storeInputChar[length(storeInputChar)+1] <- input$loadReset>lastLoadReset
-      return(paste(storeInputChar,collapse=' '))
-    #}
-  }
+    #in batch mode: if buttons have NOT been pressed since last time, 
+  	if (  effectivelyBatch() && (applyValue <= lastApplyValue) )
+  	    return()
+    #Check if no change -- especially useful for slider asthetic changes.
+        #no need to isolate this next line -- if we're not in interative mode we would have already exited by now.
+    if(all(allVars()==lastAllVars)) {print('no change'); return()}
 
 
-  output$dummyText<-renderText({ #We want to call regen only once.
-    #I'm not sure what it means that this reactive chunk always seems to be "evaluated first"
-    print('resetting regenCalls')
-    regenCalls<<-0
-    regen(params(),caller='dummy')
-    print('adding to regenCalls')
-    regenCalls<<-1
-    substr(refresh(),0,0) #ADDING EXTRA STUFF HERE TO MAKE IT VISIBLE.
-    #refresh()
-  })
+    #if Batch==1, we don't want things updating automatically, so we use isolate()
+    #JUNE 26 - This must be done in conjunction with isolating the is.null tests @ the start of the function
+    #need to use allVars() so that we head off some potential errors
+    assignAllVars<-function(){
+      for(i in 1:length(allVarNames))
+        assign(allVarNames[i], allVars()[allVarNames[i]], inherits=TRUE)
+    }
+  	if (effectivelyBatch()){ isolate(assignAllVars() )
+    } else { assignAllVars() }
+
+    #browser()
+    cat("making table1 ...")
+    table1 <<- table_constructor()
+    cat("Done\n")
+
+  	if (effectivelyBatch() ) lastApplyValue <<- applyValue
+    lastAllVars<<-allVars()
+})
+
+
+
+
+
+  #############################################
+  #############################################
+  # PLOTS
+  #############################################
+  #############################################
+
 
 
   output$power_curve_plot <- renderPlot({
-	regen(params(),caller='power_curve_plot') #NOTE! adding a "if(input$Batch=='1')" qualifier to this regen call appears to not change anything, since regen exists under anyother conditions thanks for the regenCalls resetting
-  refresh()
+	regen() 
+  print('power plot')
 	power_curve_plot()
   })
 
   output$expected_sample_size_plot <- renderPlot({
-	regen(params(),caller='expected_sample_size_plot')
-  refresh()
+	regen()
+  print('sample plot')
 	expected_sample_size_plot()
   })
 
   output$expected_duration_plot <- renderPlot({
-	regen(params(),caller='expected_duration_plot')
-  refresh()
+	regen()
+  print('duration plot')
 	expected_duration_plot()
   })
 
   #overruns <- function() plot(1:2, main="Overruns")
   output$overruns <- renderPlot({
-	regen(params(),caller='overruns')
-  refresh()
+	regen()
+  print('overruns plot')
 	overrun_plot()
   })
+
+
+
+
+
+
+  #############################################
+  #############################################
+  # TABLES (& new xtable/renderTable functions)
+  #############################################
+  #############################################
 
 # HJ - x must be a list of length 3, with a digits and caption
 xtable <- function(x) {
@@ -305,33 +326,41 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 
   output$adaptive_design_sample_sizes_and_boundaries_table.2 <-
   output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable({    
-	regen(params(),caller='adaptive_table')
-  refresh()  
+	regen()
+  print('adapt table')
 	adaptive_design_sample_sizes_and_boundaries_table()
   })
 
   output$fixed_H0C_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
-	regen(params(),caller='HOC_table')
-  refresh()
+	regen()
+  print('HOC table')
 	fixed_H0C_design_sample_sizes_and_boundaries_table()
   })
 
   output$fixed_H0S_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0S_design_sample_sizes_and_boundaries_table <-renderTable({
-	regen(params(),caller='HOS_table')
-  refresh()
+	regen()
+  print('HOS table')
 	fixed_H0S_design_sample_sizes_and_boundaries_table()
   })
 
   output$performance_table <- renderTable(expr={
-	regen(params(),caller='performance_table')
-  refresh()
+	regen()
+  print('perf table')
 	transpose_performance_table(performance_table())
     },include.colnames=FALSE)
 
 
-  #SAVE DATA:
+
+
+
+
+  #############################################
+  #############################################
+  #SAVE DATA
+  #############################################
+  #############################################
   output$downloadData <- downloadHandler(
     filename =  'inputs.csv',
     content = function(file) {
@@ -340,5 +369,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
       write.table(inputCsv, file, row.names=allVarNames, col.names=FALSE, sep=',')
     }
   )
+
+
 
 })
