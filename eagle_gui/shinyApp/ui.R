@@ -134,26 +134,7 @@ shinyUI(pageWithSidebar(
 
 
 
- #  sidebarPanel(
- #  uiOutput("cityControls"),
- #  textOutput('dummyText'),
-	# selectInput("Batch", "", c("Batch mode" = "1", Interactive = "2")),
- #  uiOutput('actionButton'),
- #  #actionButton("Parameters", "Apply"),
-	# 	br(),
-	# br(),
- #  br(),
- #  downloadButton('downloadData', 'Save current inputs'),
- #  fileInput('uploadData', 'Load saved inputs from file',
- #          accept=c('text/csv', 'text/comma-separated-values,text/plain')),
 
-	# uiOutput('dynamicSliders'),
- #  #sliderList,
- #  br(),
-	# br(),
-	# #boxList
- #  uiOutput('fullBoxes')
- #  ),
 
   # "Advanced" forces batch mode
   sidebarPanel(

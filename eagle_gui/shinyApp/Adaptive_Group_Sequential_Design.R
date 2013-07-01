@@ -45,6 +45,8 @@ per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined  
 Delta <- (-0.5)
 # Number simulated trials
 iter <- 7000  # Range: 1 to 500,000
+# Time limit for primary function (table_constructor())
+time_limit<-30 #(seconds, range from 5 to 60)
 # Number stages
 total_number_stages <- 5 # Range 1:20
 # Enrollment rate subpop. 1 (patients per year)
@@ -416,6 +418,9 @@ return(c(H0C_prop_const,H0S_prop_const))
 # Construct table of values to display in plots
 
 table_constructor <- function(){
+
+setTimeLimit(time_limit)
+
 ### Built in settings (not user controlled)
 # Probability randomized to control Arm
 # for Subpop. 1 (Range: 0 to 1)

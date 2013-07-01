@@ -1,6 +1,8 @@
 #BUGS!
 # Add Michael's Warnings
 # Add a checkbox to autoupdate new parameters, or a warning saying they're not yet applied.
+# Need to make sure the initialized image is set correctly. 
+    # For beta testing it's just commented out to maintain consistency.
 
 #############################################
 #############################################
@@ -46,9 +48,37 @@ for(i in 1:dim(bt)[1]){
   assign(bt[i,'inputId'], bt[i,'value']) 
   lastAllVars[bt[i,'inputId']] <- bt[i,'value']
 }
+
 table1 <- table_constructor()
 
-cat("...initialized variables & table1...", file=stderr())
+
+
+
+
+
+
+
+#THIS LAST BIT HAS BEEN TRICKY TO GET WORKING! Maybe better to start with just a 
+# whole image file, but for beta testing just leave it as is.
+
+# buildTable1Now<-TRUE
+# if(!getItOnline){
+#   try({
+#     load(file='initialized_image_&_table1.RData')
+#     cat("loaded table1 & image...", file=stderr())
+#     buildTable1Now<-FALSE
+#   })
+# }
+# if(buildTable1Now){
+#   table1 <- table_constructor()
+#   cat("built table1...", file=stderr())
+# }
+# Saving table1 for future use
+# iter<-10000
+# save.image(file='initialized_image_&_table1.RData')
+
+
+
 
 
 #############################################
@@ -70,7 +100,7 @@ shinyServer(function(input, output) {
   #############################################
 
 
-  lastApplyValue <- 0
+  lastApplyValue <- -1
   totalCalls<-0 #a place keeper to watch when we cat to stderr
   uploadFileTicker<-0
   inValues<-NULL
@@ -89,7 +119,7 @@ shinyServer(function(input, output) {
     x
   })
 
-  params<-reactive({input$Parameters1 + input$Parameters2})
+  params<-reactive({ input$Parameters1 + input$Parameters2 })
 
   #when we're not just looking at basic parameters, we force batch mode.
   effectivelyBatch<- reactive({input$Batch == "1" | input$Which_params != "1"})
@@ -167,11 +197,6 @@ shinyServer(function(input, output) {
     sliderList
   })
   output$fullSliders<-renderUI({sliders()})
-  #   #Need to make a small version to ensure that both update immediately.
-  # output$smallSliders<-renderText({
-  #   as.character(sliders())
-  # })
-
 
 
   boxes <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
@@ -186,10 +211,6 @@ shinyServer(function(input, output) {
     boxList
   })
   output$fullBoxes<-renderUI({boxes()})
-  # #Need to make a small version to ensure that both update immediately.
-  # output$smallBoxes<-renderText({
-  #   as.character(boxes())
-  # })
 
 
 
@@ -220,16 +241,20 @@ shinyServer(function(input, output) {
     #ESCAPE --
     #escape if it's called when dynamic sliders/buttons are still loading
     if(is.null(input$Batch) || is.null(applyValue))
-      {print('regen out') ; return()}
+      {print('regen null batch or apply -> out') ; return()}
     for(name in allVarNames){
-      isolate(if(is.null(input[[name]])) {print('null regen Input');return()})
+      isolate(if(is.null(input[[name]])) {print('null regen input -> out');return()})
     }
     #in batch mode: if buttons have NOT been pressed since last time, 
   	if (  effectivelyBatch() && (applyValue <= lastApplyValue) )
   	    return()
-    #Check if no change -- especially useful for slider asthetic changes.
+    #In batch or interactive, check for no change -- especially useful for slider asthetic changes.
         #no need to isolate this next line -- if we're not in interative mode we would have already exited by now.
-    if(all(allVars()==lastAllVars)) {print('no change'); return()}
+    if(all(allVars()==lastAllVars)) {
+      print('no change')
+      lastApplyValue <<- applyValue #fixes bug where if you hit apply w/ no changes, the next slider change will interactively call table_constructor()
+      return()
+    }
 
 
     #if Batch==1, we don't want things updating automatically, so we use isolate()
@@ -239,6 +264,7 @@ shinyServer(function(input, output) {
       for(i in 1:length(allVarNames))
         assign(allVarNames[i], allVars()[allVarNames[i]], inherits=TRUE)
     }
+    cat("assigning Variables ...")
   	if (effectivelyBatch()){ isolate(assignAllVars() )
     } else { assignAllVars() }
 
@@ -371,7 +397,5 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
       write.table(inputCsv, file, row.names=allVarNames, col.names=FALSE, sep=',')
     }
   )
-
-
 
 })
