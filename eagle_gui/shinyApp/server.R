@@ -110,6 +110,27 @@ shinyServer(function(input, output) {
   allVars<-reactive({
     x<-c()
     for(i in 1:length(allVarNames)) x[allVarNames[i]]<- input[[allVarNames[i] ]]
+    minMaxErrs<-rep('',length(allVarNames))
+    for(i in 1:dim(st)[1]){
+      minMaxErrs_i<-FALSE
+      if( x[allVarNames[i]]<st[i,'min']) {x[allVarNames[i]]<-st[i,'min']; minMaxErrs_i<-TRUE}
+      if( x[allVarNames[i]]>st[i,'max']) {x[allVarNames[i]]<-st[i,'max']; minMaxErrs_i<-TRUE}
+      if(minMaxErrs_i) minMaxErrs[i] <- paste0('Warning: the variable "',st[i,'label'],'" exceeds the allowed range, and has been set to ', x[allVarNames[i]],'. ')
+    }
+    for(i in 1:dim(bt)[1]){
+      nameInd<- i+dim(st)[1]
+      minMaxErrs_ind<-FALSE
+      if( x[allVarNames[nameInd]]>bt[i,'max'])  {
+        x[allVarNames[nameInd]]<-bt[i,'max']
+        minMaxErrs_ind<-TRUE
+      }
+      if( x[allVarNames[nameInd]]<bt[i,'min'])  {
+        x[allVarNames[nameInd]]<-bt[i,'min']
+        minMaxErrs_ind<-TRUE
+      }
+      if(minMaxErrs_ind) minMaxErrs[nameInd]<- paste0('Warning: the variable "',bt[i,'label'], '" exceeds the allowed range, and has been set to ',x[allVarNames[nameInd]],'. ')
+    }
+    output$warn3<-renderText({paste(minMaxErrs,collapse='')})
     warn2<-""
     if(x['total_number_stages']<x['last_stage_subpop_2_enrolled_adaptive_design']){
         x['last_stage_subpop_2_enrolled_adaptive_design']<-x['total_number_stages']

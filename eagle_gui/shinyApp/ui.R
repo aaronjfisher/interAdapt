@@ -206,6 +206,7 @@ shinyUI(pageWithSidebar(
   #WARNINGS
   h4(textOutput('warn1')),
   h4(textOutput('warn2')),
+  h4(textOutput('warn3')),
   br(),br(),
 
   #OUTPUT
