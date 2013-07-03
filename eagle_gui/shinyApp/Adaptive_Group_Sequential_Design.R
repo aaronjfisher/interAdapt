@@ -46,7 +46,7 @@ Delta <- (-0.5)
 # Number simulated trials
 iter <- 7000  # Range: 1 to 500,000
 # Time limit for primary function (table_constructor())
-time_limit<-30 #(seconds, range from 5 to 60)
+time_limit<-45 #(seconds, range from 5 to 60)
 # Number stages
 total_number_stages <- 5 # Range 1:20
 # Enrollment rate subpop. 1 (patients per year)

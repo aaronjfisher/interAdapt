@@ -49,7 +49,7 @@ for(i in 1:dim(bt)[1]){
   lastAllVars[bt[i,'inputId']] <- bt[i,'value']
 }
 
-table1 <- table_constructor()
+
 
 
 
@@ -100,7 +100,7 @@ shinyServer(function(input, output) {
   #############################################
 
 
-  lastApplyValue <- 0 #regen will run once, this should take care of the x/y coords error... understand better & change in future version?
+  lastApplyValue <- -1
   totalCalls<-0 #a place keeper to watch when we cat to stderr
   uploadFileTicker<-0
   inValues<-NULL
@@ -310,6 +310,10 @@ shinyServer(function(input, output) {
   # PLOTS
   #############################################
   #############################################
+
+
+  table1 <<- table_constructor() #evaluated just before it's called.
+
 
 
 
