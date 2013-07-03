@@ -49,7 +49,7 @@ for(i in 1:dim(bt)[1]){
   lastAllVars[bt[i,'inputId']] <- bt[i,'value']
 }
 
-table1 <- table_constructor()
+#table1 <- table_constructor() #getting error in x y length differing when we call plots the first time, if we call table_constructor too soon?
 
 
 
@@ -311,7 +311,7 @@ shinyServer(function(input, output) {
 
 
   
-  #table1 <<- table_constructor() #temporary fix -- moving this initializer down to just before it's called, to make sure all the settings are adjusted right.
+  table1 <<- table_constructor() #temporary fix -- moving this initializer down to just before it's called, to make sure all the settings are adjusted right.
 
 
   output$power_curve_plot <- renderPlot({
