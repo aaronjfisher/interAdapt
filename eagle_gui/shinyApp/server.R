@@ -259,7 +259,6 @@ shinyServer(function(input, output) {
     applyValue<-params()
     totalCalls<<-totalCalls+1
     print(paste('total calls =',totalCalls))
-    browser()
     #ESCAPE --
     #escape if it's called when dynamic sliders/buttons are still loading
     if(is.null(input$Batch) || is.null(applyValue))
@@ -316,7 +315,6 @@ shinyServer(function(input, output) {
 
   output$power_curve_plot <- renderPlot({
 	regen() 
-  browser()
   print('power plot')
 	power_curve_plot()
   })
