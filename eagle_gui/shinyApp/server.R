@@ -51,8 +51,6 @@ for(i in 1:dim(bt)[1]){
 
 #table1 <- table_constructor() #getting error in x y length differing when we call plots the first time, if we call table_constructor too soon?
 
-#table1 <- table_constructor() #only works if inputs won't be auto-rounded by shiny
-#NOTE -- Changed # default value of p11 to .46 instead of .455
 
 
 
