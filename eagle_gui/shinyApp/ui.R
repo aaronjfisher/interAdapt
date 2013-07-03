@@ -211,9 +211,9 @@ shinyUI(pageWithSidebar(
 
   #OUTPUT
   radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
-	c(Designs = "1", Performance = "2")),	
+	c(Performance = "1", Designs = "2"),selected="Performance"),	
   br(),
-  conditionalPanel(condition = "input.ComparisonCriterion == '1'",
+  conditionalPanel(condition = "input.ComparisonCriterion == '2'",
     em(strong("Designs")),
     #br(), br(),
     tabsetPanel(
@@ -233,7 +233,7 @@ shinyUI(pageWithSidebar(
     #HTML("<hr>"),
     #em(strong("Performance comparisons")),
     #br(), br(),
-  conditionalPanel(condition = "input.ComparisonCriterion == '2'",
+  conditionalPanel(condition = "input.ComparisonCriterion == '1'",
     tabsetPanel(
 	tabPanel("Power", my_plotOutput("power_curve_plot")),
 	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot")),
