@@ -49,7 +49,7 @@ for(i in 1:dim(bt)[1]){
   lastAllVars[bt[i,'inputId']] <- bt[i,'value']
 }
 
-
+table1 <- table_constructor()
 
 
 
@@ -311,7 +311,7 @@ shinyServer(function(input, output) {
 
 
   
-  table1 <<- table_constructor() #temporary fix -- moving this initializer down to just before it's called, to make sure all the settings are adjusted right.
+  #table1 <<- table_constructor() #temporary fix -- moving this initializer down to just before it's called, to make sure all the settings are adjusted right.
 
 
   output$power_curve_plot <- renderPlot({
