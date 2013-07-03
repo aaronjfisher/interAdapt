@@ -100,23 +100,21 @@ shinyServer(function(input, output) {
   #############################################
 
 
-  lastApplyValue <- -1
+  lastApplyValue <- 0 #regen will run once, this should take care of the x/y coords error... understand better & change in future version?
   totalCalls<-0 #a place keeper to watch when we cat to stderr
   uploadFileTicker<-0
   inValues<-NULL
 
   #current value of all the data, need to store this if we want to change the sliders to all be animated in interactive mode, but not change their values.
-    #all used a comparison against static lastAllVars
+  #all used a comparison against static lastAllVars
+  #Also do error checks for invalid inputs
   allVars<-reactive({
     x<-c()
     for(i in 1:length(allVarNames)) x[allVarNames[i]]<- input[[allVarNames[i] ]]
-    minMaxErrs<-rep('',length(allVarNames))
-    for(i in 1:dim(st)[1]){
-      minMaxErrs_i<-FALSE
-      if( x[allVarNames[i]]<st[i,'min']) {x[allVarNames[i]]<-st[i,'min']; minMaxErrs_i<-TRUE}
-      if( x[allVarNames[i]]>st[i,'max']) {x[allVarNames[i]]<-st[i,'max']; minMaxErrs_i<-TRUE}
-      if(minMaxErrs_i) minMaxErrs[i] <- paste0('Warning: the variable "',st[i,'label'],'" exceeds the allowed range, and has been set to ', x[allVarNames[i]],'. ')
-    }
+
+    #Check to make sure all box inputs are within the required ranges. 
+    #Don't need to do this for sliders, since you can't set them past the min/max
+    minMaxErrs<-rep('',dim(bt)[1]) #vector to store error/warnings messages. The ith entry is '' if allVars()[i] is valid
     for(i in 1:dim(bt)[1]){
       nameInd<- i+dim(st)[1]
       minMaxErrs_ind<-FALSE
@@ -128,17 +126,22 @@ shinyServer(function(input, output) {
         x[allVarNames[nameInd]]<-bt[i,'min']
         minMaxErrs_ind<-TRUE
       }
-      if(minMaxErrs_ind) minMaxErrs[nameInd]<- paste0('Warning: the variable "',bt[i,'label'], '" exceeds the allowed range, and has been set to ',x[allVarNames[nameInd]],'. ')
+      if(minMaxErrs_ind) minMaxErrs[i]<- paste0('Warning: the variable "',bt[i,'label'], '" exceeds the allowed range, and has been set to ',x[allVarNames[nameInd]],'. ')
     }
     output$warn3<-renderText({paste(minMaxErrs,collapse='')})
+
+    #Other error checks on inputs.
     warn2<-""
     if(x['total_number_stages']<x['last_stage_subpop_2_enrolled_adaptive_design']){
         x['last_stage_subpop_2_enrolled_adaptive_design']<-x['total_number_stages']
         warn2<-paste("Warning: the last stage sub population 2 is enrolled must be less than the total number of stages. Here the last stage in which sub population 2 is enrolled is set to",x['total_number_stages'],"the total number of stages")
     }
     output$warn2<-renderText({warn2})
+
+    #Done! Send back the error-checked list of inputs
     x
   })
+
 
   params<-reactive({ input$Parameters1 + input$Parameters2 })
 
