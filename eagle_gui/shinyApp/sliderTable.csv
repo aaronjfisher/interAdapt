@@ -2,7 +2,7 @@ inputId,label,min,max,value,step,animate
 p1_user_defined,Subpopulation 1 proportion,0,1,0.61,0.01,TRUE
 p10_user_defined,"Probability outcome = 1 under control, subpopulation 1",0,1,0.33,0.01,TRUE
 p20_user_defined,"Probability outcome = 1 under control, subpopulation 2",0,1,0.12,0.01,TRUE
-p11_user_defined,Probability outcome = 1 under treatment for sub-population 1,0,1,0.46,0.01,TRUE
+p11_user_defined,Probability outcome = 1 under treatment for sub-population 1,0,1,0.455,0.01,TRUE
 alpha_FWER_user_defined,Alpha (FWER) Requirement ,0.005,0.1,0.025,0.005,TRUE
 alpha_H0C_user_defined,Alpha allocation to (H0C),0.005,0.1,0.006,0.005,TRUE
 per_stage_sample_size_combined_adaptive_design_user_defined,"Per stage sample size, combined population",0,1000,150,1,TRUE
