@@ -50,7 +50,7 @@ for(i in 1:dim(bt)[1]){
 }
 
 
-
+table1 <- table_constructor()
 
 
 
@@ -312,7 +312,7 @@ shinyServer(function(input, output) {
   #############################################
 
 
-  table1 <<- table_constructor() #evaluated just before it's called.
+  
 
 
 
