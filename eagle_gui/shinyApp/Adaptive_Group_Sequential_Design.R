@@ -622,6 +622,38 @@ legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed
 
 }
 
+boundary_adapt_plot <-function()
+{
+
+adapt_boundary_mat<- t(adaptive_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary", "H01 Efficacy Boundary", "H01 Futility Boundary"), ])
+matplot(adapt_boundary_mat,type='o',pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2,, xlab='Stage',ylab='Boundaries on Z-score scale')
+legend('topright',c('H0C Efficacy Boundary','H0C Futility Boundary','H0C Efficacy Boundary','H0C Futility Boundary'),pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2) 
+
+print(adapt_boundary_mat)
+}
+
+
+boundary_fixed_HOS_plot <-function()
+{
+
+HOS_boundary_mat<- t(fixed_H0S_design_sample_sizes_and_boundaries_table()[[1]][c("H01 Efficacy Boundary", "H01 Futility Boundary"), ])
+matplot(HOS_boundary_mat,type='o',lty=2,pch=c(19,15),col='blue', xlab='Stage',ylab='Boundaries on Z-score scale')
+legend('topright',c('H0S Efficacy Boundary','H0S Futility Boundary'),lty=2,pch=c(19,15),col='blue')
+
+print(HOS_boundary_mat)
+}
+
+
+boundary_fixed_HOC_plot <-function()
+{
+HOC_boundary_mat<- t(fixed_H0C_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary"), ])
+matplot(HOC_boundary_mat,type='o',lty=2,pch=c(19,15),col='black', xlab='Stage',ylab='Boundaries on Z-score scale')
+legend('topright',c('H0C Efficacy Boundary','H0C Futility Boundary'),lty=2,pch=c(19,15),col='black')
+
+print(HOC_boundary_mat)
+}
+
+
 
 performance_table <- function()
 {
@@ -682,7 +714,7 @@ H0S_efficacy <- subpop_1_efficacy_boundaries
 H0S_futility <- subpop_1_futility_boundaries_adaptive_design
 
 output_df <- rbind(row1,row2,row3,H0C_efficacy,H0C_futility,H0S_efficacy,H0S_futility)
-row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","H0C futility Boundary","H01 Efficacy Boundary","H01 Futility Boundary")
+row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","H0C Futility Boundary","H01 Efficacy Boundary","H01 Futility Boundary")
 colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(7,(total_number_stages+1)))
 #dig_array[4:7,] <- array(2,c(4,(total_number_stages+1)))
@@ -713,7 +745,7 @@ H0C_futility <- futility_boundaries_fixed_design_H0C
 
 
 output_df <- rbind(row1,row2,row3,H0C_efficacy,H0C_futility)
-row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","H0C futility Boundary")
+row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","H0C Futility Boundary")
 colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(5,(total_number_stages+1)))
 #dig_array[4:7,] <- array(2,c(4,(total_number_stages+1)))
@@ -741,7 +773,7 @@ H0S_efficacy <-  H0S_efficacy_boundaries
 H0S_futility <- futility_boundaries_fixed_design_H0S
 
 output_df <- rbind(row1,H0S_efficacy,H0S_futility)
-row.names(output_df) <- c("Cum. Sample Size","H01 Efficacy Boundary","H01 futility Boundary")
+row.names(output_df) <- c("Cum. Sample Size","H01 Efficacy Boundary","H01 Futility Boundary")
 colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(3,(total_number_stages+1)))
 #dig_array[4:7,] <- array(2,c(4,(total_number_stages+1)))

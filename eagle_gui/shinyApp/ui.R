@@ -218,13 +218,16 @@ shinyUI(pageWithSidebar(
     #br(), br(),
     tabsetPanel(
 	tabPanel("Adaptive",
-		tableOutput("adaptive_design_sample_sizes_and_boundaries_table")),
+		tableOutput("adaptive_design_sample_sizes_and_boundaries_table"),
+    my_plotOutput("adapt_boundary_plot") ),
 	tabPanel("Fixed, Total Population",
 		br(), br(),
-		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table")),
+		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table"),
+    my_plotOutput("fixed_HOC_boundary_plot") ) ,
 	tabPanel("Fixed, Subpop. 1 only",
 		br(), br(), br(), br(), br(),
-		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table")),
+		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table"),
+    my_plotOutput("fixed_HOS_boundary_plot") ),
 	tabPanel("All designs",
 		tableOutput("adaptive_design_sample_sizes_and_boundaries_table.2"),
 		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.2"),
@@ -238,7 +241,7 @@ shinyUI(pageWithSidebar(
 	tabPanel("Power", my_plotOutput("power_curve_plot")),
 	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot")),
 	tabPanel("Duration", my_plotOutput("expected_duration_plot")),
-	tabPanel("Overrunns", my_plotOutput("overruns"))
+	tabPanel("Overruns", my_plotOutput("overruns"))
     ),
     br(),
     tableOutput("performance_table"))

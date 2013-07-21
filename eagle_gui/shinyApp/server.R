@@ -313,6 +313,10 @@ shinyServer(function(input, output) {
   table1 <<- table_constructor() #temporary fix -- moving this initializer down to just before it's called, to make sure all the settings are adjusted right.
 
 
+
+  #############
+  #Performance plots
+
   output$power_curve_plot <- renderPlot({
 	regen() 
   print('power plot')
@@ -338,6 +342,26 @@ shinyServer(function(input, output) {
 	overrun_plot()
   })
 
+
+  #############
+  #Boundary Plots
+  output$fixed_HOC_boundary_plot<-renderPlot({
+    regen()
+    print('H0C Boundary Plot')
+    boundary_fixed_HOC_plot()
+  })
+
+  output$fixed_HOS_boundary_plot<-renderPlot({
+    regen()
+    print('H0S Boundary Plot')
+    boundary_fixed_HOS_plot()
+  })
+
+  output$adapt_boundary_plot<-renderPlot({
+    regen()
+    print('H0C Boundary Plot')
+    boundary_adapt_plot()
+  })
 
 
 
