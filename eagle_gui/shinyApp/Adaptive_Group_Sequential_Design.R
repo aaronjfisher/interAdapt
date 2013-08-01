@@ -570,17 +570,17 @@ expected_sample_size_plot <- function()
 ## Expected Sample Size Plot
 min_ess <- 0
 max_ess <- max(c(table1[,2],table1[,7],table1[,11]))
-plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_ess,max_ess),main="Expected Sample Size")
+plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_ess,max_ess),main="Expected Sample Size versus Average Treatment Effect",xlab="Avg. Treatment Effect on Risk Difference Scale in Subpopulation 2",ylab="Expected Sample Size")
 
 # adaptive
-lines(x=rev(risk_difference_list),y=table1[,2],lty=1,col=2,lwd=3)
+lines(x=rev(risk_difference_list),y=table1[,2],lty=1,col=1,lwd=3)
 
 # H0C fixed
 lines(x=rev(risk_difference_list),y=table1[,7],lty=2,col=3,lwd=3)
 
 # H0S fixed
 lines(x=rev(risk_difference_list),y=table1[,11],lty=3,col=4,lwd=3)
-legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(2,3,4),lwd=c(3,3,3))
+legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
 
 }
 
@@ -589,17 +589,17 @@ expected_duration_plot <- function()
 ## Expected Duration Plot
 min_dur <- 0
 max_dur <- max(c(table1[,3],table1[,8],table1[,12]))
-plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_dur,max_dur),main="Expected Duration")
+plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_dur,max_dur),main="Expected Duration versus Average Treatment Effect",xlab="Avg. Treatment Effect on Risk Difference Scale in Subpopulation 2",ylab="Expected Duration")
 
 # adaptive
-lines(x=rev(risk_difference_list),y=table1[,3],lty=1,col=2,lwd=3)
+lines(x=rev(risk_difference_list),y=table1[,3],lty=1,col=1,lwd=3)
 
 # H0C fixed
 lines(x=rev(risk_difference_list),y=table1[,8],lty=2,col=3,lwd=3)
 
 # H0S fixed
 lines(x=rev(risk_difference_list),y=table1[,12],lty=3,col=4,lwd=3)
-legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(2,3,4),lwd=c(3,3,3))
+legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
 
 }
 
@@ -608,17 +608,17 @@ overrun_plot <- function()
 ## Avg. Overrunning Patients
 min_ess <- 0
 max_ess <- max(c(table1[,14],table1[,15],table1[,16]))
-plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_ess,max_ess),main="Expected Number of Overrunning (Pipeline) Patients at End of Trial")
+plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_ess,max_ess),main="Expected Number of Overrunning (Pipeline) Patients at End of Trial \n versus Average Treatment Effect",xlab="Avg. Treatment Effect on Risk Difference Scale in Subpopulation 2",ylab="Expected # Overruning Patients")
 
 # adaptive
-lines(x=rev(risk_difference_list),y=table1[,14],lty=1,col=2,lwd=3)
+lines(x=rev(risk_difference_list),y=table1[,14],lty=1,col=1,lwd=3)
 
 # H0C fixed
 lines(x=rev(risk_difference_list),y=table1[,15],lty=2,col=3,lwd=3)
 
 # H0S fixed
 lines(x=rev(risk_difference_list),y=table1[,16],lty=3,col=4,lwd=3)
-legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(2,3,4),lwd=c(3,3,3))
+legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
 
 }
 
