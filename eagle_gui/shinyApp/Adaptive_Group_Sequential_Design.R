@@ -29,7 +29,8 @@ p21_user_defined<- 0.12 + 0.125
 # Desired familywise type I error rate (one-sided) (Range: 0 to 1)
 alpha_FWER_user_defined <- 0.025
 # Allocation to test of H0C (Range: 0 to 1)
-alpha_H0C_user_defined <- 0.006
+alpha_H0C_proportion_user_defined <- 0.24
+
 
 ## Adaptive Design Per-stage Sample Sizes
 per_stage_sample_size_combined_adaptive_design_user_defined <- 150 #(Range: 0 to 1000)
@@ -461,7 +462,7 @@ p20 <- p20_user_defined
 ## Fixed Design for Total Pop., Per-stage Sample Size
 outcome_variance_subpop_1_under_null <- p10*(1-p10)/r10+p10*(1-p10)/(1-r10)
 outcome_variance_subpop_2_under_null <- p20*(1-p20)/r20+p20*(1-p20)/(1-r20)
-prop_consts <- get_adaptive_efficacy_boundaries(alpha_FWER_user_defined,alpha_H0C_user_defined,outcome_variance_subpop_1_under_null,outcome_variance_subpop_2_under_null)
+prop_consts <- get_adaptive_efficacy_boundaries(alpha_FWER_user_defined,alpha_H0C_proportion_user_defined*alpha_FWER_user_defined,outcome_variance_subpop_1_under_null,outcome_variance_subpop_2_under_null)
 #print(prop_consts)
 H0C_efficacy_boundary_proportionality_constant_adaptive_design <<- prop_consts[1] 
 #(Range: 0 to 10)

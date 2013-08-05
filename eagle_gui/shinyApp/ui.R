@@ -110,6 +110,7 @@ sliderList<-list()
 boxList<-list()
 
 #build the inputs that will be seen
+#THIS IS NO LONGER USED!!!!?!?!: Since sliders & boxes are now dynamic objects defined in the server.
 #building sliders
 for(i in 1:dim(st)[1]){
 sliderList[[i]]<-sliderInput(inputId=st[i,'inputId'], label=st[i,'label'], min=st[i,'min'], max=st[i,'max'], value=st[i,'value'], step=st[i,'step'], animate=st[i,'animate'])
