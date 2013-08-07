@@ -27,7 +27,7 @@ try({
   source("Adaptive_Group_Sequential_Design.R", local=TRUE)
   st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
   bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
-  readHelpTabHTML<- readLines('help_tab.html')
+  readHelpTabHTML<- paste0(readLines('help_tab.html'),collapse='')
   cat("found code locally...", file=stderr())
 
   #### action buttons
@@ -57,10 +57,12 @@ try({
     library(devtools)
     library(RCurl)
     library(digest) #some reason this is a dependency not auto-loaded by devtools?
+    library(XML)
     st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
     bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
     source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
-    readHelpTabHTML<- readLines(getURL('https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/help_tab.html'))
+    readHelpTabRaw <-getURL('https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/help_tab.html')
+    readHelpTabHTML<-htmlTreeParse(readHelpTabRaw)$children$html
 
     #################
     # TO USE SHINY 0.5 instead of 0.6
