@@ -57,12 +57,12 @@ try({
     library(devtools)
     library(RCurl)
     library(digest) #some reason this is a dependency not auto-loaded by devtools?
-    library(XML)
+    library(stringr)
     st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
     bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
     source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
     readHelpTabRaw <-getURL('https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/help_tab.html')
-    readHelpTabHTML<-htmlTreeParse(readHelpTabRaw)$children$html
+    readHelpTabHTML<-str_replace_all(readHelpTabRaw,'\n','')
 
     #################
     # TO USE SHINY 0.5 instead of 0.6
