@@ -627,10 +627,11 @@ boundary_adapt_plot <-function()
 {
 
 adapt_boundary_mat<- t(adaptive_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary", "H0S Efficacy Boundary", "H0S Futility Boundary"), ])
-matplot(adapt_boundary_mat,type='o',pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2,, xlab='Stage',ylab='Boundaries on Z-score scale')
-legend('topright',c('H0C Efficacy Boundary','H0C Futility Boundary','H0C Efficacy Boundary','H0C Futility Boundary'),pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2) 
+matplot(adapt_boundary_mat,type='o',main='Decision Boundaries for Sequential Test of \n Combined Population Null Hypothesis (H0C) and
+Subpopulation 1 Null Hypothesis (H0S)',pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2,, xlab='Stage',ylab='Boundaries on Z-score scale')
+legend('topright',c('H0C Efficacy Boundary','H0C Futility Boundary','H0S Efficacy Boundary','H0S Futility Boundary'),pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2) 
 
-print(adapt_boundary_mat)
+#print(adapt_boundary_mat)
 }
 
 
@@ -638,20 +639,20 @@ boundary_fixed_HOS_plot <-function()
 {
 
 HOS_boundary_mat<- t(fixed_H0S_design_sample_sizes_and_boundaries_table()[[1]][c("H0S Efficacy Boundary", "H0S Futility Boundary"), ])
-matplot(HOS_boundary_mat,type='o',lty=2,pch=c(19,15),col='blue', xlab='Stage',ylab='Boundaries on Z-score scale')
+matplot(HOS_boundary_mat,type='o',main='Decision Boundaries for Sequential Test of \n Subpopulation 1 Null Hypothesis (H0S)',lty=2,pch=c(19,15),col='blue', xlab='Stage',ylab='Boundaries on Z-score scale')
 legend('topright',c('H0S Efficacy Boundary','H0S Futility Boundary'),lty=2,pch=c(19,15),col='blue')
 
-print(HOS_boundary_mat)
+#print(HOS_boundary_mat)
 }
 
 
 boundary_fixed_HOC_plot <-function()
 {
 HOC_boundary_mat<- t(fixed_H0C_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary"), ])
-matplot(HOC_boundary_mat,type='o',lty=2,pch=c(19,15),col='black', xlab='Stage',ylab='Boundaries on Z-score scale')
+matplot(HOC_boundary_mat,type='o',main='Decision Boundaries for Sequential Test of \n Combined Population Null Hypothesis (H0C)',lty=2,pch=c(19,15),col='black', xlab='Stage',ylab='Boundaries on Z-score scale')
 legend('topright',c('H0C Efficacy Boundary','H0C Futility Boundary'),lty=2,pch=c(19,15),col='black')
 
-print(HOC_boundary_mat)
+#print(HOC_boundary_mat)
 }
 
 

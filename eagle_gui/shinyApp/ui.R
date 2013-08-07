@@ -1,17 +1,4 @@
-# ## Subpopulation 1 proportion (Range: 0 to 1)
-# p1 <- 0.61
 
-# ## Prob. outcome = 1 under control:
-# ## for Subpop. 1 (Range: 0 to 1)
-# p10_user_defined <- 0.33
-# ## for Subpop. 2 (Range: 0 to 1)
-# p20_user_defined <- 0.12
-
-# ## Prob. outcome = 1 under treatment, at alternative:
-# ## for Subpop. 1 (Range: 0 to 1)
-# p11_user_defined<- 0.33 + 0.125
-# ## for Subpop. 2 (Range: 0 to 1)
-# p21_user_defined<- 0.12 + 0.125
 
 
 # non-standard plot dimensions
@@ -125,13 +112,14 @@ names(boxList)<-bt[,'inputId']
 ################################
 
 
+
   animationOptions(interval = 5000, loop = FALSE,
   playButton = NULL, pauseButton = NULL)
 
 shinyUI(pageWithSidebar(
 
 
-  my_headerPanel("Multi-stage design tool"),  
+  my_headerPanel("Group Sequential, Adaptive Enrichment Design Planner"),  
 
 
 
@@ -212,28 +200,32 @@ shinyUI(pageWithSidebar(
 
   #OUTPUT
   radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
-	c(Performance = "1", Designs = "2"),selected="Performance"),	
+	c(Designs = "2",Performance = "1"),selected="Designs"),	
   br(),
   conditionalPanel(condition = "input.ComparisonCriterion == '2'",
     em(strong("Designs")),
     #br(), br(),
     tabsetPanel(
 	tabPanel("Adaptive",
-		tableOutput("adaptive_design_sample_sizes_and_boundaries_table"),
-    my_plotOutput("adapt_boundary_plot") ),
+		my_plotOutput("adapt_boundary_plot"),
+    br(),
+    tableOutput("adaptive_design_sample_sizes_and_boundaries_table") ),
 	tabPanel("Fixed, Total Population",
-		br(), br(),
-		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table"),
-    my_plotOutput("fixed_HOC_boundary_plot") ) ,
+    my_plotOutput("fixed_HOC_boundary_plot"),
+    br(),
+		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table") ) ,
 	tabPanel("Fixed, Subpop. 1 only",
-		br(), br(), br(), br(), br(),
-		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table"),
-    my_plotOutput("fixed_HOS_boundary_plot") ),
+		my_plotOutput("fixed_HOS_boundary_plot"),
+    br(),
+    tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table") ),
 	tabPanel("All designs",
 		tableOutput("adaptive_design_sample_sizes_and_boundaries_table.2"),
 		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.2"),
-		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.2"))
-    )),
+		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.2")),
+  tabPanel("About EAGLE", 
+    HTML(paste(readLines('help_tab.html'),collapse='')) ),
+  selected="About EAGLE")
+  ),
     #HTML("<hr>"),
     #em(strong("Performance comparisons")),
     #br(), br(),
