@@ -140,7 +140,7 @@ shinyUI(pageWithSidebar(
         conditionalPanel(condition="input.Which_params == '3'",
             br(),
             strong('Save current parameters to file:'),br(),
-            downloadButton('downloadData', 'Save'),
+            downloadButton('downloadData', 'Save Inputs'),
             br(),br(),
             strong('Load previous parameters from file:'),
             fileInput('uploadData', '',

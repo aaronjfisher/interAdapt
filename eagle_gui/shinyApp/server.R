@@ -37,6 +37,7 @@ try({
 cat("...got code!...", file=stderr())
 
 allVarNames<-c(st[,'inputId'],bt[,'inputId'])
+allVarLabels<-c(st[,'label'],bt[,'label'])
 lastAllVars<-rep(0,length(allVarNames))
 names(lastAllVars)<-allVarNames
 
@@ -442,10 +443,11 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   #############################################
   output$downloadData <- downloadHandler(
     filename =  'inputs.csv',
+    contentType =  'text/csv',
     content = function(file) {
-      inputCsv<-rep('',length=length(allVarNames))
+      inputCsv<-rep(NA,length=length(allVarNames))
       for(i in 1:length(allVarNames)) inputCsv[i]<- input[[ allVarNames[i] ]]
-      write.table(inputCsv, file, row.names=allVarNames, col.names=FALSE, sep=',')
+      write.table(inputCsv, file, row.names=allVarLabels, col.names=FALSE, sep=',')
     }
   )
 
