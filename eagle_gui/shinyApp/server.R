@@ -421,7 +421,10 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 	fixed_H0S_design_sample_sizes_and_boundaries_table()
   })
 
-  output$performance_table <- renderTable(expr={
+  output$performance_table.1<-
+  output$performance_table.2<-
+  output$performance_table.3<-
+  output$performance_table.4<- renderTable(expr={
 	regen()
   print('perf table')
 	transpose_performance_table(performance_table())

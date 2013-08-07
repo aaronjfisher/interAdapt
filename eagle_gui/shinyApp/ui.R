@@ -204,7 +204,7 @@ shinyUI(pageWithSidebar(
 
   #OUTPUT
   radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
-	c(Designs = "2",Performance = "1"),selected="Designs"),	
+	c(Performance = "1",Designs = "2"),selected="Performance"),	
   br(),
   conditionalPanel(condition = "input.ComparisonCriterion == '2'",
     em(strong("Designs")),
@@ -228,20 +228,24 @@ shinyUI(pageWithSidebar(
 		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.2")),
   tabPanel("About EAGLE", 
     HTML(paste(readHelpTabHTML,collapse='')) ),
-  selected="About EAGLE")
+  selected="Adaptive")
   ),
     #HTML("<hr>"),
     #em(strong("Performance comparisons")),
     #br(), br(),
   conditionalPanel(condition = "input.ComparisonCriterion == '1'",
     tabsetPanel(
-	tabPanel("Power", my_plotOutput("power_curve_plot")),
-	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot")),
-	tabPanel("Duration", my_plotOutput("expected_duration_plot")),
-	tabPanel("Overruns", my_plotOutput("overruns"))
-    ),
-    br(),
-    tableOutput("performance_table"))
+	tabPanel("Power", my_plotOutput("power_curve_plot"),
+    tableOutput("performance_table.1")),
+	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot"),
+    tableOutput("performance_table.2")),
+	tabPanel("Duration", my_plotOutput("expected_duration_plot"),
+    tableOutput("performance_table.3")),
+	tabPanel("Overruns", my_plotOutput("overruns"),
+    tableOutput("performance_table.4")),
+  tabPanel("About EAGLE", 
+    HTML(paste(readHelpTabHTML,collapse='')) ),
+  selected='About EAGLE'))
   #,br(),textOutput('uploadTime'),textOutput('loadReset')
   )
 ))
