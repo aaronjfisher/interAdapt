@@ -11,6 +11,25 @@
 #############################################
 
 
+subH0 <- function(x){ #make a function that does the same thing as "strong()" but for <sub></sub>
+#finds all H0C and H0S terms and subs them!
+  x <- strong(x)
+  x <- gsub("<strong>", "", x)
+  x <- gsub("</strong>", "", x)
+  x <- gsub("H0C", "H<sub>0C</sub>", x)
+  x <- gsub("H0S", "H<sub>0S</sub>", x)
+  return(x)
+}
+
+#To be used in our xtable function!
+subH0sanitize<-function(x){
+  x <- gsub("H0C", "H<sub>0C</sub>", x)
+  x <- gsub("H0S", "H<sub>0S</sub>", x)
+  return(x)
+}
+
+
+
 cat("source'ing code...", file=stderr())
 
 #Get the csv file either online or locally
@@ -27,9 +46,9 @@ try({
     library(devtools)
     library(RCurl)
     library(digest) #some reason this is a dependency not auto-loaded by devtools?
-    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/sliderTable.csv"),header=TRUE,as.is=TRUE)
-    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/boxTable.csv"),header=TRUE,as.is=TRUE)
-    source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/Adaptive_Group_Sequential_Design.R")
+    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
+    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
+    source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
     cat("found code online...", file=stderr())
   }
 },silent=TRUE)
@@ -37,6 +56,7 @@ try({
 cat("...got code!...", file=stderr())
 
 allVarNames<-c(st[,'inputId'],bt[,'inputId'])
+allVarLabels<-c(st[,'label'],bt[,'label'])
 lastAllVars<-rep(0,length(allVarNames))
 names(lastAllVars)<-allVarNames
 
@@ -201,7 +221,7 @@ shinyServer(function(input, output) {
     print('sliders')
     print(uploadFileTicker)
     regenUpload() #reactive input to uploaded file
-    sliderList<-list()
+    labelSliderList<-list()
     animate<-FALSE
     if(input$Batch=='2' & input$Which_params=='1' ) animate<-TRUE # reactive input
     for(i in 1:dim(st)[1]){
@@ -211,11 +231,15 @@ shinyServer(function(input, output) {
       if(!is.null(inValues)) value_i<-inValues[st[i,'inputId']]
       #case3: whatever's there has been called already, ignore uploaded data.
       if(uploadFileTicker>0) isolate(value_i<-allVars()[st[i,'inputId']])
-      sliderList[[i]]<-sliderInput(inputId=st[i,'inputId'], label=st[i,'label'], min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'], animate=animate)
+      labelListi<-subH0(st[i,'label'])
+      sliderListi<-sliderInput(inputId=st[i,'inputId'], label='', min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'], animate=animate)
+      ind<-length(labelSliderList)
+      labelSliderList[[ind+1]]<-labelListi
+      labelSliderList[[ind+2]]<-sliderListi
     }
     uploadFileTicker<<-uploadFileTicker+1
     print('           sliders updating!!!!!!')
-    sliderList
+    labelSliderList
   })
   output$fullSliders<-renderUI({sliders()})
 
@@ -223,13 +247,18 @@ shinyServer(function(input, output) {
   boxes <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
     print('                    boxes')
     regenUpload()
-    boxList<-list()
+    labelBoxList<-list()
     for(i in 1:dim(bt)[1]){
       value_i<-bt[i,'value']
       if( (!is.null(inValues)) ){ value_i<-inValues[bt[i,'inputId']]}
-      boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
+      boxLabeli<-subH0(bt[i,'label'])
+      boxListi<-numericInput(inputId=bt[i,'inputId'], label='', min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
+      ind<-length(labelBoxList)           
+      labelBoxList[[ind+1]]<-boxLabeli
+      labelBoxList[[ind+2]]<-boxListi
+      labelBoxList[[ind+3]]<-br()      
     }
-    boxList
+    labelBoxList
   })
   output$fullBoxes<-renderUI({boxes()})
 
@@ -393,7 +422,8 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
         if (is.null(data) || identical(data, data.frame())) 
             return("")
         return(paste(capture.output(print(xtable(data, ...), include.colnames=include.colnames, 
-            type = "html", html.table.attributes = paste("class=\"", 
+            type = "html",sanitize.text.function=subH0sanitize,
+            html.table.attributes = paste("class=\"", 
                 #htmlEscape(classNames, TRUE), "\"", sep = ""), 
                 shiny:::htmlEscape(classNames, TRUE), "\"", sep = ""), 
             ...)), collapse = "\n"))
@@ -421,7 +451,10 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 	fixed_H0S_design_sample_sizes_and_boundaries_table()
   })
 
-  output$performance_table <- renderTable(expr={
+  output$performance_table.1<-
+  output$performance_table.2<-
+  output$performance_table.3<-
+  output$performance_table.4<- renderTable(expr={
 	regen()
   print('perf table')
 	transpose_performance_table(performance_table())
@@ -439,10 +472,13 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   #############################################
   output$downloadData <- downloadHandler(
     filename =  'inputs.csv',
+    contentType =  'text/csv',
     content = function(file) {
-      inputCsv<-rep('',length=length(allVarNames))
-      for(i in 1:length(allVarNames)) inputCsv[i]<- input[[ allVarNames[i] ]]
-      write.table(inputCsv, file, row.names=allVarNames, col.names=FALSE, sep=',')
+      pdf('test.pdf')#inputCsv<-rep(NA,length=length(allVarNames))
+      #for(i in 1:length(allVarNames)) inputCsv[i]<- input[[ allVarNames[i] ]]
+      #write.table(inputCsv, file, row.names=allVarLabels, col.names=FALSE, sep=',')
+      plot(0,0)
+      dev.off()
     }
   )
 

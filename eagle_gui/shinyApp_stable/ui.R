@@ -1,17 +1,4 @@
-# ## Subpopulation 1 proportion (Range: 0 to 1)
-# p1 <- 0.61
 
-# ## Prob. outcome = 1 under control:
-# ## for Subpop. 1 (Range: 0 to 1)
-# p10_user_defined <- 0.33
-# ## for Subpop. 2 (Range: 0 to 1)
-# p20_user_defined <- 0.12
-
-# ## Prob. outcome = 1 under treatment, at alternative:
-# ## for Subpop. 1 (Range: 0 to 1)
-# p11_user_defined<- 0.33 + 0.125
-# ## for Subpop. 2 (Range: 0 to 1)
-# p21_user_defined<- 0.12 + 0.125
 
 
 # non-standard plot dimensions
@@ -34,21 +21,15 @@ my_headerPanel <- function (title, windowTitle = title, h=h3)
 #slider table & box table
 
 
-#H0Ctext<-as.character(div(HTML("H<sub>0C</sub>")))
-#H0Stext<-as.character(div(HTML("H<sub>0S</sub>")))
-
-H0Ctext<-HTML("H<sub>0C</sub>")
-H0Stext<-HTML("H<sub>0S</sub>")
-
-
 #Get the csv file either online or locally
 getItOnline<-TRUE
 try({
   source("Adaptive_Group_Sequential_Design.R", local=TRUE)
   st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
   bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
+  readHelpTabHTML<- paste0(readLines('help_tab.html'),collapse='')
   cat("found code locally...", file=stderr())
-  
+
   #### action buttons
   # No reason for all the action buttons to do the same thing, so
   # we add the resource here once. 
@@ -76,10 +57,13 @@ try({
     library(devtools)
     library(RCurl)
     library(digest) #some reason this is a dependency not auto-loaded by devtools?
-    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/sliderTable.csv"),header=TRUE,as.is=TRUE)
-    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/boxTable.csv"),header=TRUE,as.is=TRUE)
-    source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/Adaptive_Group_Sequential_Design.R")
-    
+    library(stringr)
+    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
+    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
+    source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
+    readHelpTabRaw <-getURL('https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/help_tab.html')
+    readHelpTabHTML<-str_replace_all(readHelpTabRaw,'\n','')
+
     #################
     # TO USE SHINY 0.5 instead of 0.6
     # Stolen from shinyIncubator
@@ -132,13 +116,14 @@ names(boxList)<-bt[,'inputId']
 ################################
 
 
+
   animationOptions(interval = 5000, loop = FALSE,
   playButton = NULL, pauseButton = NULL)
 
 shinyUI(pageWithSidebar(
 
 
-  my_headerPanel("Multi-stage design tool"),  
+  my_headerPanel("Group Sequential, Adaptive Enrichment Design Planner"),  
 
 
 
@@ -155,7 +140,7 @@ shinyUI(pageWithSidebar(
         conditionalPanel(condition="input.Which_params == '3'",
             br(),
             strong('Save current parameters to file:'),br(),
-            downloadButton('downloadData', 'Save'),
+            downloadButton('downloadData', 'Save Inputs'),
             br(),br(),
             strong('Load previous parameters from file:'),
             fileInput('uploadData', '',
@@ -219,40 +204,48 @@ shinyUI(pageWithSidebar(
 
   #OUTPUT
   radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
-	c(Performance = "1", Designs = "2"),selected="Performance"),	
+	c(Performance = "1",Designs = "2"),selected="Performance"),	
   br(),
   conditionalPanel(condition = "input.ComparisonCriterion == '2'",
     em(strong("Designs")),
     #br(), br(),
     tabsetPanel(
 	tabPanel("Adaptive",
-		tableOutput("adaptive_design_sample_sizes_and_boundaries_table"),
-    my_plotOutput("adapt_boundary_plot") ),
+		my_plotOutput("adapt_boundary_plot"),
+    br(),
+    tableOutput("adaptive_design_sample_sizes_and_boundaries_table") ),
 	tabPanel("Fixed, Total Population",
-		br(), br(),
-		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table"),
-    my_plotOutput("fixed_HOC_boundary_plot") ) ,
+    my_plotOutput("fixed_HOC_boundary_plot"),
+    br(),
+		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table") ) ,
 	tabPanel("Fixed, Subpop. 1 only",
-		br(), br(), br(), br(), br(),
-		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table"),
-    my_plotOutput("fixed_HOS_boundary_plot") ),
+		my_plotOutput("fixed_HOS_boundary_plot"),
+    br(),
+    tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table") ),
 	tabPanel("All designs",
 		tableOutput("adaptive_design_sample_sizes_and_boundaries_table.2"),
 		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.2"),
-		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.2"))
-    )),
+		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.2")),
+  tabPanel("About EAGLE", 
+    HTML(paste(readHelpTabHTML,collapse='')) ),
+  selected="Adaptive")
+  ),
     #HTML("<hr>"),
     #em(strong("Performance comparisons")),
     #br(), br(),
   conditionalPanel(condition = "input.ComparisonCriterion == '1'",
     tabsetPanel(
-	tabPanel("Power", my_plotOutput("power_curve_plot")),
-	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot")),
-	tabPanel("Duration", my_plotOutput("expected_duration_plot")),
-	tabPanel("Overruns", my_plotOutput("overruns"))
-    ),
-    br(),
-    tableOutput("performance_table"))
+	tabPanel("Power", my_plotOutput("power_curve_plot"),
+    tableOutput("performance_table.1")),
+	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot"),
+    tableOutput("performance_table.2")),
+	tabPanel("Duration", my_plotOutput("expected_duration_plot"),
+    tableOutput("performance_table.3")),
+	tabPanel("Overruns", my_plotOutput("overruns"),
+    tableOutput("performance_table.4")),
+  tabPanel("About EAGLE", 
+    HTML(paste(readHelpTabHTML,collapse='')) ),
+  selected='About EAGLE'))
   #,br(),textOutput('uploadTime'),textOutput('loadReset')
   )
 ))
