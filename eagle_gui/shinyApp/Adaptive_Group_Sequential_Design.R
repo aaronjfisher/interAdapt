@@ -563,7 +563,13 @@ lines(x=rev(risk_difference_list),y=table1[,9],lty=4,col=3,lwd=3)
 
 # H0S fixed
 lines(x=rev(risk_difference_list),y=table1[,13],lty=5,col=4,lwd=3)
-legend("bottomright",legend=c("Adaptive, Power H0C or H0S","Adaptive, Power H0C","Adaptive, Power H0S","Fixed Design Total Pop. (H0C)","Fixed Design Subpop. 1 Only (H0S)"),lty=c(1,2,3,4,5),col=c(1,1,1,3,4),lwd=c(3,3,3,3,3))
+ltext<-rep(NA,5)
+ltext[1]<-expression(paste("Adaptive, Power H"[0][C]," or H"[0][S]))
+ltext[2]<-expression(paste("Adaptive, Power H"[0][C]))
+ltext[3]<-expression(paste("Adaptive, Power H"[0][S]))
+ltext[4]<-expression(paste("Fixed Design Total Pop. (H"[0][C],")"))
+ltext[5]<-expression(paste("Fixed Design Subpop. 1 Only (H"[0][S],")"))
+legend("bottomright",legend=ltext,lty=c(1,2,3,4,5),col=c(1,1,1,3,4),lwd=c(3,3,3,3,3))
 }
 
 expected_sample_size_plot <- function()
@@ -627,9 +633,14 @@ boundary_adapt_plot <-function()
 {
 
 adapt_boundary_mat<- t(adaptive_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary", "H0S Efficacy Boundary", "H0S Futility Boundary"), ])
-matplot(adapt_boundary_mat,type='o',main='Decision Boundaries for Sequential Test of \n Combined Population Null Hypothesis (H0C) and
-Subpopulation 1 Null Hypothesis (H0S)',pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2,, xlab='Stage',ylab='Boundaries on Z-score scale')
-legend('topright',c('H0C Efficacy Boundary','H0C Futility Boundary','H0S Efficacy Boundary','H0S Futility Boundary'),pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2) 
+fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of Combined Population','Null Hypothesis ( H'[0][C]~') and Subpopulation 1 Null Hypothesis ( H'[0][S]~')'))
+matplot(adapt_boundary_mat,type='o',main=fancyTitle,pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2,, xlab='Stage',ylab='Boundaries on Z-score scale')
+ltext<-rep(NA,4)
+ltext[1]<-expression(paste("H"[0][C]," Efficacy Boundary"))
+ltext[2]<-expression(paste('H'[0][C],' Futility Boundary'))
+ltext[3]<-expression(paste('H'[0][S],' Efficacy Boundary'))
+ltext[4]<-expression(paste('H'[0][S],' Futility Boundary'))
+legend('topright',ltext,pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2) 
 
 #print(adapt_boundary_mat)
 }
@@ -639,8 +650,12 @@ boundary_fixed_HOS_plot <-function()
 {
 
 HOS_boundary_mat<- t(fixed_H0S_design_sample_sizes_and_boundaries_table()[[1]][c("H0S Efficacy Boundary", "H0S Futility Boundary"), ])
-matplot(HOS_boundary_mat,type='o',main='Decision Boundaries for Sequential Test of \n Subpopulation 1 Null Hypothesis (H0S)',lty=2,pch=c(19,15),col='blue', xlab='Stage',ylab='Boundaries on Z-score scale')
-legend('topright',c('H0S Efficacy Boundary','H0S Futility Boundary'),lty=2,pch=c(19,15),col='blue')
+fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of', 'Combined Population Null Hypothesis ( H'[0][S]~')'))
+matplot(HOS_boundary_mat,type='o',main=fancyTitle,lty=2,pch=c(19,15),col='blue', xlab='Stage',ylab='Boundaries on Z-score scale')
+ltext<-rep(NA,2)
+ltext[1]<-expression(paste('H'[0][S],' Efficacy Boundary'))
+ltext[2]<-expression(paste('H'[0][S],' Futility Boundary'))
+legend('topright',ltext,lty=2,pch=c(19,15),col='blue')
 
 #print(HOS_boundary_mat)
 }
@@ -649,8 +664,12 @@ legend('topright',c('H0S Efficacy Boundary','H0S Futility Boundary'),lty=2,pch=c
 boundary_fixed_HOC_plot <-function()
 {
 HOC_boundary_mat<- t(fixed_H0C_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary"), ])
-matplot(HOC_boundary_mat,type='o',main='Decision Boundaries for Sequential Test of \n Combined Population Null Hypothesis (H0C)',lty=2,pch=c(19,15),col='black', xlab='Stage',ylab='Boundaries on Z-score scale')
-legend('topright',c('H0C Efficacy Boundary','H0C Futility Boundary'),lty=2,pch=c(19,15),col='black')
+fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of', 'Combined Population Null Hypothesis ( H'[0][C]~')'))
+matplot(HOC_boundary_mat,type='o',main=fancyTitle,lty=2,pch=c(19,15),col='black', xlab='Stage',ylab='Boundaries on Z-score scale')
+ltext<-rep(NA,2)
+ltext[1]<-expression(paste('H'[0][C],' Efficacy Boundary'))
+ltext[2]<-expression(paste('H'[0][C],' Futility Boundary'))
+legend('topright',ltext,lty=2,pch=c(19,15),col='black')
 
 #print(HOC_boundary_mat)
 }
