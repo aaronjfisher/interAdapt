@@ -171,7 +171,7 @@ shinyServer(function(input, output) {
   # Warnings
   #############################################
   #############################################
-  output$warn1<-renderText({ #STILL NEED TO MAKE WORK!
+  output$warn1<-renderText({
     x<-""
     if(input$Which_params!="1" & input$Batch=="2")x<-"Note: interactive mode not enabled for advanced parameters, defaulting to batch mode."
     x    
@@ -346,26 +346,30 @@ shinyServer(function(input, output) {
   #############
   #Performance plots
 
-  output$power_curve_plot <- renderPlot({
+  output$power_curve_plot.1 <-
+  output$power_curve_plot.2 <- renderPlot({
 	regen() 
   print('power plot')
 	power_curve_plot()
   })
 
-  output$expected_sample_size_plot <- renderPlot({
+  output$expected_sample_size_plot.1 <-
+  output$expected_sample_size_plot.2 <- renderPlot({
 	regen()
   print('sample plot')
 	expected_sample_size_plot()
   })
 
-  output$expected_duration_plot <- renderPlot({
+  output$expected_duration_plot.1 <-
+  output$expected_duration_plot.2 <- renderPlot({
 	regen()
   print('duration plot')
 	expected_duration_plot()
   })
 
   #overruns <- function() plot(1:2, main="Overruns")
-  output$overruns <- renderPlot({
+  output$overruns.1 <-
+  output$overruns.2 <- renderPlot({
 	regen()
   print('overruns plot')
 	overrun_plot()
@@ -374,19 +378,22 @@ shinyServer(function(input, output) {
 
   #############
   #Boundary Plots
-  output$fixed_HOC_boundary_plot<-renderPlot({
+  output$fixed_HOC_boundary_plot.1 <-
+  output$fixed_HOC_boundary_plot.2 <-renderPlot({
     regen()
     print('H0C Boundary Plot')
     boundary_fixed_HOC_plot()
   })
 
-  output$fixed_HOS_boundary_plot<-renderPlot({
+  output$fixed_HOS_boundary_plot.1 <-
+  output$fixed_HOS_boundary_plot.2 <-renderPlot({
     regen()
     print('H0S Boundary Plot')
     boundary_fixed_HOS_plot()
   })
 
-  output$adapt_boundary_plot<-renderPlot({
+  output$adapt_boundary_plot.1 <-
+  output$adapt_boundary_plot.2 <-renderPlot({
     regen()
     print('H0C Boundary Plot')
     boundary_adapt_plot()
@@ -429,7 +436,8 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
             ...)), collapse = "\n"))
     }
 }
-
+  
+  output$adaptive_design_sample_sizes_and_boundaries_table.3 <-
   output$adaptive_design_sample_sizes_and_boundaries_table.2 <-
   output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable({    
 	regen()
@@ -437,6 +445,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 	adaptive_design_sample_sizes_and_boundaries_table()
   })
 
+  output$fixed_H0C_design_sample_sizes_and_boundaries_table.3 <-
   output$fixed_H0C_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
 	regen()
@@ -444,6 +453,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 	fixed_H0C_design_sample_sizes_and_boundaries_table()
   })
 
+  output$fixed_H0S_design_sample_sizes_and_boundaries_table.3 <-
   output$fixed_H0S_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0S_design_sample_sizes_and_boundaries_table <-renderTable({
 	regen()
@@ -452,9 +462,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   })
 
   output$performance_table.1<-
-  output$performance_table.2<-
-  output$performance_table.3<-
-  output$performance_table.4<- renderTable(expr={
+  output$performance_table.2<- renderTable(expr={
 	regen()
   print('perf table')
 	transpose_performance_table(performance_table())
@@ -470,14 +478,87 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   #SAVE DATA
   #############################################
   #############################################
-  output$downloadData <- downloadHandler(
-    filename =  'inputs.csv',
+  output$downloadInputs <- downloadHandler(
+    filename =  paste0('inputs_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
-    content = function(file) {
+    content = function(filename) {
       inputCsv<-rep(NA,length=length(allVarNames))
       for(i in 1:length(allVarNames)) inputCsv[i]<- input[[ allVarNames[i] ]]
-      write.table(inputCsv, file, row.names=allVarLabels, col.names=FALSE, sep=',')
+      write.table(inputCsv, filename, row.names=allVarLabels, col.names=FALSE, sep=',')
     }
   )
+
+  roundTable<-function(tab,digits){
+    newTab<-array(0,dim=dim(tab))
+    for(i in 1:dim(tab)[1]){
+      for(j in 1:dim(tab)[2]){
+        newTab[i,j]<-round(tab[i,j],digits=digits[i,j])
+      }
+    }
+    return(newTab)
+  }
+
+  designTable2csv<-function(t1,filename){
+      K<-dim(t1[[1]])[2]
+      designsCsv<-rbind( 
+        'labeltext'=rep(NA,K),
+        'Stage'=1:K,
+        roundTable(tab=t1[[1]],digits=t1[[2]][,-1])
+      )
+      rownames(designsCsv)[1]<-t1[[3]]
+      write.table(designsCsv, filename, row.names=TRUE, col.names=FALSE, sep=',')
+
+  }
+
+
+  #Look good, but double check these files below in the future.
+  
+  output$downloadDesignAD.1<-
+  output$downloadDesignAD.2 <- downloadHandler(
+    filename =  paste0('DesignAD_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+    contentType =  'text/csv',
+    content = function(filename) {
+      t1<-adaptive_design_sample_sizes_and_boundaries_table()
+      designTable2csv(t1,filename)
+    }
+  )
+  output$downloadDesignFC.1<-
+  output$downloadDesignFC.2<- downloadHandler(
+    filename =  paste0('DesignFC_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+    contentType =  'text/csv',
+    content = function(filename) {
+      t1<-fixed_H0C_design_sample_sizes_and_boundaries_table()
+      designTable2csv(t1,filename)
+    }
+  )
+  output$downloadDesignFS.1<-
+  output$downloadDesignFS.2 <- downloadHandler(
+    filename =  paste0('DesignFS_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+    contentType =  'text/csv',
+    content = function(filename) {
+      t1<-fixed_H0S_design_sample_sizes_and_boundaries_table()
+      designTable2csv(t1,filename)
+    }
+  )
+
+  output$downloadPerformance.1<-
+  output$downloadPerformance.2<-
+  output$downloadPerformance.3<-
+  output$downloadPerformance.4<- downloadHandler(
+    filename =  paste0('Performance_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+    contentType =  'text/csv',
+    content = function(filename) {
+      t1<-transpose_performance_table(performance_table())
+      perfCsv<-rbind(
+        'labeltext'=NA,
+        round(t1[[1]],digits=max(t1[[2]]))#NOT SURE WHY ROUND ISN"T WORKING WELL IF WE PUT IN THE MATRIX???
+      )
+      rownames(perfCsv)[1]<-t1[[3]]
+      write.table(perfCsv, filename, row.names=TRUE, col.names=FALSE, sep=',')
+    }
+  )
+
+
+
 
 })

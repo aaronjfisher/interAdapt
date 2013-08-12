@@ -15,6 +15,8 @@ my_headerPanel <- function (title, windowTitle = title, h=h3)
         style = "padding: 10px 0px;", h(title)))
 }
 
+pbreak<-HTML('<P CLASS=breakhere>')
+
 # from Aaron
 #Load csv's with info about the input sliders & boxes
 #then build lists of input sliders & boxes
@@ -140,7 +142,7 @@ shinyUI(pageWithSidebar(
         conditionalPanel(condition="input.Which_params == '3'",
             br(),
             strong('Save current parameters to file:'),br(),
-            downloadButton('downloadData', 'Save Inputs'),
+            downloadButton('downloadInputs', 'Save Inputs'),
             br(),br(),
             strong('Load previous parameters from file:'),
             fileInput('uploadData', '',
@@ -196,56 +198,86 @@ shinyUI(pageWithSidebar(
 
 
   mainPanel(
+  #INITIALIZE PAGE BREAK CODE
+  HTML('<STYLE TYPE=text/css> P.breakhere {page-break-before: always} </STYLE>'),
+
   #WARNINGS
   h4(textOutput('warn1')),
   h4(textOutput('warn2')),
   h4(textOutput('warn3')),
-  br(),br(),
+  #br(),br(),
 
   #OUTPUT
-  radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
-	c(Performance = "1",Designs = "2"),selected="Performance"),	
-  br(),
-  conditionalPanel(condition = "input.ComparisonCriterion == '2'",
+  #???!?? need to add some more breaks in here to space out the download buttons.
+  radioButtons("OutputSelection", em(strong("Output selection")),
+  c("About EAGLE" = "1", Designs = "2", Performance = "3",
+        "Printer version" = "4"), selected="About EAGLE"),
+  
+  br(), pbreak,
+
+  conditionalPanel(condition = "input.OutputSelection == '1'",
+    HTML(paste(readHelpTabHTML,collapse=''))),
+
+  conditionalPanel(condition = "input.OutputSelection == '2'",
     em(strong("Designs")),
     #br(), br(),
     tabsetPanel(
-	tabPanel("Adaptive",
-		my_plotOutput("adapt_boundary_plot"),
-    br(),
-    tableOutput("adaptive_design_sample_sizes_and_boundaries_table") ),
-	tabPanel("Fixed, Total Population",
-    my_plotOutput("fixed_HOC_boundary_plot"),
-    br(),
-		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table") ) ,
-	tabPanel("Fixed, Subpop. 1 only",
-		my_plotOutput("fixed_HOS_boundary_plot"),
-    br(),
-    tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table") ),
-	tabPanel("All designs",
-		tableOutput("adaptive_design_sample_sizes_and_boundaries_table.2"),
-		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.2"),
-		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.2")),
-  tabPanel("About EAGLE", 
-    HTML(paste(readHelpTabHTML,collapse='')) ),
+    	tabPanel("Adaptive",
+    		my_plotOutput("adapt_boundary_plot.1"),
+        br(),pbreak,
+        tableOutput("adaptive_design_sample_sizes_and_boundaries_table"),
+        downloadButton('downloadDesignAD.1', 'Download table as csv'),br()),
+    	tabPanel("Fixed, Total Population",
+        my_plotOutput("fixed_HOC_boundary_plot.1"),
+        br(),pbreak,
+    		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table"),
+        downloadButton('downloadDesignFC.1', 'Download table as csv'),br()) ,
+    	tabPanel("Fixed, Subpop. 1 only",
+    		my_plotOutput("fixed_HOS_boundary_plot.1"),
+        br(),pbreak,
+        tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table"),
+        downloadButton('downloadDesignFS.1', 'Download table as csv'),br()),
+    	tabPanel("All designs",
+    		tableOutput("adaptive_design_sample_sizes_and_boundaries_table.2"),
+        pbreak,
+    		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.2"),
+        pbreak,
+        tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.2"),
+        br(),br(),downloadButton('downloadDesignAD.2', 'Download AD design table as '),
+        br(),br(),downloadButton('downloadDesignFS.2', 'Download FS design table as '),
+        br(),br(),downloadButton('downloadDesignFC.2', 'Download FC design table as ')),
   selected="Adaptive")
   ),
-    #HTML("<hr>"),
-    #em(strong("Performance comparisons")),
-    #br(), br(),
-  conditionalPanel(condition = "input.ComparisonCriterion == '1'",
+
+  conditionalPanel( condition = "input.OutputSelection == '3'",
     tabsetPanel(
-	tabPanel("Power", my_plotOutput("power_curve_plot"),
-    tableOutput("performance_table.1")),
-	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot"),
-    tableOutput("performance_table.2")),
-	tabPanel("Duration", my_plotOutput("expected_duration_plot"),
-    tableOutput("performance_table.3")),
-	tabPanel("Overruns", my_plotOutput("overruns"),
-    tableOutput("performance_table.4")),
-  tabPanel("About EAGLE", 
-    HTML(paste(readHelpTabHTML,collapse='')) ),
-  selected='About EAGLE'))
-  #,br(),textOutput('uploadTime'),textOutput('loadReset')
-  )
+    	tabPanel("Power", my_plotOutput("power_curve_plot.1")),
+    	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot.1")),
+    	tabPanel("Duration", my_plotOutput("expected_duration_plot.1")),
+    	tabPanel("Overruns", my_plotOutput("overruns.1")),
+      selected='Power'),
+    pbreak,
+    tableOutput("performance_table.1"),
+    downloadButton('downloadPerformance.1', 'Download as csv')
+  ),
+
+  conditionalPanel(condition = "input.OutputSelection == '4'",
+    tableOutput("adaptive_design_sample_sizes_and_boundaries_table.3"),
+    pbreak,
+    tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.3"),
+    pbreak,
+    tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.3"),
+    pbreak,
+    my_plotOutput("power_curve_plot.2"),
+    pbreak,
+    my_plotOutput("expected_sample_size_plot.2"),
+    pbreak,
+    my_plotOutput("expected_duration_plot.2"),
+    pbreak,
+    my_plotOutput("overruns.2"),
+    pbreak,
+    tableOutput("performance_table.2")
+  ),
+
+  br(),br() )
 ))

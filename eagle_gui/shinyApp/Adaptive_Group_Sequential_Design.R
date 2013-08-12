@@ -596,7 +596,7 @@ expected_duration_plot <- function()
 ## Expected Duration Plot
 min_dur <- 0
 max_dur <- max(c(table1[,3],table1[,8],table1[,12]))
-plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_dur,max_dur),main="Expected Duration versus Average Treatment Effect",xlab="Avg. Treatment Effect on Risk Difference Scale in Subpopulation 2",ylab="Expected Duration")
+plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_dur,max_dur),main="Expected Duration versus Average Treatment Effect",xlab="Avg. Treatment Effect on Risk Difference Scale in Subpopulation 2",ylab="Expected Duration in Years")
 
 # adaptive
 lines(x=rev(risk_difference_list),y=table1[,3],lty=1,col=1,lwd=3)
@@ -695,7 +695,7 @@ transpose_performance_table<-function(ptable){
 	digitMat<-cbind(0,digitMatPre) #add a column of zeros for the row names
 	orderedTab<-t(ptable[[1]])[,(dpt[1]:1)] #reverse the col order
 	outTab<-data.frame(orderedTab)
-	colnames(outTab)<-rep('',times=dpt[1]) #this turns out to be not nessecary if we say include.colnames=FALSE in our custom renderTable function
+	#We need to say include.colnames=FALSE in our custom renderTable function
 	return(list( outTab, digits=digitMat, caption=ptable$caption ) )
 }
 
