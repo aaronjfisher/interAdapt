@@ -243,9 +243,9 @@ shinyUI(pageWithSidebar(
     		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.2"),
         pbreak,
         tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.2"),
-        br(),br(),downloadButton('downloadDesignAD.2', 'Download AD design table as '),
-        br(),br(),downloadButton('downloadDesignFS.2', 'Download FS design table as '),
-        br(),br(),downloadButton('downloadDesignFC.2', 'Download FC design table as ')),
+        br(),br(),downloadButton('downloadDesignAD.2', 'Download AD design table as csv'),
+        br(),br(),downloadButton('downloadDesignFS.2', 'Download FS design table as csv'),
+        br(),br(),downloadButton('downloadDesignFC.2', 'Download FC design table as csv')),
   selected="Adaptive")
   ),
 

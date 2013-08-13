@@ -495,6 +495,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
         newTab[i,j]<-round(tab[i,j],digits=digits[i,j])
       }
     }
+    rownames(newTab)<-rownames(tab)
     return(newTab)
   }
 
