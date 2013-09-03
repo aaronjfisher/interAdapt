@@ -9,7 +9,7 @@
 # PREAMBLE
 #############################################
 #############################################
-
+library(knitr)
 
 subH0 <- function(x){ #make a function that does the same thing as "strong()" but for <sub></sub>
 #finds all H0C and H0S terms and subs them!
@@ -378,18 +378,18 @@ shinyServer(function(input, output) {
 
   #############
   #Boundary Plots
-  output$fixed_HOC_boundary_plot.1 <-
-  output$fixed_HOC_boundary_plot.2 <-renderPlot({
+  output$fixed_H0C_boundary_plot.1 <-
+  output$fixed_H0C_boundary_plot.2 <-renderPlot({
     regen()
     print('H0C Boundary Plot')
-    boundary_fixed_HOC_plot()
+    boundary_fixed_H0C_plot()
   })
 
-  output$fixed_HOS_boundary_plot.1 <-
-  output$fixed_HOS_boundary_plot.2 <-renderPlot({
+  output$fixed_H0S_boundary_plot.1 <-
+  output$fixed_H0S_boundary_plot.2 <-renderPlot({
     regen()
     print('H0S Boundary Plot')
-    boundary_fixed_HOS_plot()
+    boundary_fixed_H0S_plot()
   })
 
   output$adapt_boundary_plot.1 <-
@@ -449,7 +449,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   output$fixed_H0C_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
 	regen()
-  print('HOC table')
+  print('H0C table')
 	fixed_H0C_design_sample_sizes_and_boundaries_table()
   })
 
@@ -457,7 +457,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   output$fixed_H0S_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0S_design_sample_sizes_and_boundaries_table <-renderTable({
 	regen()
-  print('HOS table')
+  print('H0S table')
 	fixed_H0S_design_sample_sizes_and_boundaries_table()
   })
 
@@ -485,6 +485,18 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
       inputCsv<-rep(NA,length=length(allVarNames))
       for(i in 1:length(allVarNames)) inputCsv[i]<- input[[ allVarNames[i] ]]
       write.table(inputCsv, filename, row.names=allVarLabels, col.names=FALSE, sep=',')
+    }
+  )
+
+  output$knitr <- downloadHandler(
+    filename =  'report.html',
+    contentType =  'text/html',
+    content = function(filename) {
+      if (file.exists('knitr_report.html')) file.remove('knitr_report.html')
+      if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
+      knit2html('knitr_report.Rmd')
+      if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
+      file.rename('knitr_report.html', filename)
     }
   )
 

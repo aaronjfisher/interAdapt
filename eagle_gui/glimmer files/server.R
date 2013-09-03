@@ -9,6 +9,12 @@
 #install.packages('devtools_1.1.tar.gz', type='source', repos=NULL)
 #unlink('devtools_1.1.tar.gz')
 
+#make sure file size hasn't blown up absurdly.
+#if not, write the current user time.
+if(file.info("user_log.txt")$size < 1000000)
+	cat(paste(date(),'\n'),file='user_log.txt',append=TRUE)
+
+
 library(shiny)
 library(digest)
 library(RCurl)

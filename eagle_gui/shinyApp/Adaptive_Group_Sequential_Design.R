@@ -646,32 +646,32 @@ legend('topright',ltext,pch=c(19,15,19,15),col=c('black','black','blue','blue'),
 }
 
 
-boundary_fixed_HOS_plot <-function()
+boundary_fixed_H0S_plot <-function()
 {
 
-HOS_boundary_mat<- t(fixed_H0S_design_sample_sizes_and_boundaries_table()[[1]][c("H0S Efficacy Boundary", "H0S Futility Boundary"), ])
+H0S_boundary_mat<- t(fixed_H0S_design_sample_sizes_and_boundaries_table()[[1]][c("H0S Efficacy Boundary", "H0S Futility Boundary"), ])
 fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of', 'Combined Population Null Hypothesis ( H'[0][S]~')'))
-matplot(HOS_boundary_mat,type='o',main=fancyTitle,lty=2,pch=c(19,15),col='blue', xlab='Stage',ylab='Boundaries on Z-score scale')
+matplot(H0S_boundary_mat,type='o',main=fancyTitle,lty=2,pch=c(19,15),col='blue', xlab='Stage',ylab='Boundaries on Z-score scale')
 ltext<-rep(NA,2)
 ltext[1]<-expression(paste('H'[0][S],' Efficacy Boundary'))
 ltext[2]<-expression(paste('H'[0][S],' Futility Boundary'))
 legend('topright',ltext,lty=2,pch=c(19,15),col='blue')
 
-#print(HOS_boundary_mat)
+#print(H0S_boundary_mat)
 }
 
 
-boundary_fixed_HOC_plot <-function()
+boundary_fixed_H0C_plot <-function()
 {
-HOC_boundary_mat<- t(fixed_H0C_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary"), ])
+H0C_boundary_mat<- t(fixed_H0C_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary"), ])
 fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of', 'Combined Population Null Hypothesis ( H'[0][C]~')'))
-matplot(HOC_boundary_mat,type='o',main=fancyTitle,lty=2,pch=c(19,15),col='black', xlab='Stage',ylab='Boundaries on Z-score scale')
+matplot(H0C_boundary_mat,type='o',main=fancyTitle,lty=2,pch=c(19,15),col='black', xlab='Stage',ylab='Boundaries on Z-score scale')
 ltext<-rep(NA,2)
 ltext[1]<-expression(paste('H'[0][C],' Efficacy Boundary'))
 ltext[2]<-expression(paste('H'[0][C],' Futility Boundary'))
 legend('topright',ltext,lty=2,pch=c(19,15),col='black')
 
-#print(HOC_boundary_mat)
+#print(H0C_boundary_mat)
 }
 
 
