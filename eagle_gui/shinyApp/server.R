@@ -494,9 +494,12 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     content = function(filename) {
       if (file.exists('knitr_report.html')) file.remove('knitr_report.html')
       if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
-      knit2html('knitr_report.Rmd')
+      htmlKnitted<-knit2html('knitr_report.Rmd')
       if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
-      file.rename('knitr_report.html', filename)
+      x<-readLines(con=htmlKnitted)
+      writeLines(x,con=filename)
+      # file.rename('knitr_report.html', filename)
+
     }
   )
 

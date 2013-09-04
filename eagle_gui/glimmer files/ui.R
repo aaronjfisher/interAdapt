@@ -2,6 +2,7 @@
 #install.packages(devtools)
 #install.packages(digest)
 #install.packages('stringr')
+#install.packages('knitr')
 
 #install.packages(c("httr", "RCurl", "memoise", "whisker", "evaluate"))
 #download.file('http://cran.rstudio.com/src/contrib/Archive/devtools/devtools_1.1.tar.gz',
