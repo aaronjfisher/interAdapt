@@ -54,6 +54,9 @@ total_number_stages <- 5 # Range 1:20
 recruitment_rate_subpop_1 <- 140 #(Range: 0-1000)
 # Enrollment rate subpop. 2 (patients per year)
 recruitment_rate_subpop_2 <- 140 #(Range: 0-1000)
+# Delay from enrollment to primary outcome observed in years
+delay_time_from_enrollment_to_primary_outcome <- 1/2 
+
 
 # Horizontal axis range of treatment effects on risk difference scale:
 lower_bound_treatment_effect_subpop_2 <- (-0.2)
