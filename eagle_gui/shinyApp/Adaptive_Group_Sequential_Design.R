@@ -53,6 +53,7 @@ total_number_stages <- 5 # Range 1:20
 # Enrollment rate for combined population (patients per year)
 enrollment_rate_combined_population <- 420
 
+# Enrollment rate subpop. 1 (patients per year)
 enrollment_rate_subpop_1 <- p1_user_defined*enrollment_rate_combined_population
 # Enrollment rate subpop. 2 (patients per year)
 enrollment_rate_subpop_2 <- (1-p1_user_defined)*enrollment_rate_combined_population #(Range: 0-1000)
