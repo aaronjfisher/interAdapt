@@ -312,7 +312,7 @@ duration <- cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]/enrollm
 
 #cov_mat_comp <<- cov(cbind(t(Z_mixture_cumulative[1:4,]),t(Z_subpop_1_cumulative)))
 #print(max(abs(cov_matrix_full-cov_mat_comp)))
-browser()
+
 
 return(c(
 #### For adaptive designs
