@@ -1,6 +1,3 @@
-
-
-
 # non-standard plot dimensions
 width <- "90%"          # narrower
 height <- "500px"       # more than 400
@@ -245,8 +242,7 @@ shinyUI(pageWithSidebar(
   #OUTPUT
   #???!?? need to add some more breaks in here to space out the download buttons.
   radioButtons("OutputSelection", em(strong("Output selection")),
-  c("About EAGLE" = "1", Designs = "2", Performance = "3",
-        "Printer version" = "4"), selected="About EAGLE"),
+  c("About EAGLE" = "1", Designs = "2", Performance = "3"), selected="About EAGLE"),
   
   br(), pbreak,
 
@@ -258,17 +254,17 @@ shinyUI(pageWithSidebar(
     #br(), br(),
     tabsetPanel(
     	tabPanel("Adaptive",
-    		my_plotOutput("adapt_boundary_plot.1"),
+    		my_plotOutput("adapt_boundary_plot"),
         br(),pbreak,
         tableOutput("adaptive_design_sample_sizes_and_boundaries_table"),
         downloadButton('downloadDesignAD.1', 'Download table as csv'),br()),
     	tabPanel("Fixed, Total Population",
-        my_plotOutput("fixed_H0C_boundary_plot.1"),
+        my_plotOutput("fixed_H0C_boundary_plot"),
         br(),pbreak,
     		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table"),
         downloadButton('downloadDesignFC.1', 'Download table as csv'),br()) ,
     	tabPanel("Fixed, Subpop. 1 only",
-    		my_plotOutput("fixed_H0S_boundary_plot.1"),
+    		my_plotOutput("fixed_H0S_boundary_plot"),
         br(),pbreak,
         tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table"),
         downloadButton('downloadDesignFS.1', 'Download table as csv'),br()),
@@ -286,42 +282,14 @@ shinyUI(pageWithSidebar(
 
   conditionalPanel( condition = "input.OutputSelection == '3'",
     tabsetPanel(
-    	tabPanel("Power", my_plotOutput("power_curve_plot.1")),
-    	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot.1")),
-    	tabPanel("Duration", my_plotOutput("expected_duration_plot.1")),
-    	tabPanel("Overruns", my_plotOutput("overruns.1")),
+    	tabPanel("Power", my_plotOutput("power_curve_plot")),
+    	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot")),
+    	tabPanel("Duration", my_plotOutput("expected_duration_plot")),
+    	tabPanel("Overruns", my_plotOutput("overruns")),
       selected='Power'),
     pbreak,
-    tableOutput("performance_table.1"),
+    tableOutput("performance_table"),
     downloadButton('downloadPerformance.1', 'Download as csv')
-  ),
-
-  conditionalPanel(condition = "input.OutputSelection == '4'",
-    h4('Plots of Decision Boundaries'),
-    my_plotOutput("adapt_boundary_plot.2"),
-    pbreak,
-    my_plotOutput("fixed_H0C_boundary_plot.2"),
-    pbreak,        
-    my_plotOutput("fixed_H0S_boundary_plot.2"),
-    pbreak,
-    h4('Design Tables for Trials'),
-    tableOutput("adaptive_design_sample_sizes_and_boundaries_table.3"),
-    pbreak,
-    tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.3"),
-    pbreak,
-    tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.3"),
-    pbreak,
-    h4('Plots of Peformance Metrics'),
-    my_plotOutput("power_curve_plot.2"),
-    pbreak,
-    my_plotOutput("expected_sample_size_plot.2"),
-    pbreak,
-    my_plotOutput("expected_duration_plot.2"),
-    pbreak,
-    my_plotOutput("overruns.2"),
-    pbreak,
-    h4('Table of Performance Metrics, for different effect sizes in subpopulation 2'),
-    tableOutput("performance_table.2")
   ),
 
   br(),br() )
