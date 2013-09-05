@@ -370,30 +370,26 @@ shinyServer(function(input, output) {
   #############
   #Performance plots
 
-  output$power_curve_plot.1 <-
-  output$power_curve_plot.2 <- renderPlot({
+  output$power_curve_plot <- renderPlot({
 	regen() 
   print('power plot')
 	power_curve_plot()
   })
 
-  output$expected_sample_size_plot.1 <-
-  output$expected_sample_size_plot.2 <- renderPlot({
+  output$expected_sample_size_plot <- renderPlot({
 	regen()
   print('sample plot')
 	expected_sample_size_plot()
   })
 
-  output$expected_duration_plot.1 <-
-  output$expected_duration_plot.2 <- renderPlot({
+  output$expected_duration_plot <- renderPlot({
 	regen()
   print('duration plot')
 	expected_duration_plot()
   })
 
   #overruns <- function() plot(1:2, main="Overruns")
-  output$overruns.1 <-
-  output$overruns.2 <- renderPlot({
+  output$overruns <- renderPlot({
 	regen()
   print('overruns plot')
 	overrun_plot()
@@ -402,22 +398,19 @@ shinyServer(function(input, output) {
 
   #############
   #Boundary Plots
-  output$fixed_H0C_boundary_plot.1 <-
-  output$fixed_H0C_boundary_plot.2 <-renderPlot({
+  output$fixed_H0C_boundary_plot <-renderPlot({
     regen()
     print('H0C Boundary Plot')
     boundary_fixed_H0C_plot()
   })
 
-  output$fixed_H0S_boundary_plot.1 <-
-  output$fixed_H0S_boundary_plot.2 <-renderPlot({
+  output$fixed_H0S_boundary_plot <-renderPlot({
     regen()
     print('H0S Boundary Plot')
     boundary_fixed_H0S_plot()
   })
 
-  output$adapt_boundary_plot.1 <-
-  output$adapt_boundary_plot.2 <-renderPlot({
+  output$adapt_boundary_plot <-renderPlot({
     regen()
     print('H0C Boundary Plot')
     boundary_adapt_plot()
@@ -465,7 +458,6 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     }
 }
   
-  output$adaptive_design_sample_sizes_and_boundaries_table.3 <-
   output$adaptive_design_sample_sizes_and_boundaries_table.2 <-
   output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable({    
 	regen()
@@ -473,7 +465,6 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 	adaptive_design_sample_sizes_and_boundaries_table()
   })
 
-  output$fixed_H0C_design_sample_sizes_and_boundaries_table.3 <-
   output$fixed_H0C_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
 	regen()
@@ -481,7 +472,6 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 	fixed_H0C_design_sample_sizes_and_boundaries_table()
   })
 
-  output$fixed_H0S_design_sample_sizes_and_boundaries_table.3 <-
   output$fixed_H0S_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0S_design_sample_sizes_and_boundaries_table <-renderTable({
 	regen()
@@ -489,8 +479,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 	fixed_H0S_design_sample_sizes_and_boundaries_table()
   })
 
-  output$performance_table.1<-
-  output$performance_table.2<- renderTable(expr={
+  output$performance_table <- renderTable(expr={
 	regen()
   print('perf table')
 	transpose_performance_table(performance_table())
