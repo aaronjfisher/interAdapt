@@ -115,7 +115,6 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 	enrollment_rate_subpop_1 <- p1_user_defined*enrollment_rate_combined_population
 	# Enrollment rate subpop. 2 (patients per year)
 	enrollment_rate_subpop_2 <- (1-p1_user_defined)*enrollment_rate_combined_population #(Range: 0-1000)
-	#print(c(enrollment_rate_subpop_1,enrollment_rate_combined_population))
 	pipeline_boundary_deflation_factor <- (-Inf)
 	subpop_2_tradeoff_percentile <- 0
 	OBrienFleming_boundaries <- 2.04*sqrt(total_number_stages/(1:total_number_stages))
@@ -319,7 +318,7 @@ mean(reject_H0C & (!H0C_reversal_due_to_pipeline)), # power to reject H0C
 mean((reject_H0S_via_step_1 & (!H0S_via_step1_reversal_due_to_pipeline)) | (reject_H0S_via_step_2 & (!H0S_via_step2_reversal_due_to_pipeline))), # power to reject H0S
 mean((ever_cross_H0C_efficacy_boundary_at_or_before_stage_k & (!reversal_at_first_cross_H0C_efficacy_boundary_at_or_before_stage_k)) | (ever_cross_H0S_efficacy_boundary & (!reversal_at_first_cross_H0S_efficacy_boundary_at_or_after_stage_k))), # Worst-case Type I error (assuming no futility stopping at all)
 mean(cum_sample_sizes_mixture[final_stage_C_enrolled_up_through]-cum_sample_sizes_subpop_1[final_stage_C_enrolled_up_through]+cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]), #mean sample size under adaptive design
-mean(pmax(pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],enrollment_rate_subpop_2*delay_from_enrollment_to_primary_outcome)/enrollment_rate_subpop_2,pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through],enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome)/enrollment_rate_subpop_1))+delay_from_enrollment_to_primary_outcome, ## max of duration corresponding to each subpopulation, including pipeline patients
+mean(pmax((cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through]+pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],enrollment_rate_subpop_2*delay_from_enrollment_to_primary_outcome))/enrollment_rate_subpop_2,(cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]+pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through],enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome))/enrollment_rate_subpop_1))+delay_from_enrollment_to_primary_outcome, ## max of duration corresponding to each subpopulation, including pipeline patients
 mean((reject_H0C & (!H0C_reversal_due_to_pipeline)) | (reject_H0S_via_step_1 & (!H0S_via_step1_reversal_due_to_pipeline)) | (reject_H0S_via_step_2 & (!H0S_via_step2_reversal_due_to_pipeline))), # reject at least one null hypothesis for efficacy
 mean(pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],enrollment_rate_subpop_2*delay_from_enrollment_to_primary_outcome)+
      pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through],enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome)), # avg. sample size in pipeline in adaptive design
