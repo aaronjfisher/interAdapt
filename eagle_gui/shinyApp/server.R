@@ -1,14 +1,26 @@
-#BUGS!
+  # ______ _   _ _____  _____ _ 
+  # | ___ \ | | |  __ \/  ___| |
+  # | |_/ / | | | |  \/\ `--.| |
+  # | ___ \ | | | | __  `--. \ |
+  # | |_/ / |_| | |_\ \/\__/ /_|
+  # \____/ \___/ \____/\____/(_)
+                              
+                              
 # Add Michael's Warnings
 # Add a checkbox to autoupdate new parameters, or a warning saying they're not yet applied.
 # Need to make sure the initialized image is set correctly. 
     # For beta testing it's just commented out to maintain consistency.
 
-#############################################
-#############################################
-# PREAMBLE
-#############################################
-#############################################
+
+  # ______                         _     _      
+  # | ___ \                       | |   | |     
+  # | |_/ / __ ___  __ _ _ __ ___ | |__ | | ___ 
+  # |  __/ '__/ _ \/ _` | '_ ` _ \| '_ \| |/ _ \
+  # | |  | | |  __/ (_| | | | | | | |_) | |  __/
+  # \_|  |_|  \___|\__,_|_| |_| |_|_.__/|_|\___|
+                                              
+                                              
+
 library(knitr)
 
 subH0 <- function(x){ #make a function that does the same thing as "strong()" but for <sub></sub>
@@ -98,11 +110,14 @@ for(i in 1:dim(bt)[1]){
 
 
 
-#############################################
-#############################################
-# END OF PREAMBLE
-#############################################
-#############################################
+  #  _____                          _____           _      
+  # /  ___|                        /  __ \         | |     
+  # \ `--.  ___ _ ____   _____ _ __| /  \/ ___   __| | ___ 
+  #  `--. \/ _ \ '__\ \ / / _ \ '__| |    / _ \ / _` |/ _ \
+  # /\__/ /  __/ |   \ V /  __/ |  | \__/\ (_) | (_| |  __/
+  # \____/ \___|_|    \_/ \___|_|   \____/\___/ \__,_|\___|
+                                                         
+                                                         
 
 
 
@@ -110,11 +125,15 @@ for(i in 1:dim(bt)[1]){
 shinyServer(function(input, output) {
 
 
-  #############################################
-  #############################################
+  ##########
+  # (_)     (_) | (_)     | (_)        
+  #  _ _ __  _| |_ _  __ _| |_ _______ 
+  # | | '_ \| | __| |/ _` | | |_  / _ \
+  # | | | | | | |_| | (_| | | |/ /  __/
+  # |_|_| |_|_|\__|_|\__,_|_|_/___\___|
+                                     
   # Initialize some static & reactive variables
-  #############################################
-  #############################################
+  ##########
 
 
   lastApplyValue <- -1
@@ -166,11 +185,13 @@ shinyServer(function(input, output) {
   effectivelyBatch<- reactive({input$Batch == "1" | input$Which_params != "1"})
 
 
-  #############################################
-  #############################################
-  # Warnings
-  #############################################
-  #############################################
+  #                          (_)                
+  # __      ____ _ _ __ _ __  _ _ __   __ _ ___ 
+  # \ \ /\ / / _` | '__| '_ \| | '_ \ / _` / __|
+  #  \ V  V / (_| | |  | | | | | | | | (_| \__ \
+  #   \_/\_/ \__,_|_|  |_| |_|_|_| |_|\__, |___/
+  #                                    __/ |    
+  #                                   |___/     
   output$warn1<-renderText({
     x<-""
     if(input$Which_params!="1" & input$Batch=="2")x<-"Note: interactive mode not enabled for advanced parameters, defaulting to batch mode."
@@ -180,11 +201,12 @@ shinyServer(function(input, output) {
   
 
 
-  #############################################
-  #############################################
-  # LOADING DATA
-  #############################################
-  #############################################
+  #  _                     _  ______      _        
+  # | |                   | | |  _  \    | |       
+  # | |     ___   __ _  __| | | | | |__ _| |_ __ _ 
+  # | |    / _ \ / _` |/ _` | | | | / _` | __/ _` |
+  # | |___| (_) | (_| | (_| | | |/ / (_| | || (_| |
+  # \_____/\___/ \__,_|\__,_| |___/ \__,_|\__\__,_|
 
   #a reactive chunk to feed to the dynamicBoxes & dynamicSliders
   regenUpload<-reactive({
@@ -207,11 +229,12 @@ shinyServer(function(input, output) {
 
 
 
-  #############################################
-  #############################################
-  # SLIDERS & BOXES
-  #############################################
-  #############################################
+#      _ _     _                          _                        
+#     | (_)   | |                 ___    | |                       
+#  ___| |_  __| | ___ _ __ ___   ( _ )   | |__   _____  _____  ___ 
+# / __| | |/ _` |/ _ \ '__/ __|  / _ \/\ | '_ \ / _ \ \/ / _ \/ __|
+# \__ \ | | (_| |  __/ |  \__ \ | (_>  < | |_) | (_) >  <  __/\__ \
+# |___/_|_|\__,_|\___|_|  |___/  \___/\/ |_.__/ \___/_/\_\___||___/
 
 
   #NOTE - June 26: When sliders update, regen thinks it needs to be called again because sliders have updated values and you're now in interactive mode.
@@ -270,12 +293,12 @@ shinyServer(function(input, output) {
 
 
 
-  #############################################
-  #############################################
-  # REGEN
-  #############################################
-  #############################################
-
+# ______ _____ _____  _____ _   _ 
+# | ___ \  ___|  __ \|  ___| \ | |
+# | |_/ / |__ | |  \/| |__ |  \| |
+# |    /|  __|| | __ |  __|| . ` |
+# | |\ \| |___| |_\ \| |___| |\  |
+# \_| \_\____/ \____/\____/\_| \_/
 
   # In interactive mode, we re-export the parameters and rebuild table1
   # every time.  In batch, only on the first call for a given push of the
@@ -331,12 +354,13 @@ shinyServer(function(input, output) {
 
 
 
-  #############################################
-  #############################################
-  # PLOTS
-  #############################################
-  #############################################
-
+  # ______ _       _       
+  # | ___ \ |     | |      
+  # | |_/ / | ___ | |_ ___ 
+  # |  __/| |/ _ \| __/ __|
+  # | |   | | (_) | |_\__ \
+  # \_|   |_|\___/ \__|___/
+                         
 
   
   table1 <<- table_constructor() #temporary fix -- moving this initializer down to just before it's called, to make sure all the settings are adjusted right.
@@ -403,11 +427,15 @@ shinyServer(function(input, output) {
 
 
 
-  #############################################
-  #############################################
+  #  _____     _     _           
+  # |_   _|   | |   | |          
+  #   | | __ _| |__ | | ___  ___ 
+  #   | |/ _` | '_ \| |/ _ \/ __|
+  #   | | (_| | |_) | |  __/\__ \
+  #   \_/\__,_|_.__/|_|\___||___/
   # TABLES (& new xtable/renderTable functions)
-  #############################################
-  #############################################
+  #####
+
 
 # HJ - x must be a list of length 3, with a digits and caption
 xtable <- function(x) {
@@ -473,11 +501,13 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 
 
 
-  #############################################
-  #############################################
-  #SAVE DATA
-  #############################################
-  #############################################
+  #                            _       _        
+  #                           | |     | |       
+  #  ___  __ ___   _____    __| | __ _| |_ __ _ 
+  # / __|/ _` \ \ / / _ \  / _` |/ _` | __/ _` |
+  # \__ \ (_| |\ V /  __/ | (_| | (_| | || (_| |
+  # |___/\__,_| \_/ \___|  \__,_|\__,_|\__\__,_|
+
   output$downloadInputs <- downloadHandler(
     filename =  paste0('inputs_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
@@ -492,6 +522,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     filename =  'report.html',
     contentType =  'text/html',
     content = function(filename) {
+      #can't say "if (file.exists(filename)) file.remove(filename)" because this would open the door to hacking?
       if (file.exists('knitr_report.html')) file.remove('knitr_report.html')
       if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
       htmlKnitted<-knit2html('knitr_report.Rmd')

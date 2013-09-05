@@ -119,8 +119,24 @@ names(boxList)<-bt[,'inputId']
 
 
 
-  animationOptions(interval = 5000, loop = FALSE,
-  playButton = NULL, pauseButton = NULL)
+animationOptions(interval = 5000, loop = FALSE, playButton = NULL, pauseButton = NULL)
+
+
+
+
+
+
+  #  _____ _     _               _____           _      
+  # /  ___| |   (_)             /  __ \         | |     
+  # \ `--.| |__  _ _ __  _   _  | /  \/ ___   __| | ___ 
+  #  `--. \ '_ \| | '_ \| | | | | |    / _ \ / _` |/ _ \
+  # /\__/ / | | | | | | | |_| | | \__/\ (_) | (_| |  __/
+  # \____/|_| |_|_|_| |_|\__, |  \____/\___/ \__,_|\___|
+  #                       __/ |                         
+  #                      |___/                          
+
+
+
 
 shinyUI(pageWithSidebar(
 
@@ -129,7 +145,14 @@ shinyUI(pageWithSidebar(
 
 
 
-
+    #      _     _      
+    #     (_)   | |     
+    #  ___ _  __| | ___ 
+    # / __| |/ _` |/ _ \
+    # \__ \ | (_| |  __/
+    # |___/_|\__,_|\___|
+                      
+                      
 
   # "Advanced" forces batch mode
   sidebarPanel(
@@ -198,6 +221,16 @@ shinyUI(pageWithSidebar(
   #               boxList)
   # ),
 
+
+
+  #                  _       
+  #                 (_)      
+  #  _ __ ___   __ _ _ _ __  
+  # | '_ ` _ \ / _` | | '_ \ 
+  # | | | | | | (_| | | | | |
+  # |_| |_| |_|\__,_|_|_| |_|
+                           
+                           
 
   mainPanel(
   #INITIALIZE PAGE BREAK CODE
