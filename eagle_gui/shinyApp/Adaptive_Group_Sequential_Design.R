@@ -112,10 +112,10 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 	p2 <- (1-p1)
 	#maximum_per_stage_sample_size <- 500
 	# Enrollment rate subpop. 1 (patients per year)
-	 <- p1_user_defined*enrollment_rate_combined_population
+	enrollment_rate_subpop_1 <- p1_user_defined*enrollment_rate_combined_population
 	# Enrollment rate subpop. 2 (patients per year)
 	enrollment_rate_subpop_2 <- (1-p1_user_defined)*enrollment_rate_combined_population #(Range: 0-1000)
-
+	#print(c(enrollment_rate_subpop_1,enrollment_rate_combined_population))
 	pipeline_boundary_deflation_factor <- (-Inf)
 	subpop_2_tradeoff_percentile <- 0
 	OBrienFleming_boundaries <- 2.04*sqrt(total_number_stages/(1:total_number_stages))
@@ -312,7 +312,6 @@ duration <- cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]/enrollm
 
 #cov_mat_comp <<- cov(cbind(t(Z_mixture_cumulative[1:4,]),t(Z_subpop_1_cumulative)))
 #print(max(abs(cov_matrix_full-cov_mat_comp)))
-
 
 return(c(
 #### For adaptive designs
