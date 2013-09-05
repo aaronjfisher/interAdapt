@@ -50,12 +50,14 @@ iter <- 7000  # Range: 1 to 500,000
 time_limit<-45 #(seconds, range from 5 to 60)
 # Number stages
 total_number_stages <- 5 # Range 1:20
-# Enrollment rate subpop. 1 (patients per year)
-recruitment_rate_subpop_1 <- 140 #(Range: 0-1000)
+# Enrollment rate for combined population (patients per year)
+enrollment_rate_combined_population <- 420
+
+enrollment_rate_subpop_1 <- p1_user_defined*enrollment_rate_combined_population
 # Enrollment rate subpop. 2 (patients per year)
-recruitment_rate_subpop_2 <- 140 #(Range: 0-1000)
+enrollment_rate_subpop_2 <- (1-p1_user_defined)*enrollment_rate_combined_population #(Range: 0-1000)
 # Delay from enrollment to primary outcome observed in years
-delay_time_from_enrollment_to_primary_outcome <- 1/2 
+delay_from_enrollment_to_primary_outcome <- 1/2 
 
 
 # Horizontal axis range of treatment effects on risk difference scale:
@@ -131,8 +133,8 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 	}
 	cum_sample_sizes_mixture <- cum_sample_sizes_subpop_2 + cum_sample_sizes_subpop_1
  
-    subpop_1_pipeline_stagewise_sample_sizes <- pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1,recruitment_rate_subpop_1/2)  # number in pipeline if stop enrollment at given stage
-    subpop_2_pipeline_stagewise_sample_sizes <- pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2,((1-p1)/p1)*recruitment_rate_subpop_1/2)  # number in pipeline if stop enrollment at given stage
+    subpop_1_pipeline_stagewise_sample_sizes <- pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1,enrollment_rate_subpop_1/2)  # number in pipeline if stop enrollment at given stage
+    subpop_2_pipeline_stagewise_sample_sizes <- pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2,((1-p1)/p1)*enrollment_rate_subpop_1/2)  # number in pipeline if stop enrollment at given stage
 
 	cum_sample_sizes_subpop_1_pipeline <- cum_sample_sizes_subpop_1 + subpop_1_pipeline_stagewise_sample_sizes
 	cum_sample_sizes_subpop_2_pipeline <- cum_sample_sizes_subpop_2+subpop_2_pipeline_stagewise_sample_sizes
@@ -299,7 +301,7 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 	}
 
 	# compute each trial's duration:
-duration <- cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]/recruitment_rate_subpop_1 + 1/2 + 11/12 # add 1/2 year for waiting for 180 day outcomes, plus 11/12 year for assumed ramp up period
+duration <- cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]/enrollment_rate_subpop_1 + 1/2 + 11/12 # add 1/2 year for waiting for 180 day outcomes, plus 11/12 year for assumed ramp up period
 	
 	# Compute 0.01 quantile of Z_subpop_2_cumulative conditional on rejecting H_0C
 	#indexarray <- array(c(final_stage_C_enrolled_up_through,1:length(final_stage_C_enrolled_up_through)),c(length(final_stage_C_enrolled_up_through),2))
@@ -316,20 +318,20 @@ mean(reject_H0C & (!H0C_reversal_due_to_pipeline)), # power to reject H0C
 mean((reject_H0S_via_step_1 & (!H0S_via_step1_reversal_due_to_pipeline)) | (reject_H0S_via_step_2 & (!H0S_via_step2_reversal_due_to_pipeline))), # power to reject H0S
 mean((ever_cross_H0C_efficacy_boundary_at_or_before_stage_k & (!reversal_at_first_cross_H0C_efficacy_boundary_at_or_before_stage_k)) | (ever_cross_H0S_efficacy_boundary & (!reversal_at_first_cross_H0S_efficacy_boundary_at_or_after_stage_k))), # Worst-case Type I error (assuming no futility stopping at all)
 mean(cum_sample_sizes_mixture[final_stage_C_enrolled_up_through]-cum_sample_sizes_subpop_1[final_stage_C_enrolled_up_through]+cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]), #mean sample size under adaptive design
-mean(cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]/recruitment_rate_subpop_1)+1/2 # avg. trial duration not including pipeline patients: we add 1/2 year for waiting for 180 day outcomes, the next two lines compute additional duration due to pipeline patients from small IVH and large IVH, and takes max of these (to get the additional duration until all pipeline patients complete).
+mean(cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]/enrollment_rate_subpop_1)+delay_from_enrollment_to_primary_outcome # avg. trial duration not including pipeline patients: we add delay_from_enrollment_to_primary_outcome  for waiting for primary outcomes, the next two lines compute additional duration due to pipeline patients from small IVH and large IVH, and takes max of these (to get the additional duration until all pipeline patients complete).
 +mean(
- pmax(pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],((1-p1)/p1)*recruitment_rate_subpop_1/2)/(((1-p1)/p1)*recruitment_rate_subpop_1), ##(number pipeline large IVH) / (large IVH enrollment rate) 
-pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through],recruitment_rate_subpop_1/2)/recruitment_rate_subpop_1)), ##(number pipeline small IVH / (small IVH enrollment rate)         
+ pmax(pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],enrollment_rate_subpop_2*delay_from_enrollment_to_primary_outcome)/enrollment_rate_subpop_2, ##number pipeline subpop 2 / subpop 2 enrollment rate 
+pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through],enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome)/enrollment_rate_subpop_1)), ##number pipeline subpop 1 / subpop 1         
 mean((reject_H0C & (!H0C_reversal_due_to_pipeline)) | (reject_H0S_via_step_1 & (!H0S_via_step1_reversal_due_to_pipeline)) | (reject_H0S_via_step_2 & (!H0S_via_step2_reversal_due_to_pipeline))), # reject at least one null hypothesis for efficacy
-mean(pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],((1-p1)/p1)*recruitment_rate_subpop_1/2)+
-     pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through],recruitment_rate_subpop_1/2)), # avg. sample size in pipeline in adaptive design
-#mean(as.numeric(combined_pop_futility_boundaries[final_stage_C]!=(-Inf))*((1-p1)/p1)*(recruitment_rate_subpop_1/2) + as.numeric(subpop_1_futility_boundaries[final_stage_S]!=(-Inf))*recruitment_rate_subpop_1/2),# avg. recruited subjects in pipeline in adaptive design
+mean(pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],((1-p1)/p1)*enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome)+
+     pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through],enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome)), # avg. sample size in pipeline in adaptive design
+#mean(as.numeric(combined_pop_futility_boundaries[final_stage_C]!=(-Inf))*((1-p1)/p1)*(enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome) + as.numeric(subpop_1_futility_boundaries[final_stage_S]!=(-Inf))*enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome),# avg. recruited subjects in pipeline in adaptive design
 
 #### For fixed designs that stop when H0C rejected for efficacy or futility:
-mean(cum_sample_sizes_subpop_1[final_stage_C_enrolled_up_through]/recruitment_rate_subpop_1) + 1/2  # avg. trial duration: we add 1/2 year for waiting for 180 day outcomes
-+mean(pmin(cum_sample_sizes_mixture[total_number_stages]-cum_sample_sizes_mixture[final_stage_C_enrolled_up_through],(1/p1)*recruitment_rate_subpop_1/2))/((1/p1)*recruitment_rate_subpop_1), # extra duration due to pipeline patients completing
+mean(cum_sample_sizes_mixture[final_stage_C_enrolled_up_through])/enrollment_rate_combined_population + delay_from_enrollment_to_primary_outcome  # avg. trial duration: we add delay_from_enrollment_to_primary_outcome (in years) to account for this extra time
++mean(pmin(cum_sample_sizes_mixture[total_number_stages]-cum_sample_sizes_mixture[final_stage_C_enrolled_up_through],(enrollment_rate_combined_population)*delay_from_enrollment_to_primary_outcome))/(enrollment_rate_combined_population), # extra duration due to pipeline patients completing
 mean(cum_sample_sizes_mixture[final_stage_C_enrolled_up_through]), # mean sample size (not including pipeline patients)
-mean(pmin(cum_sample_sizes_mixture[total_number_stages]-cum_sample_sizes_mixture[final_stage_C_enrolled_up_through],(1/p1)*recruitment_rate_subpop_1/2)), # avg. extra recruited subjects in pipeline
+mean(pmin(cum_sample_sizes_mixture[total_number_stages]-cum_sample_sizes_mixture[final_stage_C_enrolled_up_through],(enrollment_rate_combined_population)*delay_from_enrollment_to_primary_outcome)), # avg. extra recruited subjects in pipeline
 mean(reject_H0S_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries), # only used in fixed sequence, fixed mixture design
 0,#quantile_Z_subpop_2_cond_on_reject_H_0C,
 ### Reversals due to pipeline patients
@@ -810,4 +812,3 @@ return(list(output_df,digits=dig_array,caption="Cumulative Sample Sizes and Deci
 
 # construct table
 #table1 <- table_constructor()
-
