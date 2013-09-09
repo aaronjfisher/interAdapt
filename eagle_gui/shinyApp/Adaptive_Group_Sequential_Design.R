@@ -633,8 +633,7 @@ legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed
 
 boundary_adapt_plot <-function()
 {
-
-adapt_boundary_mat<- t(adaptive_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary", "H0S Efficacy Boundary", "H0S Futility Boundary"), ])
+adapt_boundary_mat<- t(adaptive_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary", "H01 Efficacy Boundary", "H01 Futility Boundary"), ])
 fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of Combined Population','Null Hypothesis ( H'[0][C]~') and Subpopulation 1 Null Hypothesis ( H'[0][1]~')'))
 matplot(adapt_boundary_mat,type='o',main=fancyTitle,pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2,, xlab='Stage',ylab='Boundaries on Z-score scale')
 ltext<-rep(NA,4)
