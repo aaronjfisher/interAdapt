@@ -1,6 +1,15 @@
 # non-standard plot dimensions
+verName<-'EAGLE.1' #appVersion is already taken for sable v. nonstable
 width <- "90%"          # narrower
 height <- "500px"       # more than 400
+
+#check for new version
+need2update<-FALSE
+try({
+  library(RCurl)
+  newestVerName<-strsplit(getURL('https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/version.txt'),split='\n')[[1]][1]
+  if(newestVerName!=verName) need2update<-TRUE
+})
 
 my_plotOutput <- function(...)
 	plotOutput(..., width=width, height=height)
@@ -235,6 +244,14 @@ shinyUI(pageWithSidebar(
   mainPanel(
   #INITIALIZE PAGE BREAK CODE
   HTML('<STYLE TYPE=text/css> P.breakhere {page-break-before: always} </STYLE>'),
+
+  #UPDATE MESSAGE
+  conditionalPanel(need2update, 
+    h4('Updates are available!'),
+    'An updated version of this software can been downloaded ',
+    a('here',href='http://htmlpreview.github.io/?https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/install_instructions.html'), 
+    br(),br()
+  ),
 
   #WARNINGS
   h4(textOutput('warn1')),
