@@ -1,6 +1,3 @@
-
-
-
 # non-standard plot dimensions
 width <- "90%"          # narrower
 height <- "500px"       # more than 400
@@ -15,6 +12,8 @@ my_headerPanel <- function (title, windowTitle = title, h=h3)
         style = "padding: 10px 0px;", h(title)))
 }
 
+pbreak<-HTML('<P CLASS=breakhere>')
+
 # from Aaron
 #Load csv's with info about the input sliders & boxes
 #then build lists of input sliders & boxes
@@ -23,6 +22,7 @@ my_headerPanel <- function (title, windowTitle = title, h=h3)
 
 #Get the csv file either online or locally
 getItOnline<-TRUE
+if(FALSE){
 try({
   source("Adaptive_Group_Sequential_Design.R", local=TRUE)
   st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
@@ -51,6 +51,7 @@ try({
   getItOnline<-FALSE #if we haven't gotten an error yet!
 
 },silent=TRUE)
+}
 try({
   if(getItOnline){
 
@@ -58,10 +59,15 @@ try({
     library(RCurl)
     library(digest) #some reason this is a dependency not auto-loaded by devtools?
     library(stringr)
-    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
-    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
-    source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
-    readHelpTabRaw <-getURL('https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/help_tab.html')
+    gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/"
+    if(exists('appVersion')) {
+      if(appVersion=='stable'){
+        gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/"
+    }}
+    st<-read.csv(text=getURL(paste0(gitDir,"sliderTable.csv")),header=TRUE,as.is=TRUE)
+    bt<-read.csv(text=getURL(paste0(gitDir,"boxTable.csv")),header=TRUE,as.is=TRUE)
+    source_url(paste0(gitDir,"Adaptive_Group_Sequential_Design.R"))
+    readHelpTabRaw <-getURL(paste0(gitDir,"help_tab.html"))
     readHelpTabHTML<-str_replace_all(readHelpTabRaw,'\n','')
 
     #################
@@ -117,8 +123,24 @@ names(boxList)<-bt[,'inputId']
 
 
 
-  animationOptions(interval = 5000, loop = FALSE,
-  playButton = NULL, pauseButton = NULL)
+animationOptions(interval = 5000, loop = FALSE, playButton = NULL, pauseButton = NULL)
+
+
+
+
+
+
+  #  _____ _     _               _____           _      
+  # /  ___| |   (_)             /  __ \         | |     
+  # \ `--.| |__  _ _ __  _   _  | /  \/ ___   __| | ___ 
+  #  `--. \ '_ \| | '_ \| | | | | |    / _ \ / _` |/ _ \
+  # /\__/ / | | | | | | | |_| | | \__/\ (_) | (_| |  __/
+  # \____/|_| |_|_|_| |_|\__, |  \____/\___/ \__,_|\___|
+  #                       __/ |                         
+  #                      |___/                          
+
+
+
 
 shinyUI(pageWithSidebar(
 
@@ -127,7 +149,14 @@ shinyUI(pageWithSidebar(
 
 
 
-
+    #      _     _      
+    #     (_)   | |     
+    #  ___ _  __| | ___ 
+    # / __| |/ _` |/ _ \
+    # \__ \ | (_| |  __/
+    # |___/_|\__,_|\___|
+                      
+                      
 
   # "Advanced" forces batch mode
   sidebarPanel(
@@ -138,9 +167,11 @@ shinyUI(pageWithSidebar(
 
         #SAVE & LOAD
         conditionalPanel(condition="input.Which_params == '3'",
+            strong('Create an html report:'),br(),
+            downloadButton('knitr', 'Generate Report'), br(),
             br(),
             strong('Save current parameters to file:'),br(),
-            downloadButton('downloadData', 'Save Inputs'),
+            downloadButton('downloadInputs', 'Save Inputs'),
             br(),br(),
             strong('Load previous parameters from file:'),
             fileInput('uploadData', '',
@@ -195,57 +226,78 @@ shinyUI(pageWithSidebar(
   # ),
 
 
+
+  #                  _       
+  #                 (_)      
+  #  _ __ ___   __ _ _ _ __  
+  # | '_ ` _ \ / _` | | '_ \ 
+  # | | | | | | (_| | | | | |
+  # |_| |_| |_|\__,_|_|_| |_|
+                           
+                           
+
   mainPanel(
+  #INITIALIZE PAGE BREAK CODE
+  HTML('<STYLE TYPE=text/css> P.breakhere {page-break-before: always} </STYLE>'),
+
   #WARNINGS
   h4(textOutput('warn1')),
   h4(textOutput('warn2')),
   h4(textOutput('warn3')),
-  br(),br(),
+  #br(),br(),
 
   #OUTPUT
-  radioButtons("ComparisonCriterion", em(strong("Comparison criterion")),
-	c(Performance = "1",Designs = "2"),selected="Performance"),	
-  br(),
-  conditionalPanel(condition = "input.ComparisonCriterion == '2'",
+  #???!?? need to add some more breaks in here to space out the download buttons.
+  radioButtons("OutputSelection", em(strong("Output selection")),
+  c("About EAGLE" = "1", Designs = "2", Performance = "3"), selected="About EAGLE"),
+  
+  br(), pbreak,
+
+  conditionalPanel(condition = "input.OutputSelection == '1'",
+    HTML(paste(readHelpTabHTML,collapse=''))),
+
+  conditionalPanel(condition = "input.OutputSelection == '2'",
     em(strong("Designs")),
     #br(), br(),
     tabsetPanel(
-	tabPanel("Adaptive",
-		my_plotOutput("adapt_boundary_plot"),
-    br(),
-    tableOutput("adaptive_design_sample_sizes_and_boundaries_table") ),
-	tabPanel("Fixed, Total Population",
-    my_plotOutput("fixed_HOC_boundary_plot"),
-    br(),
-		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table") ) ,
-	tabPanel("Fixed, Subpop. 1 only",
-		my_plotOutput("fixed_HOS_boundary_plot"),
-    br(),
-    tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table") ),
-	tabPanel("All designs",
-		tableOutput("adaptive_design_sample_sizes_and_boundaries_table.2"),
-		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.2"),
-		tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.2")),
-  tabPanel("About EAGLE", 
-    HTML(paste(readHelpTabHTML,collapse='')) ),
+    	tabPanel("Adaptive",
+    		my_plotOutput("adapt_boundary_plot"),
+        br(),pbreak,
+        tableOutput("adaptive_design_sample_sizes_and_boundaries_table"),
+        downloadButton('downloadDesignAD.1', 'Download table as csv'),br()),
+    	tabPanel("Fixed, Total Population",
+        my_plotOutput("fixed_H0C_boundary_plot"),
+        br(),pbreak,
+    		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table"),
+        downloadButton('downloadDesignFC.1', 'Download table as csv'),br()) ,
+    	tabPanel("Fixed, Subpop. 1 only",
+    		my_plotOutput("fixed_H01_boundary_plot"),
+        br(),pbreak,
+        tableOutput("fixed_H01_design_sample_sizes_and_boundaries_table"),
+        downloadButton('downloadDesignFS.1', 'Download table as csv'),br()),
+    	tabPanel("All designs",
+    		tableOutput("adaptive_design_sample_sizes_and_boundaries_table.2"),
+        pbreak,
+    		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.2"),
+        pbreak,
+        tableOutput("fixed_H01_design_sample_sizes_and_boundaries_table.2"),
+        br(),br(),downloadButton('downloadDesignAD.2', 'Download AD design table as csv'),
+        br(),br(),downloadButton('downloadDesignFS.2', 'Download FS design table as csv'),
+        br(),br(),downloadButton('downloadDesignFC.2', 'Download FC design table as csv')),
   selected="Adaptive")
   ),
-    #HTML("<hr>"),
-    #em(strong("Performance comparisons")),
-    #br(), br(),
-  conditionalPanel(condition = "input.ComparisonCriterion == '1'",
+
+  conditionalPanel( condition = "input.OutputSelection == '3'",
     tabsetPanel(
-	tabPanel("Power", my_plotOutput("power_curve_plot"),
-    tableOutput("performance_table.1")),
-	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot"),
-    tableOutput("performance_table.2")),
-	tabPanel("Duration", my_plotOutput("expected_duration_plot"),
-    tableOutput("performance_table.3")),
-	tabPanel("Overruns", my_plotOutput("overruns"),
-    tableOutput("performance_table.4")),
-  tabPanel("About EAGLE", 
-    HTML(paste(readHelpTabHTML,collapse='')) ),
-  selected='About EAGLE'))
-  #,br(),textOutput('uploadTime'),textOutput('loadReset')
-  )
+    	tabPanel("Power", my_plotOutput("power_curve_plot")),
+    	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot")),
+    	tabPanel("Duration", my_plotOutput("expected_duration_plot")),
+    	tabPanel("Overruns", my_plotOutput("overruns")),
+      selected='Power'),
+    pbreak,
+    tableOutput("performance_table"),
+    downloadButton('downloadPerformance.1', 'Download as csv')
+  ),
+
+  br(),br() )
 ))

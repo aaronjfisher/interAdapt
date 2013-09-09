@@ -1,30 +1,42 @@
-#BUGS!
+  # ______ _   _ _____  _____ _ 
+  # | ___ \ | | |  __ \/  ___| |
+  # | |_/ / | | | |  \/\ `--.| |
+  # | ___ \ | | | | __  `--. \ |
+  # | |_/ / |_| | |_\ \/\__/ /_|
+  # \____/ \___/ \____/\____/(_)
+                              
+                              
 # Add Michael's Warnings
 # Add a checkbox to autoupdate new parameters, or a warning saying they're not yet applied.
 # Need to make sure the initialized image is set correctly. 
     # For beta testing it's just commented out to maintain consistency.
 
-#############################################
-#############################################
-# PREAMBLE
-#############################################
-#############################################
 
+  # ______                         _     _      
+  # | ___ \                       | |   | |     
+  # | |_/ / __ ___  __ _ _ __ ___ | |__ | | ___ 
+  # |  __/ '__/ _ \/ _` | '_ ` _ \| '_ \| |/ _ \
+  # | |  | | |  __/ (_| | | | | | | |_) | |  __/
+  # \_|  |_|  \___|\__,_|_| |_| |_|_.__/|_|\___|
+                                              
+                                              
+
+library(knitr)
 
 subH0 <- function(x){ #make a function that does the same thing as "strong()" but for <sub></sub>
-#finds all H0C and H0S terms and subs them!
+#finds all H0C and H01 terms and subs them!
   x <- strong(x)
   x <- gsub("<strong>", "", x)
   x <- gsub("</strong>", "", x)
   x <- gsub("H0C", "H<sub>0C</sub>", x)
-  x <- gsub("H0S", "H<sub>0S</sub>", x)
+  x <- gsub("H01", "H<sub>01</sub>", x)
   return(x)
 }
 
 #To be used in our xtable function!
-subH0sanitize<-function(x){
+subH01anitize<-function(x){
   x <- gsub("H0C", "H<sub>0C</sub>", x)
-  x <- gsub("H0S", "H<sub>0S</sub>", x)
+  x <- gsub("H01", "H<sub>01</sub>", x)
   return(x)
 }
 
@@ -34,6 +46,7 @@ cat("source'ing code...", file=stderr())
 
 #Get the csv file either online or locally
 getItOnline<-TRUE
+if(F){
 try({
   source("Adaptive_Group_Sequential_Design.R", local=TRUE)
   st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
@@ -41,14 +54,20 @@ try({
   getItOnline<-FALSE #if we haven't gotten an error yet!
   cat("found code locally...", file=stderr())
 },silent=TRUE)
+}
 try({
   if(getItOnline){
     library(devtools)
     library(RCurl)
     library(digest) #some reason this is a dependency not auto-loaded by devtools?
-    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
-    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
-    source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
+    gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/"
+    if(exists('appVersion')) {
+      if(appVersion=='stable'){
+        gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/"
+    }}
+    st<-read.csv(text=getURL(paste0(gitDir,"sliderTable.csv")),header=TRUE,as.is=TRUE)
+    bt<-read.csv(text=getURL(paste0(gitDir,"boxTable.csv")),header=TRUE,as.is=TRUE)
+    source_url(paste0(gitDir,"Adaptive_Group_Sequential_Design.R"))
     cat("found code online...", file=stderr())
   }
 },silent=TRUE)
@@ -98,11 +117,14 @@ for(i in 1:dim(bt)[1]){
 
 
 
-#############################################
-#############################################
-# END OF PREAMBLE
-#############################################
-#############################################
+  #  _____                          _____           _      
+  # /  ___|                        /  __ \         | |     
+  # \ `--.  ___ _ ____   _____ _ __| /  \/ ___   __| | ___ 
+  #  `--. \/ _ \ '__\ \ / / _ \ '__| |    / _ \ / _` |/ _ \
+  # /\__/ /  __/ |   \ V /  __/ |  | \__/\ (_) | (_| |  __/
+  # \____/ \___|_|    \_/ \___|_|   \____/\___/ \__,_|\___|
+                                                         
+                                                         
 
 
 
@@ -110,11 +132,15 @@ for(i in 1:dim(bt)[1]){
 shinyServer(function(input, output) {
 
 
-  #############################################
-  #############################################
+  ##########
+  # (_)     (_) | (_)     | (_)        
+  #  _ _ __  _| |_ _  __ _| |_ _______ 
+  # | | '_ \| | __| |/ _` | | |_  / _ \
+  # | | | | | | |_| | (_| | | |/ /  __/
+  # |_|_| |_|_|\__|_|\__,_|_|_/___\___|
+                                     
   # Initialize some static & reactive variables
-  #############################################
-  #############################################
+  ##########
 
 
   lastApplyValue <- -1
@@ -166,12 +192,14 @@ shinyServer(function(input, output) {
   effectivelyBatch<- reactive({input$Batch == "1" | input$Which_params != "1"})
 
 
-  #############################################
-  #############################################
-  # Warnings
-  #############################################
-  #############################################
-  output$warn1<-renderText({ #STILL NEED TO MAKE WORK!
+  #                          (_)                
+  # __      ____ _ _ __ _ __  _ _ __   __ _ ___ 
+  # \ \ /\ / / _` | '__| '_ \| | '_ \ / _` / __|
+  #  \ V  V / (_| | |  | | | | | | | | (_| \__ \
+  #   \_/\_/ \__,_|_|  |_| |_|_|_| |_|\__, |___/
+  #                                    __/ |    
+  #                                   |___/     
+  output$warn1<-renderText({
     x<-""
     if(input$Which_params!="1" & input$Batch=="2")x<-"Note: interactive mode not enabled for advanced parameters, defaulting to batch mode."
     x    
@@ -180,11 +208,12 @@ shinyServer(function(input, output) {
   
 
 
-  #############################################
-  #############################################
-  # LOADING DATA
-  #############################################
-  #############################################
+  #  _                     _  ______      _        
+  # | |                   | | |  _  \    | |       
+  # | |     ___   __ _  __| | | | | |__ _| |_ __ _ 
+  # | |    / _ \ / _` |/ _` | | | | / _` | __/ _` |
+  # | |___| (_) | (_| | (_| | | |/ / (_| | || (_| |
+  # \_____/\___/ \__,_|\__,_| |___/ \__,_|\__\__,_|
 
   #a reactive chunk to feed to the dynamicBoxes & dynamicSliders
   regenUpload<-reactive({
@@ -207,11 +236,12 @@ shinyServer(function(input, output) {
 
 
 
-  #############################################
-  #############################################
-  # SLIDERS & BOXES
-  #############################################
-  #############################################
+#      _ _     _                          _                        
+#     | (_)   | |                 ___    | |                       
+#  ___| |_  __| | ___ _ __ ___   ( _ )   | |__   _____  _____  ___ 
+# / __| | |/ _` |/ _ \ '__/ __|  / _ \/\ | '_ \ / _ \ \/ / _ \/ __|
+# \__ \ | | (_| |  __/ |  \__ \ | (_>  < | |_) | (_) >  <  __/\__ \
+# |___/_|_|\__,_|\___|_|  |___/  \___/\/ |_.__/ \___/_/\_\___||___/
 
 
   #NOTE - June 26: When sliders update, regen thinks it needs to be called again because sliders have updated values and you're now in interactive mode.
@@ -270,12 +300,12 @@ shinyServer(function(input, output) {
 
 
 
-  #############################################
-  #############################################
-  # REGEN
-  #############################################
-  #############################################
-
+# ______ _____ _____  _____ _   _ 
+# | ___ \  ___|  __ \|  ___| \ | |
+# | |_/ / |__ | |  \/| |__ |  \| |
+# |    /|  __|| | __ |  __|| . ` |
+# | |\ \| |___| |_\ \| |___| |\  |
+# \_| \_\____/ \____/\____/\_| \_/
 
   # In interactive mode, we re-export the parameters and rebuild table1
   # every time.  In batch, only on the first call for a given push of the
@@ -331,12 +361,13 @@ shinyServer(function(input, output) {
 
 
 
-  #############################################
-  #############################################
-  # PLOTS
-  #############################################
-  #############################################
-
+  # ______ _       _       
+  # | ___ \ |     | |      
+  # | |_/ / | ___ | |_ ___ 
+  # |  __/| |/ _ \| __/ __|
+  # | |   | | (_) | |_\__ \
+  # \_|   |_|\___/ \__|___/
+                         
 
   
   table1 <<- table_constructor() #temporary fix -- moving this initializer down to just before it's called, to make sure all the settings are adjusted right.
@@ -374,19 +405,19 @@ shinyServer(function(input, output) {
 
   #############
   #Boundary Plots
-  output$fixed_HOC_boundary_plot<-renderPlot({
+  output$fixed_H0C_boundary_plot <-renderPlot({
     regen()
     print('H0C Boundary Plot')
-    boundary_fixed_HOC_plot()
+    boundary_fixed_H0C_plot()
   })
 
-  output$fixed_HOS_boundary_plot<-renderPlot({
+  output$fixed_H01_boundary_plot <-renderPlot({
     regen()
-    print('H0S Boundary Plot')
-    boundary_fixed_HOS_plot()
+    print('H01 Boundary Plot')
+    boundary_fixed_H01_plot()
   })
 
-  output$adapt_boundary_plot<-renderPlot({
+  output$adapt_boundary_plot <-renderPlot({
     regen()
     print('H0C Boundary Plot')
     boundary_adapt_plot()
@@ -396,11 +427,15 @@ shinyServer(function(input, output) {
 
 
 
-  #############################################
-  #############################################
+  #  _____     _     _           
+  # |_   _|   | |   | |          
+  #   | | __ _| |__ | | ___  ___ 
+  #   | |/ _` | '_ \| |/ _ \/ __|
+  #   | | (_| | |_) | |  __/\__ \
+  #   \_/\__,_|_.__/|_|\___||___/
   # TABLES (& new xtable/renderTable functions)
-  #############################################
-  #############################################
+  #####
+
 
 # HJ - x must be a list of length 3, with a digits and caption
 xtable <- function(x) {
@@ -422,14 +457,14 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
         if (is.null(data) || identical(data, data.frame())) 
             return("")
         return(paste(capture.output(print(xtable(data, ...), include.colnames=include.colnames, 
-            type = "html",sanitize.text.function=subH0sanitize,
+            type = "html",sanitize.text.function=subH01anitize,
             html.table.attributes = paste("class=\"", 
                 #htmlEscape(classNames, TRUE), "\"", sep = ""), 
                 shiny:::htmlEscape(classNames, TRUE), "\"", sep = ""), 
             ...)), collapse = "\n"))
     }
 }
-
+  
   output$adaptive_design_sample_sizes_and_boundaries_table.2 <-
   output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable({    
 	regen()
@@ -440,21 +475,18 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   output$fixed_H0C_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
 	regen()
-  print('HOC table')
+  print('H0C table')
 	fixed_H0C_design_sample_sizes_and_boundaries_table()
   })
 
-  output$fixed_H0S_design_sample_sizes_and_boundaries_table.2 <-
-  output$fixed_H0S_design_sample_sizes_and_boundaries_table <-renderTable({
+  output$fixed_H01_design_sample_sizes_and_boundaries_table.2 <-
+  output$fixed_H01_design_sample_sizes_and_boundaries_table <-renderTable({
 	regen()
-  print('HOS table')
-	fixed_H0S_design_sample_sizes_and_boundaries_table()
+  print('H01 table')
+	fixed_H01_design_sample_sizes_and_boundaries_table()
   })
 
-  output$performance_table.1<-
-  output$performance_table.2<-
-  output$performance_table.3<-
-  output$performance_table.4<- renderTable(expr={
+  output$performance_table <- renderTable(expr={
 	regen()
   print('perf table')
 	transpose_performance_table(performance_table())
@@ -465,21 +497,111 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 
 
 
-  #############################################
-  #############################################
-  #SAVE DATA
-  #############################################
-  #############################################
-  output$downloadData <- downloadHandler(
-    filename =  'inputs.csv',
+  #                            _       _        
+  #                           | |     | |       
+  #  ___  __ ___   _____    __| | __ _| |_ __ _ 
+  # / __|/ _` \ \ / / _ \  / _` |/ _` | __/ _` |
+  # \__ \ (_| |\ V /  __/ | (_| | (_| | || (_| |
+  # |___/\__,_| \_/ \___|  \__,_|\__,_|\__\__,_|
+
+  output$downloadInputs <- downloadHandler(
+    filename =  paste0('inputs_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
-    content = function(file) {
-      pdf('test.pdf')#inputCsv<-rep(NA,length=length(allVarNames))
-      #for(i in 1:length(allVarNames)) inputCsv[i]<- input[[ allVarNames[i] ]]
-      #write.table(inputCsv, file, row.names=allVarLabels, col.names=FALSE, sep=',')
-      plot(0,0)
-      dev.off()
+    content = function(filename) {
+      inputCsv<-rep(NA,length=length(allVarNames))
+      for(i in 1:length(allVarNames)) inputCsv[i]<- input[[ allVarNames[i] ]]
+      write.table(inputCsv, filename, row.names=allVarLabels, col.names=FALSE, sep=',')
     }
   )
+
+  output$knitr <- downloadHandler(
+    filename =  'report.html',
+    contentType =  'text/html',
+    content = function(filename) {
+      #can't say "if (file.exists(filename)) file.remove(filename)" because this would open the door to hacking?
+      if (file.exists('knitr_report.html')) file.remove('knitr_report.html')
+      if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
+      htmlKnitted<-knit2html('knitr_report.Rmd')
+      if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
+      x<-readLines(con=htmlKnitted)
+      writeLines(x,con=filename)
+      # file.rename('knitr_report.html', filename)
+
+    }
+  )
+
+  roundTable<-function(tab,digits){
+    newTab<-array(0,dim=dim(tab))
+    for(i in 1:dim(tab)[1]){
+      for(j in 1:dim(tab)[2]){
+        newTab[i,j]<-round(tab[i,j],digits=digits[i,j])
+      }
+    }
+    rownames(newTab)<-rownames(tab)
+    return(newTab)
+  }
+
+  designTable2csv<-function(t1,filename){
+      K<-dim(t1[[1]])[2]
+      designsCsv<-rbind( 
+        'labeltext'=rep(NA,K),
+        'Stage'=1:K,
+        roundTable(tab=t1[[1]],digits=t1[[2]][,-1])
+      )
+      rownames(designsCsv)[1]<-t1[[3]]
+      write.table(designsCsv, filename, row.names=TRUE, col.names=FALSE, sep=',')
+
+  }
+
+
+  #Look good, but double check these files below in the future.
+  
+  output$downloadDesignAD.1<-
+  output$downloadDesignAD.2 <- downloadHandler(
+    filename =  paste0('DesignAD_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+    contentType =  'text/csv',
+    content = function(filename) {
+      t1<-adaptive_design_sample_sizes_and_boundaries_table()
+      designTable2csv(t1,filename)
+    }
+  )
+  output$downloadDesignFC.1<-
+  output$downloadDesignFC.2<- downloadHandler(
+    filename =  paste0('DesignFC_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+    contentType =  'text/csv',
+    content = function(filename) {
+      t1<-fixed_H0C_design_sample_sizes_and_boundaries_table()
+      designTable2csv(t1,filename)
+    }
+  )
+  output$downloadDesignFS.1<-
+  output$downloadDesignFS.2 <- downloadHandler(
+    filename =  paste0('DesignFS_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+    contentType =  'text/csv',
+    content = function(filename) {
+      t1<-fixed_H01_design_sample_sizes_and_boundaries_table()
+      designTable2csv(t1,filename)
+    }
+  )
+
+  output$downloadPerformance.1<-
+  output$downloadPerformance.2<-
+  output$downloadPerformance.3<-
+  output$downloadPerformance.4<- downloadHandler(
+    filename =  paste0('Performance_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+    contentType =  'text/csv',
+    content = function(filename) {
+      t1<-transpose_performance_table(performance_table())
+      perfCsv<-rbind(
+        'labeltext'=NA,
+        round(t1[[1]],digits=max(t1[[2]]))#NOT SURE WHY ROUND ISN"T WORKING WELL IF WE PUT IN THE MATRIX???
+      )
+      rownames(perfCsv)[1]<-t1[[3]]
+      write.table(perfCsv, filename, row.names=TRUE, col.names=FALSE, sep=',')
+    }
+  )
+
+
+
 
 })
