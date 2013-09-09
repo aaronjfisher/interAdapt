@@ -1,5 +1,4 @@
 EAGLE.1
 Sept 2013
 
-This file is read by readLines
-Only the first line is used to check the version number
+Only the first line of this file is used to check the version number
