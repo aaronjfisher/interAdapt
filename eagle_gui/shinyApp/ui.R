@@ -165,8 +165,6 @@ shinyUI(pageWithSidebar(
 
         #SAVE & LOAD
         conditionalPanel(condition="input.Which_params == '3'",
-            strong('Create an html report:'),br(),
-            downloadButton('knitr', 'Generate Report'), br(),
             br(),
             strong('Save current parameters to file:'),br(),
             downloadButton('downloadInputs', 'Save Inputs'),
@@ -294,8 +292,11 @@ shinyUI(pageWithSidebar(
       selected='Power'),
     pbreak,
     tableOutput("performance_table"),
-    downloadButton('downloadPerformance.1', 'Download as csv')
+    downloadButton('downloadPerformance.1', 'Download table as csv')
   ),
-
+  conditionalPanel(condition = "input.OutputSelection != '1'",
+    br(),
+    downloadButton('knitr', 'Generate report')
+  ),
   br(),br() )
 ))
