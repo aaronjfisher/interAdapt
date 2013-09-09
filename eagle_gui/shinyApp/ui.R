@@ -58,7 +58,7 @@ try({
     library(digest) #some reason this is a dependency not auto-loaded by devtools?
     library(stringr)
     gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/"
-    if(exists(appVersion)) {
+    if(exists('appVersion')) {
       if(appVersion=='stable'){
         gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/"
     }}
