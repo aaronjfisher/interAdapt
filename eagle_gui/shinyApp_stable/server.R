@@ -46,7 +46,6 @@ cat("source'ing code...", file=stderr())
 
 #Get the csv file either online or locally
 getItOnline<-TRUE
-if(F){
 try({
   source("Adaptive_Group_Sequential_Design.R", local=TRUE)
   st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
@@ -54,7 +53,6 @@ try({
   getItOnline<-FALSE #if we haven't gotten an error yet!
   cat("found code locally...", file=stderr())
 },silent=TRUE)
-}
 try({
   if(getItOnline){
     library(devtools)
@@ -68,6 +66,8 @@ try({
     st<-read.csv(text=getURL(paste0(gitDir,"sliderTable.csv")),header=TRUE,as.is=TRUE)
     bt<-read.csv(text=getURL(paste0(gitDir,"boxTable.csv")),header=TRUE,as.is=TRUE)
     source_url(paste0(gitDir,"Adaptive_Group_Sequential_Design.R"))
+    knitrRmd<-readLines(textConnection(getURL(paste0(gitDir,"knitr_report.Rmd"))))#download.file won't work, so hack some other stuff for now
+    writeLines(knitrRmd,"knitr_report.Rmd")
     cat("found code online...", file=stderr())
   }
 },silent=TRUE)

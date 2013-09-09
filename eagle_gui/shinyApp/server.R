@@ -66,6 +66,8 @@ try({
     st<-read.csv(text=getURL(paste0(gitDir,"sliderTable.csv")),header=TRUE,as.is=TRUE)
     bt<-read.csv(text=getURL(paste0(gitDir,"boxTable.csv")),header=TRUE,as.is=TRUE)
     source_url(paste0(gitDir,"Adaptive_Group_Sequential_Design.R"))
+    knitrRmd<-readLines(textConnection(getURL(paste0(gitDir,"knitr_report.Rmd"))))#download.file won't work, so hack some other stuff for now
+    writeLines(knitrRmd,"knitr_report.Rmd")
     cat("found code online...", file=stderr())
   }
 },silent=TRUE)

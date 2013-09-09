@@ -22,7 +22,6 @@ pbreak<-HTML('<P CLASS=breakhere>')
 
 #Get the csv file either online or locally
 getItOnline<-TRUE
-if(FALSE){
 try({
   source("Adaptive_Group_Sequential_Design.R", local=TRUE)
   st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
@@ -51,7 +50,6 @@ try({
   getItOnline<-FALSE #if we haven't gotten an error yet!
 
 },silent=TRUE)
-}
 try({
   if(getItOnline){
 
