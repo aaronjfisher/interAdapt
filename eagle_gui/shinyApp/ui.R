@@ -57,10 +57,15 @@ try({
     library(RCurl)
     library(digest) #some reason this is a dependency not auto-loaded by devtools?
     library(stringr)
-    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
-    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
-    source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
-    readHelpTabRaw <-getURL('https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/help_tab.html')
+    gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/"
+    if(exists(appVersion)) {
+      if(appVersion=='stable'){
+        gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/"
+    }}
+    st<-read.csv(text=getURL(paste0(gitDir,"sliderTable.csv")),header=TRUE,as.is=TRUE)
+    bt<-read.csv(text=getURL(paste0(gitDir,"boxTable.csv")),header=TRUE,as.is=TRUE)
+    source_url(paste0(gitDir,"Adaptive_Group_Sequential_Design.R"))
+    readHelpTabRaw <-getURL(paste0(gitDir,"help_tab.html"))
     readHelpTabHTML<-str_replace_all(readHelpTabRaw,'\n','')
 
     #################
@@ -264,16 +269,16 @@ shinyUI(pageWithSidebar(
     		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table"),
         downloadButton('downloadDesignFC.1', 'Download table as csv'),br()) ,
     	tabPanel("Fixed, Subpop. 1 only",
-    		my_plotOutput("fixed_H0S_boundary_plot"),
+    		my_plotOutput("fixed_H01_boundary_plot"),
         br(),pbreak,
-        tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table"),
+        tableOutput("fixed_H01_design_sample_sizes_and_boundaries_table"),
         downloadButton('downloadDesignFS.1', 'Download table as csv'),br()),
     	tabPanel("All designs",
     		tableOutput("adaptive_design_sample_sizes_and_boundaries_table.2"),
         pbreak,
     		tableOutput("fixed_H0C_design_sample_sizes_and_boundaries_table.2"),
         pbreak,
-        tableOutput("fixed_H0S_design_sample_sizes_and_boundaries_table.2"),
+        tableOutput("fixed_H01_design_sample_sizes_and_boundaries_table.2"),
         br(),br(),downloadButton('downloadDesignAD.2', 'Download AD design table as csv'),
         br(),br(),downloadButton('downloadDesignFS.2', 'Download FS design table as csv'),
         br(),br(),downloadButton('downloadDesignFC.2', 'Download FC design table as csv')),

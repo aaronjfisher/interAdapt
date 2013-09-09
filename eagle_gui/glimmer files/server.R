@@ -21,4 +21,6 @@ library(digest)
 library(RCurl)
 library(devtools)
 
+appVersion<-'stable' #on spark, 'beta' in glimmer
+
 source_url('https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/server.R')

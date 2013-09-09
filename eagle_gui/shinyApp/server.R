@@ -24,19 +24,19 @@
 library(knitr)
 
 subH0 <- function(x){ #make a function that does the same thing as "strong()" but for <sub></sub>
-#finds all H0C and H0S terms and subs them!
+#finds all H0C and H01 terms and subs them!
   x <- strong(x)
   x <- gsub("<strong>", "", x)
   x <- gsub("</strong>", "", x)
   x <- gsub("H0C", "H<sub>0C</sub>", x)
-  x <- gsub("H0S", "H<sub>0S</sub>", x)
+  x <- gsub("H01", "H<sub>01</sub>", x)
   return(x)
 }
 
 #To be used in our xtable function!
-subH0sanitize<-function(x){
+subH01anitize<-function(x){
   x <- gsub("H0C", "H<sub>0C</sub>", x)
-  x <- gsub("H0S", "H<sub>0S</sub>", x)
+  x <- gsub("H01", "H<sub>01</sub>", x)
   return(x)
 }
 
@@ -58,9 +58,14 @@ try({
     library(devtools)
     library(RCurl)
     library(digest) #some reason this is a dependency not auto-loaded by devtools?
-    st<-read.csv(text= getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/sliderTable.csv"),header=TRUE,as.is=TRUE)
-    bt<-read.csv(text=getURL("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/boxTable.csv"),header=TRUE,as.is=TRUE)
-    source_url("https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R")
+    gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/"
+    if(exists(appVersion)) {
+      if(appVersion=='stable'){
+        gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/"
+    }}
+    st<-read.csv(text=getURL(paste0(gitDir,"sliderTable.csv")),header=TRUE,as.is=TRUE)
+    bt<-read.csv(text=getURL(paste0(gitDir,"boxTable.csv")),header=TRUE,as.is=TRUE)
+    source_url(paste0(gitDir,"Adaptive_Group_Sequential_Design.R"))
     cat("found code online...", file=stderr())
   }
 },silent=TRUE)
@@ -404,10 +409,10 @@ shinyServer(function(input, output) {
     boundary_fixed_H0C_plot()
   })
 
-  output$fixed_H0S_boundary_plot <-renderPlot({
+  output$fixed_H01_boundary_plot <-renderPlot({
     regen()
-    print('H0S Boundary Plot')
-    boundary_fixed_H0S_plot()
+    print('H01 Boundary Plot')
+    boundary_fixed_H01_plot()
   })
 
   output$adapt_boundary_plot <-renderPlot({
@@ -450,7 +455,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
         if (is.null(data) || identical(data, data.frame())) 
             return("")
         return(paste(capture.output(print(xtable(data, ...), include.colnames=include.colnames, 
-            type = "html",sanitize.text.function=subH0sanitize,
+            type = "html",sanitize.text.function=subH01anitize,
             html.table.attributes = paste("class=\"", 
                 #htmlEscape(classNames, TRUE), "\"", sep = ""), 
                 shiny:::htmlEscape(classNames, TRUE), "\"", sep = ""), 
@@ -472,11 +477,11 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 	fixed_H0C_design_sample_sizes_and_boundaries_table()
   })
 
-  output$fixed_H0S_design_sample_sizes_and_boundaries_table.2 <-
-  output$fixed_H0S_design_sample_sizes_and_boundaries_table <-renderTable({
+  output$fixed_H01_design_sample_sizes_and_boundaries_table.2 <-
+  output$fixed_H01_design_sample_sizes_and_boundaries_table <-renderTable({
 	regen()
-  print('H0S table')
-	fixed_H0S_design_sample_sizes_and_boundaries_table()
+  print('H01 table')
+	fixed_H01_design_sample_sizes_and_boundaries_table()
   })
 
   output$performance_table <- renderTable(expr={
@@ -572,7 +577,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     filename =  paste0('DesignFS_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
     content = function(filename) {
-      t1<-fixed_H0S_design_sample_sizes_and_boundaries_table()
+      t1<-fixed_H01_design_sample_sizes_and_boundaries_table()
       designTable2csv(t1,filename)
     }
   )

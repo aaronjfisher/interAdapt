@@ -59,10 +59,10 @@ pxtablek(fixed_H0C_design_sample_sizes_and_boundaries_table())
 ```
 *******
 ```{r}
-boundary_fixed_H0S_plot()
+boundary_fixed_H01_plot()
 ```
 ```{r}
-pxtablek(fixed_H0S_design_sample_sizes_and_boundaries_table())
+pxtablek(fixed_H01_design_sample_sizes_and_boundaries_table())
 ```
 *******
 
