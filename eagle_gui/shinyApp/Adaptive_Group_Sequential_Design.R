@@ -66,15 +66,15 @@ upper_bound_treatment_effect_subpop_2 <- (0.2)
 last_stage_subpop_2_enrolled_adaptive_design <- 4  #(Range: 1 to total_number_stages, which was defined above; if that's hard to set up, then set max at 20)
 ## Futility boundary proportionality constant for H0C (z-statistic scale)
 H0C_futility_boundary_proportionality_constant_adaptive_design <- 0 #(Range: -10 to 10)
-## Futility boundary proportionality constant for H0S (z-statistic scale)
-H0S_futility_boundary_proportionality_constant_adaptive_design <- 0 #(Range: -10 to 10)
+## Futility boundary proportionality constant for H01 (z-statistic scale)
+H01_futility_boundary_proportionality_constant_adaptive_design <- 0 #(Range: -10 to 10)
 
 ## Fixed design for combined population:<please make this a section of input boxes>
 ## Futility boundary proportionality constant (z-statistic scale)
 H0C_futility_boundary_proportionality_constant_fixed_design <- -0.1 #(Range: -10 to 10)
 
 ## Fixed design for subpopulation 1 only:<please make this a section of input boxes>
-H0S_futility_boundary_proportionality_constant_fixed_design <- -0.1 ##(Range: -10 to 10)
+H01_futility_boundary_proportionality_constant_fixed_design <- -0.1 ##(Range: -10 to 10)
 
 
 
@@ -83,26 +83,26 @@ H0S_futility_boundary_proportionality_constant_fixed_design <- -0.1 ##(Range: -1
 ### List of global variables not accessible by user; I initilize these as functions of above variables, but they are updated everytime table_constructor is called
 
 per_stage_sample_size_combined_fixed_design_H0C <- 90 #(Range: 0 to 1000)
-per_stage_sample_size_combined_fixed_design_H0S <- 106 #(Range: 0 to 1000)
+per_stage_sample_size_combined_fixed_design_H01 <- 106 #(Range: 0 to 1000)
 
 H0C_efficacy_boundary_proportionality_constant_fixed_design <- 2.04
-H0S_efficacy_boundary_proportionality_constant_fixed_design <- 2.04
+H01_efficacy_boundary_proportionality_constant_fixed_design <- 2.04
 H0C_efficacy_boundary_proportionality_constant_adaptive_design <- 2.54
-H0S_efficacy_boundary_proportionality_constant_adaptive_design <- 2.12
+H01_efficacy_boundary_proportionality_constant_adaptive_design <- 2.12
 
 risk_difference_list <- seq(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,length=7)
 
 
 combined_pop_futility_boundaries_adaptive_design <- c(rep(H0C_futility_boundary_proportionality_constant_adaptive_design,last_stage_subpop_2_enrolled_adaptive_design-1),rep(-Inf,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design+1))
-subpop_1_futility_boundaries_adaptive_design <-c(H0S_futility_boundary_proportionality_constant_adaptive_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),-Inf)
+subpop_1_futility_boundaries_adaptive_design <-c(H01_futility_boundary_proportionality_constant_adaptive_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),-Inf)
 
 subpop_2_futility_cutoff <- (-Inf)
 
 combined_pop_futility_boundaries_fixed_design_H0C <-c(H0C_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),-Inf)
 subpop_1_futility_boundaries_fixed_design_H0C <-c(rep(Inf,total_number_stages-1),-Inf)
 
-combined_pop_futility_boundaries_fixed_design_H0S <-c(H0S_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),-Inf)
-subpop_1_futility_boundaries_fixed_design_H0S <-c(rep(Inf,total_number_stages-1),-Inf)
+combined_pop_futility_boundaries_fixed_design_H01 <-c(H01_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),-Inf)
+subpop_1_futility_boundaries_fixed_design_H01 <-c(rep(Inf,total_number_stages-1),-Inf)
 
 
 # function to compute power (or Type I error) for given design vector (n1,n2,b_C,b_S) and data generating distribution;
@@ -238,13 +238,13 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 	
 ## Determine outcomes of each simulated trial
         
-	# record if efficacy boundary ever crossed, for each of H0C and H0S:
+	# record if efficacy boundary ever crossed, for each of H0C and H01:
 	reversal_at_first_cross_H0C_efficacy_boundary_at_or_before_stage_k <- rep(0,iter)
-	reversal_at_first_cross_H0S_efficacy_boundary_at_or_after_stage_k <- rep(0,iter)
+	reversal_at_first_cross_H01_efficacy_boundary_at_or_after_stage_k <- rep(0,iter)
         ever_cross_H0C_efficacy_boundary_at_or_before_stage_k <- rep(0,iter)
-	ever_cross_H0S_efficacy_boundary <- rep(0,iter)
+	ever_cross_H01_efficacy_boundary <- rep(0,iter)
 	#ever_cross_H0C_futility_boundary <- rep(0,iter)
-	#ever_cross_H0S_futility_boundary <- rep(0,iter)
+	#ever_cross_H01_futility_boundary <- rep(0,iter)
 	# record stage at which enrollment stopped, for different populations:
 	subpop_2_stopped <- rep(0,iter)
 	#stopped_subpop_2_previously <- rep(0,iter)
@@ -252,12 +252,12 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 	# record stage (if any) at which null hypothesis rejected for efficacy:
 	reject_H0C <- rep(0,iter)
         reject_H0C_for_first_time <- rep(0,iter)
-	reject_H0S_via_step_1 <- rep(0,iter)
-        reject_H0S_via_step_2 <- rep(0,iter)
-	reject_H0S_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries <- rep(0,iter)
+	reject_H01_via_step_1 <- rep(0,iter)
+        reject_H01_via_step_2 <- rep(0,iter)
+	reject_H01_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries <- rep(0,iter)
 	H0C_reversal_due_to_pipeline <- rep(0,iter)
-	H0S_via_step1_reversal_due_to_pipeline <- rep(0,iter)
-	H0S_via_step2_reversal_due_to_pipeline <- rep(0,iter)
+	H01_via_step1_reversal_due_to_pipeline <- rep(0,iter)
+	H01_via_step2_reversal_due_to_pipeline <- rep(0,iter)
 	# record stage (just) after which trial stops
 	#final_stage <- rep(total_number_stages,iter)
 	# record stage (just) after which large IVH enrollment stops
@@ -268,29 +268,29 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 	for(stage in 1:total_number_stages)
 	{
           	reversal_at_first_cross_H0C_efficacy_boundary_at_or_before_stage_k <- ifelse((stage <= k) & (!ever_cross_H0C_efficacy_boundary_at_or_before_stage_k) & Z_mixture_cumulative[stage,]>mixture_efficacy_boundaries[stage] & Z_mixture_cumulative_including_pipeline[stage,]<mixture_efficacy_boundaries_pipeline[stage],1,reversal_at_first_cross_H0C_efficacy_boundary_at_or_before_stage_k)
-		reversal_at_first_cross_H0S_efficacy_boundary_at_or_after_stage_k<- ifelse((stage >= k) & (!ever_cross_H0S_efficacy_boundary) & Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,] <subpop_1_efficacy_boundaries_pipeline[stage],1,reversal_at_first_cross_H0S_efficacy_boundary_at_or_after_stage_k)
+		reversal_at_first_cross_H01_efficacy_boundary_at_or_after_stage_k<- ifelse((stage >= k) & (!ever_cross_H01_efficacy_boundary) & Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,] <subpop_1_efficacy_boundaries_pipeline[stage],1,reversal_at_first_cross_H01_efficacy_boundary_at_or_after_stage_k)
 		ever_cross_H0C_efficacy_boundary_at_or_before_stage_k <- ifelse((stage <= k) & Z_mixture_cumulative[stage,]>mixture_efficacy_boundaries[stage] & Z_mixture_cumulative_including_pipeline[stage,]>mixture_efficacy_boundaries_pipeline[stage],1,ever_cross_H0C_efficacy_boundary_at_or_before_stage_k)
-		ever_cross_H0S_efficacy_boundary <- ifelse(Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,] >subpop_1_efficacy_boundaries_pipeline[stage],1,ever_cross_H0S_efficacy_boundary)
+		ever_cross_H01_efficacy_boundary <- ifelse(Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,] >subpop_1_efficacy_boundaries_pipeline[stage],1,ever_cross_H01_efficacy_boundary)
 		#ever_cross_H0C_futility_boundary <- ifelse(Z_mixture_cumulative[stage,]< (- combined_pop_futility_boundaries[stage]),1,ever_cross_H0C_futility_boundary)
-		#ever_cross_H0S_futility_boundary <- ifelse(Z_subpop_1_cumulative[stage,]< (-subpop_1_futility_boundaries[stage]),1,ever_cross_H0S_efficacy_boundary)
+		#ever_cross_H01_futility_boundary <- ifelse(Z_subpop_1_cumulative[stage,]< (-subpop_1_futility_boundaries[stage]),1,ever_cross_H01_efficacy_boundary)
 
 		# Step 1 of algorithm: Determine if any new events where H0C rejected for efficacy:
 		reject_H0C_for_first_time <- ifelse((!all_stopped) & (!subpop_2_stopped) & Z_mixture_cumulative[stage,]>mixture_efficacy_boundaries[stage],1,0)
 		H0C_reversal_due_to_pipeline <- ifelse(reject_H0C_for_first_time & Z_mixture_cumulative_including_pipeline[stage,]<mixture_efficacy_boundaries_pipeline[stage],1,H0C_reversal_due_to_pipeline)
         reject_H0C <- ifelse(reject_H0C_for_first_time,1,reject_H0C)
-        reject_H0S_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries <- ifelse(reject_H0C_for_first_time & Z_subpop_1_cumulative[stage,] > OBrienFleming_boundaries[stage],1,reject_H0S_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries) ## for use in fixed sequence, fixed mixture design only, to conform to Fixed Sequence procedure as in supp materials of Liu and Anderson       
-        reject_H0S_via_step_1 <- ifelse(reject_H0C_for_first_time & Z_subpop_1_cumulative[stage,] > subpop_1_efficacy_boundaries[stage],1,reject_H0S_via_step_1)
-        H0S_via_step1_reversal_due_to_pipeline <- ifelse(reject_H0C_for_first_time & Z_subpop_1_cumulative[stage,] > subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,] < subpop_1_efficacy_boundaries_pipeline[stage],1,H0S_via_step1_reversal_due_to_pipeline)
+        reject_H01_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries <- ifelse(reject_H0C_for_first_time & Z_subpop_1_cumulative[stage,] > OBrienFleming_boundaries[stage],1,reject_H01_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries) ## for use in fixed sequence, fixed mixture design only, to conform to Fixed Sequence procedure as in supp materials of Liu and Anderson       
+        reject_H01_via_step_1 <- ifelse(reject_H0C_for_first_time & Z_subpop_1_cumulative[stage,] > subpop_1_efficacy_boundaries[stage],1,reject_H01_via_step_1)
+        H01_via_step1_reversal_due_to_pipeline <- ifelse(reject_H0C_for_first_time & Z_subpop_1_cumulative[stage,] > subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,] < subpop_1_efficacy_boundaries_pipeline[stage],1,H01_via_step1_reversal_due_to_pipeline)
 
         all_stopped <- ifelse(reject_H0C_for_first_time,1,all_stopped)
         subpop_2_stopped <- ifelse(reject_H0C_for_first_time,1,subpop_2_stopped)
         # Step 2 of algorithm: Determine if stop large IVH for futility
         subpop_2_stopped <- ifelse((!reject_H0C) & Z_mixture_cumulative[stage,] < (-combined_pop_futility_boundaries[stage]),1,subpop_2_stopped)
-        ## if only large IVH stopped, but small IVH enrollment went on, then check H0S for efficacy and then futility:
-		reject_H0S_via_step_2 <- ifelse((!all_stopped) & subpop_2_stopped & Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage],1,reject_H0S_via_step_2)
-		H0S_via_step2_reversal_due_to_pipeline <- ifelse((!all_stopped) & subpop_2_stopped & Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,]< subpop_1_efficacy_boundaries_pipeline[stage],1,H0S_via_step2_reversal_due_to_pipeline)
+        ## if only large IVH stopped, but small IVH enrollment went on, then check H01 for efficacy and then futility:
+		reject_H01_via_step_2 <- ifelse((!all_stopped) & subpop_2_stopped & Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage],1,reject_H01_via_step_2)
+		H01_via_step2_reversal_due_to_pipeline <- ifelse((!all_stopped) & subpop_2_stopped & Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,]< subpop_1_efficacy_boundaries_pipeline[stage],1,H01_via_step2_reversal_due_to_pipeline)
 		
-        all_stopped <- ifelse((!all_stopped) & subpop_2_stopped & (reject_H0S_via_step_2 | Z_subpop_1_cumulative[stage,]< (-subpop_1_futility_boundaries[stage])),1,all_stopped)
+        all_stopped <- ifelse((!all_stopped) & subpop_2_stopped & (reject_H01_via_step_2 | Z_subpop_1_cumulative[stage,]< (-subpop_1_futility_boundaries[stage])),1,all_stopped)
 
         # record at what stage each subpop. stopped
 		final_stage_C_enrolled_up_through <- ifelse(final_stage_C_enrolled_up_through==total_number_stages & subpop_2_stopped==1,stage,final_stage_C_enrolled_up_through)
@@ -298,7 +298,7 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 
 		## Rejected hypotheses factoring in pipeline patient outcomes
 
-		# final_stage <- ifelse(final_stage==total_number_stages & (ever_cross_H0C_efficacy_boundary | ever_cross_H0S_efficacy_boundary |  all_stopped),stage,final_stage) # ??		
+		# final_stage <- ifelse(final_stage==total_number_stages & (ever_cross_H0C_efficacy_boundary | ever_cross_H01_efficacy_boundary |  all_stopped),stage,final_stage) # ??		
 	}
 
 	# compute each trial's duration:
@@ -315,11 +315,11 @@ duration <- cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]/enrollm
 return(c(
 #### For adaptive designs
 mean(reject_H0C & (!H0C_reversal_due_to_pipeline)), # power to reject H0C
-mean((reject_H0S_via_step_1 & (!H0S_via_step1_reversal_due_to_pipeline)) | (reject_H0S_via_step_2 & (!H0S_via_step2_reversal_due_to_pipeline))), # power to reject H0S
-mean((ever_cross_H0C_efficacy_boundary_at_or_before_stage_k & (!reversal_at_first_cross_H0C_efficacy_boundary_at_or_before_stage_k)) | (ever_cross_H0S_efficacy_boundary & (!reversal_at_first_cross_H0S_efficacy_boundary_at_or_after_stage_k))), # Worst-case Type I error (assuming no futility stopping at all)
+mean((reject_H01_via_step_1 & (!H01_via_step1_reversal_due_to_pipeline)) | (reject_H01_via_step_2 & (!H01_via_step2_reversal_due_to_pipeline))), # power to reject H01
+mean((ever_cross_H0C_efficacy_boundary_at_or_before_stage_k & (!reversal_at_first_cross_H0C_efficacy_boundary_at_or_before_stage_k)) | (ever_cross_H01_efficacy_boundary & (!reversal_at_first_cross_H01_efficacy_boundary_at_or_after_stage_k))), # Worst-case Type I error (assuming no futility stopping at all)
 mean(cum_sample_sizes_mixture[final_stage_C_enrolled_up_through]-cum_sample_sizes_subpop_1[final_stage_C_enrolled_up_through]+cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]), #mean sample size under adaptive design
 mean(pmax((cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through]+pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],enrollment_rate_subpop_2*delay_from_enrollment_to_primary_outcome))/enrollment_rate_subpop_2,(cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]+pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through],enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome))/enrollment_rate_subpop_1))+delay_from_enrollment_to_primary_outcome, ## max of duration corresponding to each subpopulation, including pipeline patients
-mean((reject_H0C & (!H0C_reversal_due_to_pipeline)) | (reject_H0S_via_step_1 & (!H0S_via_step1_reversal_due_to_pipeline)) | (reject_H0S_via_step_2 & (!H0S_via_step2_reversal_due_to_pipeline))), # reject at least one null hypothesis for efficacy
+mean((reject_H0C & (!H0C_reversal_due_to_pipeline)) | (reject_H01_via_step_1 & (!H01_via_step1_reversal_due_to_pipeline)) | (reject_H01_via_step_2 & (!H01_via_step2_reversal_due_to_pipeline))), # reject at least one null hypothesis for efficacy
 mean(pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],enrollment_rate_subpop_2*delay_from_enrollment_to_primary_outcome)+
      pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through],enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome)), # avg. sample size in pipeline in adaptive design
 #mean(as.numeric(combined_pop_futility_boundaries[final_stage_C]!=(-Inf))*((1-p1)/p1)*(enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome) + as.numeric(subpop_1_futility_boundaries[final_stage_S]!=(-Inf))*enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome),# avg. recruited subjects in pipeline in adaptive design
@@ -329,12 +329,12 @@ mean(cum_sample_sizes_mixture[final_stage_C_enrolled_up_through])/enrollment_rat
 +mean(pmin(cum_sample_sizes_mixture[total_number_stages]-cum_sample_sizes_mixture[final_stage_C_enrolled_up_through],(enrollment_rate_combined_population)*delay_from_enrollment_to_primary_outcome))/(enrollment_rate_combined_population), # extra duration due to pipeline patients completing
 mean(cum_sample_sizes_mixture[final_stage_C_enrolled_up_through]), # mean sample size (not including pipeline patients)
 mean(pmin(cum_sample_sizes_mixture[total_number_stages]-cum_sample_sizes_mixture[final_stage_C_enrolled_up_through],(enrollment_rate_combined_population)*delay_from_enrollment_to_primary_outcome)), # avg. extra recruited subjects in pipeline
-mean(reject_H0S_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries), # only used in fixed sequence, fixed mixture design
+mean(reject_H01_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries), # only used in fixed sequence, fixed mixture design
 0,#quantile_Z_subpop_2_cond_on_reject_H_0C,
 ### Reversals due to pipeline patients
 mean(H0C_reversal_due_to_pipeline),
-mean(H0S_via_step1_reversal_due_to_pipeline),
-mean(H0S_via_step2_reversal_due_to_pipeline)
+mean(H01_via_step1_reversal_due_to_pipeline),
+mean(H01_via_step2_reversal_due_to_pipeline)
 ))
 }
 
@@ -371,7 +371,7 @@ H0C_prop_const <- OF_prop_constant_midpt
 OF_final_boundaries_H0C <- OF_prop_constant_midpt*sqrt_vector
 #print(OF_final_boundaries_H0C)
 
-## Generate boundaries for H0S
+## Generate boundaries for H01
 ## construct cumulative sample sizes
 cum_sample_sizes_subpop_1 <- c(p1_user_defined*ss,rep(0,total_number_stages-k_star))
 if(total_number_stages-k_star >0)
@@ -395,7 +395,7 @@ cum_sample_sizes_subpop_2 <- c(ss*(1-p1_user_defined),rep(ss[k_star]*(1-p1_user_
 for(i in 1:k_star){
 	for(j in 1:total_number_stages){
 	cov_matrix_full[j+k_star,i] <-cov_matrix_full[i,j+k_star] <- sqrt((min(cum_sample_sizes_subpop_1[i],cum_sample_sizes_subpop_1[j])/max(cum_sample_sizes_subpop_1[i],cum_sample_sizes_subpop_1[j]))*(p1*outcome_variance_subpop_1/(p1*outcome_variance_subpop_1+p2*outcome_variance_subpop_2)))}}
-## Do binary search to set threshold for H0S.
+## Do binary search to set threshold for H01.
 #print(cov_matrix_full)
 #sqrt_vector_subpop_1 <- sqrt(cum_sample_sizes_subpop_1[length(cum_sample_sizes_subpop_1)]/cum_sample_sizes_subpop_1)
 sqrt_vector_subpop_1 <- ((1:total_number_stages)/total_number_stages)^Delta
@@ -409,10 +409,10 @@ while(OF_prop_constant_upper_bnd-OF_prop_constant_lower_bnd > 0.000001)
 	#print(pmvnorm(lower=rep(-Inf,k_star+total_number_stages),upper=c(OF_final_boundaries_H0C,OF_prop_constant_midpt*sqrt_vector_subpop_1),mean=rep(0,k_star+total_number_stages),sigma=cov_matrix_full))
 	if(type_I_error < alpha_FWER) OF_prop_constant_upper_bnd <- OF_prop_constant_midpt else OF_prop_constant_lower_bnd <- OF_prop_constant_midpt
 }
-H0S_prop_const <- OF_prop_constant_midpt
-OF_final_boundaries_H0S <- OF_prop_constant_midpt*sqrt_vector_subpop_1
-#print(OF_final_boundaries_H0S)
-return(c(H0C_prop_const,H0S_prop_const))
+H01_prop_const <- OF_prop_constant_midpt
+OF_final_boundaries_H01 <- OF_prop_constant_midpt*sqrt_vector_subpop_1
+#print(OF_final_boundaries_H01)
+return(c(H0C_prop_const,H01_prop_const))
 }
 
 
@@ -436,11 +436,11 @@ k <- last_stage_subpop_2_enrolled_adaptive_design
 
 futility_boundaries_fixed_design_H0C <<-c(-H0C_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),-Inf)
 
-futility_boundaries_fixed_design_H0S <<-c(-H0S_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),-Inf)
+futility_boundaries_fixed_design_H01 <<-c(-H01_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),-Inf)
 
 #Placeholders only here
 subpop_1_futility_boundaries_fixed_design_H0C <- rep(Inf,total_number_stages)
-subpop_1_futility_boundaries_fixed_design_H0S <- rep(Inf,total_number_stages)
+subpop_1_futility_boundaries_fixed_design_H01 <- rep(Inf,total_number_stages)
 subpop_2_futility_cutoff <<- (-Inf)
 
 p1 <- p1_user_defined
@@ -452,7 +452,7 @@ subpop_2_futility_cutoff <- (-Inf)
 subpop_2_futility_boundaries <- c(rep(subpop_2_futility_cutoff,last_stage_subpop_2_enrolled_adaptive_design),rep(Inf,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design))
 
 per_stage_sample_size_combined_fixed_design_H0C <<- 90 #(Range: 0 to 1000)
-per_stage_sample_size_combined_fixed_design_H0S <<- 106 #(Range: 0 to 1000)
+per_stage_sample_size_combined_fixed_design_H01 <<- 106 #(Range: 0 to 1000)
 
 
 p11 <- p11_user_defined
@@ -468,7 +468,7 @@ prop_consts <- get_adaptive_efficacy_boundaries(alpha_FWER_user_defined,alpha_H0
 #print(prop_consts)
 H0C_efficacy_boundary_proportionality_constant_adaptive_design <<- prop_consts[1] 
 #(Range: 0 to 10)
-H0S_efficacy_boundary_proportionality_constant_adaptive_design <<- prop_consts[2] 
+H01_efficacy_boundary_proportionality_constant_adaptive_design <<- prop_consts[2] 
 #(Range: 0 to 10)
 
 ## Get efficacy boundary for fixed design H0C, and required sample size to achieve desired_power_H0C_fixed_design
@@ -486,15 +486,15 @@ while(OF_prop_constant_upper_bnd-OF_prop_constant_lower_bnd > 0.000001)
 	if(type_I_error < alpha_FWER_user_defined) OF_prop_constant_upper_bnd <- OF_prop_constant_midpt else OF_prop_constant_lower_bnd <- OF_prop_constant_midpt
 }
 H0C_efficacy_boundary_proportionality_constant_fixed_design <<- OF_prop_constant_midpt
-H0S_efficacy_boundary_proportionality_constant_fixed_design <<- OF_prop_constant_midpt
+H01_efficacy_boundary_proportionality_constant_fixed_design <<- OF_prop_constant_midpt
 
 H0C_efficacy_boundaries <- H0C_efficacy_boundary_proportionality_constant_adaptive_design*c(((1:k)/k)^Delta,rep(Inf,total_number_stages-k))
 
-subpop_1_efficacy_boundaries <- H0S_efficacy_boundary_proportionality_constant_adaptive_design*(((1:total_number_stages)/total_number_stages)^Delta)
+subpop_1_efficacy_boundaries <- H01_efficacy_boundary_proportionality_constant_adaptive_design*(((1:total_number_stages)/total_number_stages)^Delta)
 
 combined_pop_futility_boundaries_adaptive_design <<- c(rep(-H0C_futility_boundary_proportionality_constant_adaptive_design,last_stage_subpop_2_enrolled_adaptive_design-1),-H0C_efficacy_boundaries[k],rep(-Inf,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design))
 
-subpop_1_futility_boundaries_adaptive_design <<- c(-H0S_futility_boundary_proportionality_constant_adaptive_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),-subpop_1_efficacy_boundaries[total_number_stages])
+subpop_1_futility_boundaries_adaptive_design <<- c(-H01_futility_boundary_proportionality_constant_adaptive_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),-subpop_1_efficacy_boundaries[total_number_stages])
 
 
 print_ss_and_boundaries_flag <- 1
@@ -523,7 +523,7 @@ for(percent_benefit_subpop_2 in rev(risk_difference_list))
 	#print(c(percent_benefit_subpop_2,cv_large,cv_small))
     outcome_variance_subpop_2 <- p21*(1-p21)/r20+p20*(1-p20)/(1-r20)
 
-power_vec <- get_power(p1=p1_user_defined,total_number_stages,k=last_stage_subpop_2_enrolled_adaptive_design,combined_pop_futility_boundaries_adaptive_design,subpop_1_futility_boundaries_adaptive_design,n1=per_stage_sample_size_combined_adaptive_design_user_defined,n2=per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined,b_C=H0C_efficacy_boundary_proportionality_constant_adaptive_design,b_S=H0S_efficacy_boundary_proportionality_constant_adaptive_design,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
+power_vec <- get_power(p1=p1_user_defined,total_number_stages,k=last_stage_subpop_2_enrolled_adaptive_design,combined_pop_futility_boundaries_adaptive_design,subpop_1_futility_boundaries_adaptive_design,n1=per_stage_sample_size_combined_adaptive_design_user_defined,n2=per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined,b_C=H0C_efficacy_boundary_proportionality_constant_adaptive_design,b_S=H01_efficacy_boundary_proportionality_constant_adaptive_design,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
 
 adaptive_df[counter_adaptive,] <- c(power_vec[4]+power_vec[7],power_vec[c(5,1,2,6)])
 overrun_df[counter_adaptive,1] <- power_vec[7]
@@ -538,7 +538,7 @@ counter_mixture <- counter_mixture +1
 #load("min_sum_ss_configuration_small_IVH_only.rdata")
 
 
-power_vec <- get_power(p1=1,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_fixed_design_H0S,subpop_1_futility_boundaries=subpop_1_futility_boundaries_fixed_design_H0S,n1=per_stage_sample_size_combined_fixed_design_H0S,n2=0,b_C=H0S_efficacy_boundary_proportionality_constant_fixed_design,b_S=Inf,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
+power_vec <- get_power(p1=1,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_fixed_design_H01,subpop_1_futility_boundaries=subpop_1_futility_boundaries_fixed_design_H01,n1=per_stage_sample_size_combined_fixed_design_H01,n2=0,b_C=H01_efficacy_boundary_proportionality_constant_fixed_design,b_S=Inf,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
 fixed_small_only_df[counter_small,] <- c(power_vec[9] + power_vec[10],power_vec[c(8,1)])
 overrun_df[counter_small,3] <- power_vec[10]
 
@@ -557,20 +557,20 @@ plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim
 lines(x=rev(risk_difference_list),y=table1[,6],lty=1,col=1,lwd=3)
 # H0C adaptive
 lines(x=rev(risk_difference_list),y=table1[,4],lty=2,col=1,lwd=3)
-# H0S adaptive
+# H01 adaptive
 lines(x=rev(risk_difference_list),y=table1[,5],lty=3,col=1,lwd=3)
 
 # H0C fixed
 lines(x=rev(risk_difference_list),y=table1[,9],lty=4,col=3,lwd=3)
 
-# H0S fixed
+# H01 fixed
 lines(x=rev(risk_difference_list),y=table1[,13],lty=5,col=4,lwd=3)
 ltext<-rep(NA,5)
-ltext[1]<-expression(paste("Adaptive, Power H"[0][C]," or H"[0][S]))
+ltext[1]<-expression(paste("Adaptive, Power H"[0][C]," or H"[0][1]))
 ltext[2]<-expression(paste("Adaptive, Power H"[0][C]))
-ltext[3]<-expression(paste("Adaptive, Power H"[0][S]))
+ltext[3]<-expression(paste("Adaptive, Power H"[0][1]))
 ltext[4]<-expression(paste("Fixed Design Total Pop. (H"[0][C],")"))
-ltext[5]<-expression(paste("Fixed Design Subpop. 1 Only (H"[0][S],")"))
+ltext[5]<-expression(paste("Fixed Design Subpop. 1 Only (H"[0][1],")"))
 legend("bottomright",legend=ltext,lty=c(1,2,3,4,5),col=c(1,1,1,3,4),lwd=c(3,3,3,3,3))
 }
 
@@ -587,7 +587,7 @@ lines(x=rev(risk_difference_list),y=table1[,2],lty=1,col=1,lwd=3)
 # H0C fixed
 lines(x=rev(risk_difference_list),y=table1[,7],lty=2,col=3,lwd=3)
 
-# H0S fixed
+# H01 fixed
 lines(x=rev(risk_difference_list),y=table1[,11],lty=3,col=4,lwd=3)
 legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
 
@@ -606,7 +606,7 @@ lines(x=rev(risk_difference_list),y=table1[,3],lty=1,col=1,lwd=3)
 # H0C fixed
 lines(x=rev(risk_difference_list),y=table1[,8],lty=2,col=3,lwd=3)
 
-# H0S fixed
+# H01 fixed
 lines(x=rev(risk_difference_list),y=table1[,12],lty=3,col=4,lwd=3)
 legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
 
@@ -625,7 +625,7 @@ lines(x=rev(risk_difference_list),y=table1[,14],lty=1,col=1,lwd=3)
 # H0C fixed
 lines(x=rev(risk_difference_list),y=table1[,15],lty=2,col=3,lwd=3)
 
-# H0S fixed
+# H01 fixed
 lines(x=rev(risk_difference_list),y=table1[,16],lty=3,col=4,lwd=3)
 legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
 
@@ -635,31 +635,31 @@ boundary_adapt_plot <-function()
 {
 
 adapt_boundary_mat<- t(adaptive_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary", "H0S Efficacy Boundary", "H0S Futility Boundary"), ])
-fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of Combined Population','Null Hypothesis ( H'[0][C]~') and Subpopulation 1 Null Hypothesis ( H'[0][S]~')'))
+fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of Combined Population','Null Hypothesis ( H'[0][C]~') and Subpopulation 1 Null Hypothesis ( H'[0][1]~')'))
 matplot(adapt_boundary_mat,type='o',main=fancyTitle,pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2,, xlab='Stage',ylab='Boundaries on Z-score scale')
 ltext<-rep(NA,4)
 ltext[1]<-expression(paste("H"[0][C]," Efficacy Boundary"))
 ltext[2]<-expression(paste('H'[0][C],' Futility Boundary'))
-ltext[3]<-expression(paste('H'[0][S],' Efficacy Boundary'))
-ltext[4]<-expression(paste('H'[0][S],' Futility Boundary'))
+ltext[3]<-expression(paste('H'[0][1],' Efficacy Boundary'))
+ltext[4]<-expression(paste('H'[0][1],' Futility Boundary'))
 legend('topright',ltext,pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2) 
 
 #print(adapt_boundary_mat)
 }
 
 
-boundary_fixed_H0S_plot <-function()
+boundary_fixed_H01_plot <-function()
 {
 
-H0S_boundary_mat<- t(fixed_H0S_design_sample_sizes_and_boundaries_table()[[1]][c("H0S Efficacy Boundary", "H0S Futility Boundary"), ])
-fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of', 'Combined Population Null Hypothesis ( H'[0][S]~')'))
-matplot(H0S_boundary_mat,type='o',main=fancyTitle,lty=2,pch=c(19,15),col='blue', xlab='Stage',ylab='Boundaries on Z-score scale')
+H01_boundary_mat<- t(fixed_H01_design_sample_sizes_and_boundaries_table()[[1]][c("H01 Efficacy Boundary", "H01 Futility Boundary"), ])
+fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of', 'Combined Population Null Hypothesis ( H'[0][1]~')'))
+matplot(H01_boundary_mat,type='o',main=fancyTitle,lty=2,pch=c(19,15),col='blue', xlab='Stage',ylab='Boundaries on Z-score scale')
 ltext<-rep(NA,2)
-ltext[1]<-expression(paste('H'[0][S],' Efficacy Boundary'))
-ltext[2]<-expression(paste('H'[0][S],' Futility Boundary'))
+ltext[1]<-expression(paste('H'[0][1],' Efficacy Boundary'))
+ltext[2]<-expression(paste('H'[0][1],' Futility Boundary'))
 legend('topright',ltext,lty=2,pch=c(19,15),col='blue')
 
-#print(H0S_boundary_mat)
+#print(H01_boundary_mat)
 }
 
 
@@ -684,7 +684,7 @@ output_df <- cbind(as.matrix(table1))
 output_df_formatted <- cbind(output_df[,1],output_df[,2],output_df[,3],100*output_df[,4],100*output_df[,5],100*output_df[,6],output_df[,7],output_df[,8],100*output_df[,9],
 #100*output_df[,10],
 output_df[,11],output_df[,12],100*output_df[,13])
-colnames(output_df_formatted) <- c("Subpop.2 Tx. Effect","AD:SS","AD:DUR","AD:Power H0C","AD:Power H0S","AD:Power H0C or H0S","FC:SS","FC:DUR","FC:Power H0C","FS:SS","FS:DUR","FS:Power H0S")
+colnames(output_df_formatted) <- c("Subpop.2 Tx. Effect","AD:SS","AD:DUR","AD:Power H0C","AD:Power H01","AD:Power H0C or H01","FC:SS","FC:DUR","FC:Power H0C","FS:SS","FS:DUR","FS:Power H01")
 return(list(output_df_formatted,digits=c(0,2,0,1,0,0,0,0,1,0,0,1,0),caption="Comparison of avg sample size (SS), avg duration (DUR), and power (as a percent), for the following designs: the Adaptive Design (AD), the Fixed Design Enrolling Combined Population (FC), and the Fixed Design Enrolling Subpop. 1 Only (FS). All designs strongly control the familywise Type I error rate at level FWER set using slider onleft."))
 }
 
@@ -710,11 +710,11 @@ p2 <- 1-p1
 
 H0C_efficacy_boundaries <- H0C_efficacy_boundary_proportionality_constant_adaptive_design*c(((1:k)/k)^Delta,rep(NA,total_number_stages-k))
 
-subpop_1_efficacy_boundaries <- H0S_efficacy_boundary_proportionality_constant_adaptive_design*(((1:total_number_stages)/total_number_stages)^Delta)
+subpop_1_efficacy_boundaries <- H01_efficacy_boundary_proportionality_constant_adaptive_design*(((1:total_number_stages)/total_number_stages)^Delta)
 
 combined_pop_futility_boundaries_adaptive_design <<- c(rep(H0C_futility_boundary_proportionality_constant_adaptive_design,last_stage_subpop_2_enrolled_adaptive_design-1),H0C_efficacy_boundaries[k],rep(NA,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design))
 
-subpop_1_futility_boundaries_adaptive_design <<-c(H0S_futility_boundary_proportionality_constant_adaptive_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),subpop_1_efficacy_boundaries[total_number_stages])
+subpop_1_futility_boundaries_adaptive_design <<-c(H01_futility_boundary_proportionality_constant_adaptive_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),subpop_1_efficacy_boundaries[total_number_stages])
 
 if(k<total_number_stages){
 row1 <- c(p1*per_stage_sample_size_combined_adaptive_design_user_defined*(1:k),p1*per_stage_sample_size_combined_adaptive_design_user_defined*k+per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined*(1:(total_number_stages-k)))
@@ -733,11 +733,11 @@ row3 <- c(per_stage_sample_size_combined_adaptive_design_user_defined*(1:k))
 H0C_efficacy <-  H0C_efficacy_boundaries
 #H0C_efficacy[H0C_efficacy==Inf] <- rep(0,5-k)
 H0C_futility <- combined_pop_futility_boundaries_adaptive_design
-H0S_efficacy <- subpop_1_efficacy_boundaries
-H0S_futility <- subpop_1_futility_boundaries_adaptive_design
+H01_efficacy <- subpop_1_efficacy_boundaries
+H01_futility <- subpop_1_futility_boundaries_adaptive_design
 
-output_df <- rbind(row1,row2,row3,H0C_efficacy,H0C_futility,H0S_efficacy,H0S_futility)
-row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","H0C Futility Boundary","H0S Efficacy Boundary","H0S Futility Boundary")
+output_df <- rbind(row1,row2,row3,H0C_efficacy,H0C_futility,H01_efficacy,H01_futility)
+row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","H0C Futility Boundary","H01 Efficacy Boundary","H01 Futility Boundary")
 colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(7,(total_number_stages+1)))
 #dig_array[4:7,] <- array(2,c(4,(total_number_stages+1)))
@@ -778,25 +778,25 @@ return(list(output_df,digits=dig_array,caption="Cumulative Sample Sizes and Deci
 
 }
 
-fixed_H0S_design_sample_sizes_and_boundaries_table <- function()
+fixed_H01_design_sample_sizes_and_boundaries_table <- function()
 {
 k<-total_number_stages
 p1 <- p1_user_defined
 p2 <- 1-p1
 
-H0S_efficacy_boundaries <- H0S_efficacy_boundary_proportionality_constant_fixed_design*c(((1:k)/k)^Delta)
+H01_efficacy_boundaries <- H01_efficacy_boundary_proportionality_constant_fixed_design*c(((1:k)/k)^Delta)
 
-futility_boundaries_fixed_design_H0S <<-c(H0S_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),H0S_efficacy_boundaries[total_number_stages])
+futility_boundaries_fixed_design_H01 <<-c(H01_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),H01_efficacy_boundaries[total_number_stages])
 
 
-row1 <- c(per_stage_sample_size_combined_fixed_design_H0S*(1:k))
+row1 <- c(per_stage_sample_size_combined_fixed_design_H01*(1:k))
 
-H0S_efficacy <-  H0S_efficacy_boundaries
+H01_efficacy <-  H01_efficacy_boundaries
 #H0C_efficacy[H0C_efficacy==Inf] <- rep(0,5-k)
-H0S_futility <- futility_boundaries_fixed_design_H0S
+H01_futility <- futility_boundaries_fixed_design_H01
 
-output_df <- rbind(row1,H0S_efficacy,H0S_futility)
-row.names(output_df) <- c("Cum. Sample Size","H0S Efficacy Boundary","H0S Futility Boundary")
+output_df <- rbind(row1,H01_efficacy,H01_futility)
+row.names(output_df) <- c("Cum. Sample Size","H01 Efficacy Boundary","H01 Futility Boundary")
 colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(3,(total_number_stages+1)))
 #dig_array[4:7,] <- array(2,c(4,(total_number_stages+1)))
