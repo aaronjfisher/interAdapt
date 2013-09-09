@@ -451,8 +451,8 @@ error_counter <- 0
 subpop_2_futility_cutoff <- (-Inf)
 subpop_2_futility_boundaries <- c(rep(subpop_2_futility_cutoff,last_stage_subpop_2_enrolled_adaptive_design),rep(Inf,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design))
 
-per_stage_sample_size_combined_fixed_design_H0C <<- 90 #(Range: 0 to 1000)
-per_stage_sample_size_combined_fixed_design_H01 <<- 106 #(Range: 0 to 1000)
+#per_stage_sample_size_combined_fixed_design_H0C <<- 90 #(Range: 0 to 1000)
+#per_stage_sample_size_combined_fixed_design_H01 <<- 106 #(Range: 0 to 1000)
 
 
 p11 <- p11_user_defined
