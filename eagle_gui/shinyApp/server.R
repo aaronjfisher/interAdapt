@@ -5,9 +5,7 @@
   # | |_/ / |_| | |_\ \/\__/ /_|
   # \____/ \___/ \____/\____/(_)
                               
-                              
-# Add Michael's Warnings
-# Add a checkbox to autoupdate new parameters, or a warning saying they're not yet applied.
+
 # Need to make sure the initialized image is set correctly. 
     # For beta testing it's just commented out to maintain consistency.
 
@@ -47,6 +45,7 @@ cat("source'ing code...", file=stderr())
 #Get the csv file either online or locally
 getItOnline<-TRUE
 try({
+  #loading & saving table 1 is done elsewhere, all through local file management
   source("Adaptive_Group_Sequential_Design.R", local=TRUE)
   st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
   bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
@@ -88,30 +87,26 @@ for(i in 1:dim(bt)[1]){
   lastAllVars[bt[i,'inputId']] <- bt[i,'value']
 }
 
-#table1 <- table_constructor() #getting error in x y length differing when we call plots the first time, if we call table_constructor too soon?
 
+#do we need to regen table1? Try to see if you have it locally. If you don't, or if you need to update it, do it agian & save (wherever you are, eitehr on glimmer or locally
+stillNeedTable1<-TRUE
+try({
+load('last_default_inputs.RData') #won't work first time on glimmer, but it's OK
+  if(all(bt==lastBt)&all(st==lastSt)){ #lastBt and lastSt are from the last time we generated table1
+      load('last_default_table1_&_xlim.RData')
+      stillNeedTable1<-FALSE
+       cat("loaded table1...", file=stderr())
+  }
+})
+if(stillNeedTable1){ 
+  table1<- table_constructor()
+  lastBt<-bt
+  lastSt<-st
+  save(list=c('table1','risk_difference_list'),file='last_default_table1_&_xlim.RData')
+  save(list=c('lastBt','lastSt'),file='last_default_inputs.RData')
+  cat("built table1...", file=stderr())
+}
 
-
-
-
-#THIS LAST BIT HAS BEEN TRICKY TO GET WORKING! Maybe better to start with just a 
-# whole image file, but for beta testing just leave it as is.
-
-# buildTable1Now<-TRUE
-# if(!getItOnline){
-#   try({
-#     load(file='initialized_image_&_table1.RData')
-#     cat("loaded table1 & image...", file=stderr())
-#     buildTable1Now<-FALSE
-#   })
-# }
-# if(buildTable1Now){
-#   table1 <- table_constructor()
-#   cat("built table1...", file=stderr())
-# }
-# Saving table1 for future use
-# iter<-10000
-# save.image(file='initialized_image_&_table1.RData')
 
 
 
@@ -143,7 +138,7 @@ shinyServer(function(input, output) {
   ##########
 
 
-  lastApplyValue <- -1
+  lastApplyValue <- 0 # need to put -1 here if we don't load table 1 beforehand
   totalCalls<-0 #a place keeper to watch when we cat to stderr
   uploadFileTicker<-0
   inValues<-NULL
@@ -348,7 +343,6 @@ shinyServer(function(input, output) {
   	if (effectivelyBatch()){ isolate(assignAllVars() )
     } else { assignAllVars() }
 
-    #browser()
     cat("making table1 ...")
     table1 <<- table_constructor()
     cat("Done\n")
@@ -368,10 +362,6 @@ shinyServer(function(input, output) {
   # | |   | | (_) | |_\__ \
   # \_|   |_|\___/ \__|___/
                          
-
-  
-  table1 <<- table_constructor() #temporary fix -- moving this initializer down to just before it's called, to make sure all the settings are adjusted right.
-
 
 
   #############
