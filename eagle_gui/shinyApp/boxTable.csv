@@ -1,6 +1,6 @@
 inputId,label,min,max,value,step
 Delta,Delta,-0.5,0.5,-0.5,0.1
-iter,# of Iterations for simulation,0,100000,100000,1
+iter,# of Iterations for simulation,0,100000,10000,1
 time_limit,"Time limit for simulation, in seconds",5,90,45,1
 total_number_stages,Total number of stages,1,20,5,1
 enrollment_rate_combined_population,Participants enrolled per year from combined population,0,1000,420,1
