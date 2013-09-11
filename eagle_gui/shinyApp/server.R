@@ -140,8 +140,11 @@ shinyServer(function(input, output) {
 
   lastApplyValue <- 0 # need to put -1 here if we don't load table 1 beforehand
   totalCalls<-0 #a place keeper to watch when we cat to stderr
-  uploadFileTicker<-0
-  inValues<-NULL
+  uploadCsvTicker<-0
+  uploadDatasetTicker<-0
+  inCsvValues<-NULL
+  inDatasetValues<-NULL
+  output$uploadTime<-renderText({as.character(Sys.time())})  #time when last file was uploaded. Could use for clearing??
 
   #current value of all the data, need to store this if we want to change the sliders to all be animated in interactive mode, but not change their values.
   #all used a comparison against static lastAllVars
@@ -210,21 +213,53 @@ shinyServer(function(input, output) {
   # | |___| (_) | (_| | (_| | | |/ / (_| | || (_| |
   # \_____/\___/ \__,_|\__,_| |___/ \__,_|\__\__,_|
 
-  #a reactive chunk to feed to the dynamicBoxes & dynamicSliders
-  regenUpload<-reactive({
-    upFile <- input$uploadData
+  #below are 2 reactive chunks to feed to the dynamicBoxes & dynamicSliders
+  
+
+
+
+  csvUpload<-reactive({
+    upFile <- input$uploadCsvInput
     x<-NULL
     if (!is.null(upFile)){
       x<-c(read.csv(file=upFile$datapath, row.names=1, header=FALSE))[[1]]
       names(x)<-allVarNames
-      #regenCalls<-0
-      uploadFileTicker<<-0
-      output$uploadTime<<-renderText({as.character(Sys.time())})
-      print('resetting upload')
+      uploadCsvTicker<<-0
+      output$uploadTime<<-renderText({as.character(Sys.time())}) #why is this here?
+      print('resetting upload csv all inputs')
     }
-    inValues<<-x
+    inCsvValues<<-x
   })
 
+
+
+
+
+
+  datasetVarNames<-c('p1_user_defined','p10_user_defined','p11_user_defined','p20_user_defined','p21_user_defined')
+
+  datasetUpload<-reactive({
+    upFile <- input$uploadDataTable
+    x<-NULL
+    if (!is.null(upFile)){
+      tmp <- read.csv(file=upFile$datapath, header=TRUE)
+      S <- tmp$S        # subpopulation, 1 or 2
+      A <- tmp$A        # study arm, 0 or 1
+      Y <- tmp$Y        # outcome, 0 or 1
+      x['p1_user_defined'] <- mean(S==1)
+      x['p10_user_defined'] <- mean(Y*(S==1)*(A==0))/mean((S==1)*(A==0))
+      x['p11_user_defined'] <- mean(Y*(S==1)*(A==1))/mean((S==1)*(A==1))
+      x['p20_user_defined'] <- mean(Y*(S==2)*(A==0))/mean((S==2)*(A==0))
+      x['p21_user_defined'] <- mean(Y*(S==2)*(A==1))/mean((S==2)*(A==1))
+      # perform sanity checks?
+      uploadDatasetTicker<<-0
+      output$uploadTime<<-renderText({as.character(Sys.time())}) #from when we were trying to see if we could use upload time to help see if we uploaded the same data twice.
+      print('new Data calculated from')
+      print(x)
+      print('resetting upload dataset')      
+    }
+    inDatasetValues<<-x
+  })
 
 
 
@@ -241,28 +276,37 @@ shinyServer(function(input, output) {
 
   #NOTE - June 26: When sliders update, regen thinks it needs to be called again because sliders have updated values and you're now in interactive mode.
         #solution -- added lastAllVars (nonreactive) variable that cancels this out.
-  #explanation of uploadFileTicker: Only if it's the first time do we change the sliders to the uploaded values. If it's not the first time, we use the current value of the variable, taken from allVars.
+  #explanation of uploadCsvTicker: Only if it's the first time do we change the sliders to the uploaded values from the full csv list. If it's not the first time, we use the current value of the variable, taken from allVars.
+  #for uploadDatasetTicker, it's the same basic idea, but we only check it for variables in the vector 'datasetVarNames'.
   sliders <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
     print('sliders')
-    print(uploadFileTicker)
-    regenUpload() #reactive input to uploaded file
+    print(uploadCsvTicker)
+    csvUpload() #reactive input to uploaded file; sets ticker to zero when it's activated & does stuff
+    datasetUpload() #reactive input to uploaded file; sets ticker to zero when it's activated & does stuff
     labelSliderList<-list()
     animate<-FALSE
     if(input$Batch=='2' & input$Which_params=='1' ) animate<-TRUE # reactive input
     for(i in 1:dim(st)[1]){
-      #case1: null upfile & zero uploadFileTicker (sliders haven't changed yet)
+      #each of these cases overrides the previous one
+      #case1: null upfile & zero uploadCsvTicker (sliders haven't changed yet)
       value_i<-st[i,'value']
-      #case2: something uploaded, and hasn't been called yet (uploadFileTicker==0)
-      if(!is.null(inValues)) value_i<-inValues[st[i,'inputId']]
-      #case3: whatever's there has been called already, ignore uploaded data.
-      if(uploadFileTicker>0) isolate(value_i<-allVars()[st[i,'inputId']])
-      labelListi<-subH0(st[i,'label'])
+      #case2: something uploaded in csv input file, and hasn't been used yet (uploadCsvTicker==0)
+      if(!is.null(inCsvValues)) value_i<-inCsvValues[st[i,'inputId']]
+      #case3: whatever's there has been called already, ignore uploaded input csv data.
+      if(uploadCsvTicker>0) isolate(value_i<-allVars()[st[i,'inputId']])
+      #case4: someone just uploaded a dataset that we parsed to get slider values
+      if(uploadDatasetTicker==0 & (!is.null(inDatasetValues)) & st[i,'inputId'] %in% datasetVarNames)
+        value_i<-inDatasetValues[st[i,'inputId']]
+      #end of cases
+
+      labelListi<-subH0(st[i,'label']) #Labels are stored as non slider text objects, so that we can apply subscripts
       sliderListi<-sliderInput(inputId=st[i,'inputId'], label='', min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'], animate=animate)
       ind<-length(labelSliderList)
       labelSliderList[[ind+1]]<-labelListi
       labelSliderList[[ind+2]]<-sliderListi
     }
-    uploadFileTicker<<-uploadFileTicker+1
+    uploadCsvTicker<<-uploadCsvTicker+1
+    uploadDatasetTicker<<-uploadDatasetTicker+1
     print('           sliders updating!!!!!!')
     labelSliderList
   })
@@ -271,11 +315,11 @@ shinyServer(function(input, output) {
 
   boxes <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
     print('                    boxes')
-    regenUpload()
+    csvUpload()
     labelBoxList<-list()
     for(i in 1:dim(bt)[1]){
       value_i<-bt[i,'value']
-      if( (!is.null(inValues)) ){ value_i<-inValues[bt[i,'inputId']]}
+      if( (!is.null(inCsvValues)) ){ value_i<-inCsvValues[bt[i,'inputId']]}
       boxLabeli<-subH0(bt[i,'label'])
       boxListi<-numericInput(inputId=bt[i,'inputId'], label='', min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
       ind<-length(labelBoxList)           
@@ -286,7 +330,6 @@ shinyServer(function(input, output) {
     labelBoxList
   })
   output$fullBoxes<-renderUI({boxes()})
-
 
 
 

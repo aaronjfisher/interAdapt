@@ -168,23 +168,22 @@ shinyUI(pageWithSidebar(
   # "Advanced" forces batch mode
   sidebarPanel(
         #TOP PANEL
-
         selectInput("Which_params", "", c("Show basic parameters" = "1",
-                "Show advanced parameters" = "2", "Show all parameters" = "3") ),
+                "Show advanced parameters" = "2", "Save & Load Parameters" = "3") ),
 
         #SAVE & LOAD
+
         conditionalPanel(condition="input.Which_params == '3'",
             br(),
             strong('Save current parameters to file:'),br(),
             downloadButton('downloadInputs', 'Save Inputs'),
             br(),br(),
             strong('Load previous parameters from file:'),
-            fileInput('uploadData', '',
+            fileInput('uploadCsvInput', '',
                     accept=c('text/csv', 'text/comma-separated-values,text/plain')),
-            conditionalPanel(condition='false', #need to make this actually contional!?
-              strong('Reset parameters to uploaded file:'),br(),
-              actionButton(inputId='loadReset',label='Reset')
-            ),
+            strong('Upload trial data from file:'),
+            fileInput('uploadDataTable', '',
+                    accept=c('text/csv', 'text/comma-separated-values,text/plain')),
             strong("Current Parameters:")
           ),
 
