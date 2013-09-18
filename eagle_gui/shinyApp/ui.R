@@ -77,22 +77,22 @@ try({
     readHelpTabRaw <-getURL(paste0(gitDir,"help_tab.html"))
     readHelpTabHTML<-str_replace_all(readHelpTabRaw,'\n','')
 
-    #################
-    # TO USE SHINY 0.5 instead of 0.6
-    # Stolen from shinyIncubator
-    # needs actionbutton/actionbutton.js
-    suppressMessages(addResourcePath(
-        prefix='actionbutton',
-        directoryPath=file.path(getwd(), 'actionbutton')
-    ))
-    # adapted from shinyIncubator, so we don't require that package
-    my_actionButton <- function(inputId, label) {
-      tagList(
-        singleton(tags$head(tags$script(src = 'actionbutton/actionbutton.js'))),
-        tags$button(id=inputId, type="button", class="btn action-button", label)
-      )
-    }
-    actionButton <- my_actionButton
+    # #################
+    # # TO USE SHINY 0.5 instead of 0.6
+    # # Stolen from shinyIncubator
+    # # needs actionbutton/actionbutton.js
+    # suppressMessages(addResourcePath(
+    #     prefix='actionbutton',
+    #     directoryPath=file.path(getwd(), 'actionbutton')
+    # ))
+    # # adapted from shinyIncubator, so we don't require that package
+    # my_actionButton <- function(inputId, label) {
+    #   tagList(
+    #     singleton(tags$head(tags$script(src = 'actionbutton/actionbutton.js'))),
+    #     tags$button(id=inputId, type="button", class="btn action-button", label)
+    #   )
+    # }
+    # actionButton <- my_actionButton
     #################
 
     cat("found code online...", file=stderr())

@@ -21,6 +21,10 @@
 
 library(knitr)
 
+
+###########
+#Functions
+
 subH0 <- function(x){ #make a function that does the same thing as "strong()" but for <sub></sub>
 #finds all H0C and H01 terms and subs them!
   x <- strong(x)
@@ -39,8 +43,17 @@ subH01anitize<-function(x){
 }
 
 
+#To print2log errors that we can read in a log later, useful for checking sessions on RStudio/glimmer/spark
+cat(file='session_log.txt',paste(Sys.time(),'\n \n')) #override last session, start new log
+print2log<-function(x,logFileName='session_log.txt'){ #takes a string as input
+  print(x)
+  cat(file=logFileName,paste(x,'\n'),append=TRUE)
+}
+###############
 
-cat("source'ing code...", file=stderr())
+
+
+print2log("source'ing code...")
 
 #Get the csv file either online or locally
 getItOnline<-TRUE
@@ -50,7 +63,7 @@ try({
   st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
   bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
   getItOnline<-FALSE #if we haven't gotten an error yet!
-  cat("found code locally...", file=stderr())
+  print2log("found code locally...")
 },silent=TRUE)
 try({
   if(getItOnline){
@@ -67,11 +80,11 @@ try({
     source_url(paste0(gitDir,"Adaptive_Group_Sequential_Design.R"))
     knitrRmd<-readLines(textConnection(getURL(paste0(gitDir,"knitr_report.Rmd"))))#download.file won't work, so hack some other stuff for now
     writeLines(knitrRmd,"knitr_report.Rmd")
-    cat("found code online...", file=stderr())
+    print2log("found code online...")
   }
 },silent=TRUE)
 
-cat("...got code!...", file=stderr())
+print2log("...got code!...")
 
 allVarNames<-c(st[,'inputId'],bt[,'inputId'])
 allVarLabels<-c(st[,'label'],bt[,'label'])
@@ -95,7 +108,7 @@ load('last_default_inputs.RData') #won't work first time on glimmer, but it's OK
   if(all(bt==lastBt)&all(st==lastSt)){ #lastBt and lastSt are from the last time we generated table1
       load('last_default_table1_&_xlim.RData')
       stillNeedTable1<-FALSE
-       cat("loaded table1...", file=stderr())
+      print2log("loaded table1...")
   }
 })
 if(stillNeedTable1){ 
@@ -104,7 +117,7 @@ if(stillNeedTable1){
   lastSt<-st
   save(list=c('table1','risk_difference_list'),file='last_default_table1_&_xlim.RData')
   save(list=c('lastBt','lastSt'),file='last_default_inputs.RData')
-  cat("built table1...", file=stderr())
+  print2log("built table1...")
 }
 
 
@@ -226,7 +239,7 @@ shinyServer(function(input, output) {
       names(x)<-allVarNames
       uploadCsvTicker<<-0
       output$uploadTime<<-renderText({as.character(Sys.time())}) #why is this here?
-      print('resetting upload csv all inputs')
+      print2log('resetting upload csv all inputs')
     }
     inCsvValues<<-x
   })
@@ -254,9 +267,9 @@ shinyServer(function(input, output) {
       # perform sanity checks?
       uploadDatasetTicker<<-0
       output$uploadTime<<-renderText({as.character(Sys.time())}) #from when we were trying to see if we could use upload time to help see if we uploaded the same data twice.
-      print('new Data calculated from')
-      print(x)
-      print('resetting upload dataset')      
+      print2log('new Data calculated from')
+      print2log(x)
+      print2log('resetting upload dataset')      
     }
     inDatasetValues<<-x
   })
@@ -279,8 +292,9 @@ shinyServer(function(input, output) {
   #explanation of uploadCsvTicker: Only if it's the first time do we change the sliders to the uploaded values from the full csv list. If it's not the first time, we use the current value of the variable, taken from allVars.
   #for uploadDatasetTicker, it's the same basic idea, but we only check it for variables in the vector 'datasetVarNames'.
   sliders <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
-    print('sliders')
-    print(uploadCsvTicker)
+    print2log('sliders')
+    print2log(uploadCsvTicker)
+    print2log(uploadDatasetTicker)
     csvUpload() #reactive input to uploaded file; sets ticker to zero when it's activated & does stuff
     datasetUpload() #reactive input to uploaded file; sets ticker to zero when it's activated & does stuff
     labelSliderList<-list()
@@ -301,20 +315,20 @@ shinyServer(function(input, output) {
 
       labelListi<-subH0(st[i,'label']) #Labels are stored as non slider text objects, so that we can apply subscripts
       sliderListi<-sliderInput(inputId=st[i,'inputId'], label='', min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'], animate=animate)
-      ind<-length(labelSliderList)
+      ind<-length(labelSliderList) #starts at 0
       labelSliderList[[ind+1]]<-labelListi
       labelSliderList[[ind+2]]<-sliderListi
     }
     uploadCsvTicker<<-uploadCsvTicker+1
     uploadDatasetTicker<<-uploadDatasetTicker+1
-    print('           sliders updating!!!!!!')
+    print2log('           sliders updating!!!!!!')
     labelSliderList
   })
   output$fullSliders<-renderUI({sliders()})
 
 
   boxes <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
-    print('                    boxes')
+    print2log('                    boxes')
     csvUpload()
     labelBoxList<-list()
     for(i in 1:dim(bt)[1]){
@@ -355,13 +369,13 @@ shinyServer(function(input, output) {
   regen <- reactive({
     applyValue<-params()
     totalCalls<<-totalCalls+1
-    print(paste('total calls =',totalCalls))
+    print2log(paste('total calls =',totalCalls))
     #ESCAPE --
     #escape if it's called when dynamic sliders/buttons are still loading
     if(is.null(input$Batch) || is.null(applyValue))
-      {print('regen null batch or apply -> out') ; return()}
+      {print2log('regen null batch or apply -> out') ; return()}
     for(name in allVarNames){
-      isolate(if(is.null(input[[name]])) {print('null regen input -> out');return()})
+      isolate(if(is.null(input[[name]])) {print2log('null regen input -> out');return()})
     }
     #in batch mode: if buttons have NOT been pressed since last time, 
   	if (  effectivelyBatch() && (applyValue <= lastApplyValue) )
@@ -369,7 +383,7 @@ shinyServer(function(input, output) {
     #In batch or interactive, check for no change -- especially useful for slider asthetic changes.
         #no need to isolate this next line -- if we're not in interative mode we would have already exited by now.
     if(all(allVars()==lastAllVars)) {
-      print('no change')
+      print2log('no change')
       lastApplyValue <<- applyValue #fixes bug where if you hit apply w/ no changes, the next slider change will interactively call table_constructor()
       return()
     }
@@ -382,14 +396,13 @@ shinyServer(function(input, output) {
       for(i in 1:length(allVarNames))
         assign(allVarNames[i], allVars()[allVarNames[i]], inherits=TRUE)
     }
-    cat("assigning Variables ...")
+    print2log("assigning Variables ...")
   	if (effectivelyBatch()){ isolate(assignAllVars() )
     } else { assignAllVars() }
 
-    #browser()
-    cat("making table1 ...")
+    print2log("making table1 ...") #Wait.. does this have to come before we assign variables?? Look over this stuff again.
     table1 <<- table_constructor()
-    cat("Done\n")
+    print2log("Done \n")
 
   	if (effectivelyBatch() ) lastApplyValue <<- applyValue
     lastAllVars<<-allVars()
@@ -413,26 +426,26 @@ shinyServer(function(input, output) {
 
   output$power_curve_plot <- renderPlot({
 	regen() 
-  print('power plot')
+  print2log('power plot')
 	power_curve_plot()
   })
 
   output$expected_sample_size_plot <- renderPlot({
 	regen()
-  print('sample plot')
+  print2log('sample plot')
 	expected_sample_size_plot()
   })
 
   output$expected_duration_plot <- renderPlot({
 	regen()
-  print('duration plot')
+  print2log('duration plot')
 	expected_duration_plot()
   })
 
   #overruns <- function() plot(1:2, main="Overruns")
   output$overruns <- renderPlot({
 	regen()
-  print('overruns plot')
+  print2log('overruns plot')
 	overrun_plot()
   })
 
@@ -441,19 +454,19 @@ shinyServer(function(input, output) {
   #Boundary Plots
   output$fixed_H0C_boundary_plot <-renderPlot({
     regen()
-    print('H0C Boundary Plot')
+    print2log('H0C Boundary Plot')
     boundary_fixed_H0C_plot()
   })
 
   output$fixed_H01_boundary_plot <-renderPlot({
     regen()
-    print('H01 Boundary Plot')
+    print2log('H01 Boundary Plot')
     boundary_fixed_H01_plot()
   })
 
   output$adapt_boundary_plot <-renderPlot({
     regen()
-    print('H0C Boundary Plot')
+    print2log('H0C Boundary Plot')
     boundary_adapt_plot()
   })
 
@@ -502,27 +515,27 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   output$adaptive_design_sample_sizes_and_boundaries_table.2 <-
   output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable({    
 	regen()
-  print('adapt table')
+  print2log('adapt table')
 	adaptive_design_sample_sizes_and_boundaries_table()
   })
 
   output$fixed_H0C_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
 	regen()
-  print('H0C table')
+  print2log('H0C table')
 	fixed_H0C_design_sample_sizes_and_boundaries_table()
   })
 
   output$fixed_H01_design_sample_sizes_and_boundaries_table.2 <-
   output$fixed_H01_design_sample_sizes_and_boundaries_table <-renderTable({
 	regen()
-  print('H01 table')
+  print2log('H01 table')
 	fixed_H01_design_sample_sizes_and_boundaries_table()
   })
 
   output$performance_table <- renderTable(expr={
 	regen()
-  print('perf table')
+  print2log('perf table')
 	transpose_performance_table(performance_table())
     },include.colnames=FALSE)
 
