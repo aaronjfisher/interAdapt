@@ -101,7 +101,7 @@ for(i in 1:dim(bt)[1]){
 }
 
 
-#do we need to regen table1? Try to see if you have it locally. If you don't, or if you need to update it, do it agian & save (wherever you are, eitehr on glimmer or locally
+#Answers: do we need to regen table1? Try to see if you have it locally. If you don't, or if you need to update it, do it agian & save (wherever you are, eitehr on glimmer or locally
 stillNeedTable1<-TRUE
 try({
 load('last_default_inputs.RData') #won't work first time on glimmer, but it's OK
@@ -238,7 +238,7 @@ shinyServer(function(input, output) {
       x<-c(read.csv(file=upFile$datapath, row.names=1, header=FALSE))[[1]]
       names(x)<-allVarNames
       uploadCsvTicker<<-0
-      output$uploadTime<<-renderText({as.character(Sys.time())}) #why is this here?
+      output$uploadTime<<-renderText({as.character(Sys.time())}) #Take this out eventually?
       print2log('resetting upload csv all inputs')
     }
     inCsvValues<<-x
@@ -264,7 +264,7 @@ shinyServer(function(input, output) {
       x['p11_user_defined'] <- mean(Y*(S==1)*(A==1))/mean((S==1)*(A==1))
       x['p20_user_defined'] <- mean(Y*(S==2)*(A==0))/mean((S==2)*(A==0))
       x['p21_user_defined'] <- mean(Y*(S==2)*(A==1))/mean((S==2)*(A==1))
-      # perform sanity checks?
+      # HJ -- perform sanity checks?
       uploadDatasetTicker<<-0
       output$uploadTime<<-renderText({as.character(Sys.time())}) #from when we were trying to see if we could use upload time to help see if we uploaded the same data twice.
       print2log('new Data calculated from')
@@ -489,7 +489,6 @@ xtable <- function(x) {
 	xtable::xtable(x[[1]], digits=x$digits, caption=x$caption) #NEED TO EXPAND HERE!!
 }
 
-# HJ - see shiny:::htmlEscape (why is this necessary?)
 renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func = NULL, include.colnames=TRUE) 
 {
     if (!is.null(func)) {
@@ -639,10 +638,9 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     contentType =  'text/csv',
     content = function(filename) {
       t1<-transpose_performance_table(performance_table())
-      perfCsv<-rbind(
-        'labeltext'=NA,
-        round(t1[[1]],digits=max(t1[[2]]))#NOT SURE WHY ROUND ISN"T WORKING WELL IF WE PUT IN THE MATRIX???
-      )
+      perfTab<-t1[[1]]
+      for(row in 1:dim(perfTab)[1]) perfTab[row,]<-round(t1[[1]][row,],digits=t1[[2]][row,2])
+      perfCsv<-rbind('labeltext'=NA,perfTab)
       rownames(perfCsv)[1]<-t1[[3]]
       write.table(perfCsv, filename, row.names=TRUE, col.names=FALSE, sep=',')
     }
