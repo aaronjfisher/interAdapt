@@ -570,9 +570,11 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
       #can't say "if (file.exists(filename)) file.remove(filename)" because this would open the door to hacking?
       if (file.exists('knitr_report.html')) file.remove('knitr_report.html')
       if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
-      htmlKnitted<-knit2html('knitr_report.Rmd')
-      if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
-      x<-readLines(con=htmlKnitted)
+      htmlKnitted<-knit2html('knitr_report.Rmd') #"plain" version, without knitrBootstrap
+      x<-readLines(con=htmlKnitted) #"plain" version, without knitrBootstrap
+      #library(knitrBootstrap)
+      #knit_bootstrap('knitr_report.Rmd') #fancy knitrBootstrap version
+      #x<-readLines(con='knitr_report.html')#fancy knitrBootstrap version
       writeLines(x,con=filename)
       # file.rename('knitr_report.html', filename)
 

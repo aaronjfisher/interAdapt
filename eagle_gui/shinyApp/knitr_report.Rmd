@@ -1,4 +1,4 @@
-# Report
+# About This Report
 
 
 ```{r hello-random, echo=FALSE}
@@ -13,10 +13,10 @@ opts_chunk$set(echo=FALSE, results='asis',fig.path='tempFiguresForKnitrReport/')
 ```
 
 ```{r}
-#BUGS? hrefs aren't working, ask leo? Knit citations? some of the Eqs work in RStudio, but not via knit()?
+#BUGS? hrefs aren't working, ask leo? some of the Eqs work in RStudio, but not via knit()?
 #This is just a chunk for testing it in RStudio
 #source('/Users/aaronfisher/Documents/JH/Michael - Shiny App /new_gui/EAGLE Repo/eagle_gui/shinyApp/Adaptive_Group_Sequential_Design.R')
-#table1 <- table_constructor()
+#-table1 <- table_constructor()
 ```
 
 
@@ -24,46 +24,37 @@ opts_chunk$set(echo=FALSE, results='asis',fig.path='tempFiguresForKnitrReport/')
 #Citations
 library(knitcitations)
 bibFile<-read.bibtex('EAGLEcite.bib')
+cite_options(linked=FALSE) #You don't have the full links in your bib file, so the links aren't working.
 
-#Leo's version of citep
-  mycitep <- function(x, short=NULL, year=substr(date(), 21, 24), tooltip=TRUE) {
-		res <- tmp <- citep(x)
-		if(!is.null(short)) {
-			res <- gsub("></a>", paste0(">", short, "</a>"), tmp)
-		}		
-		if(tooltip) {
-			res <- gsub("\\?\\?\\?\\?", year, res)
-		}
-		res <- gsub("span> ", "span>", tmp)
-		res
-	}
+#Styling
+library(knitrBootstrap)
 ```
 
 
 
-This report was created using the EAGLE software for generating and analyzing trial designs with adaptive enrollment criteria. The EAGLE software can be accessed online at
+This report was created using the EAGLE software for generating and analyzing trial designs with adaptive enrollment criteria. EAGLE can be accessed online at
 
 http://spark.rstudio.com/mrosenblum/eagle_gui_demo
 
-Additional documentation for the EAGLE software, including instructions on how to download EAGLE for personal offline use, can be found at
+Additional documentation for the EAGLE, including instructions on how to download the application for offline use, can be found at
 
 http://www.biostat.jhsph.edu/~afisher/AdaptiveShiny/About_Eagle.pdf
 
 ### Table of Contents:
-* <a href=#Introduction > Introduction </a>
-* <a href=#Summary of Input Data > Summary of Input Data </a>
-* <a href=#Full List of Inputs > Full List of Inputs </a>
-* <a href=#EAGLE Output > EAGLE Output </a>
-  * <a href=#Decision Boundary Plots > Decision Boundary Plots </a>
-  * <a href=#Performance Comparsion Plots > Performance Comparsion Plots </a>
-	* <a href=#Performance Comparison Table > Performance Comparison Table </a>
-* <a href=#Formal Description of the Problem > Formal Description of the Problem </a>
-	* <a href=#Hypotheses > Hypotheses </a>
-	* <a href=#Test Statistics > Test Statistics </a>
-	* <a href=#Family-wise Type I Error > Family-wise Type I Error </a>
-	* <a href=#Decision Rules for Stopping the Trial Early > Decision Rules for Stopping the Trial Early </a>
-* <a href=#Description of Input Variables > Description of Input Variables </a>
-* <a href=#References > References </a>
+* <a href="#Introduction"> Introduction </a>
+* <a href="#Full List of Inputs"> Full List of Inputs </a>
+* <a href="#Decision Boundaries"> Decision Boundaries </a>
+* <a href="#Performance Comparison Plots"> Performance Comparsion Plots </a>
+* <a href="#Performance Comparison Table"> Performance Comparison Table </a>
+* <a href="#Formal Description of the Problem"> Formal Description of the Problem </a>
+	* <a href="#Hypotheses"> Hypotheses </a>
+	* <a href="#Test Statistics"> Test Statistics </a>
+	* <a href="#Family-wise Type I Error"> Family-wise Type I Error </a>
+	* <a href="#Decision Rules for Stopping the Trial Early"> Decision Rules for Stopping the Trial Early </a>
+* <a href="#Inputs"> Inputs</a>
+  * <a href="#Basic Parameters"> Basic Parameters</a>
+  * <a href="#Advanced Parameters"> Advanced Parameters</a>
+* <a href="#References"> References </a>
 
 
 
@@ -71,40 +62,17 @@ http://www.biostat.jhsph.edu/~afisher/AdaptiveShiny/About_Eagle.pdf
 
 
 
-# Introduction
+# <a name="Introduction">Introduction</a>
 
-In this report, we consider the scenario where we have prior evidence that the treatment might work better in a one subpopulation than another. We use the term "adaptive design" to refer to a group sequential design that starts by enrolling from both subpopulations, and then decides whether or not to continue enrolling from each subpopulation based on interim analyses.  We use the term "standard design" to refer to a group sequential design where the enrollment criteria is fixed.
+In this report, we consider the scenario where we have prior evidence that the treatment might work better in a one subpopulation than another. We use the term "adaptive design" to refer to a group sequential design that starts by enrolling from both subpopulations, and then decides whether or not to continue enrolling from each subpopulation based on interim analyses.  We use the term "standard designs" to refer to group sequential designs where the enrollment criteria are fixed.
 
-Below, we describe an adaptive design in more detail, and compare the performance of this design against that of standard designs. Performance is compared in terms of expected sample size, expected trial duration, and power, with family-wise type I error rate set to be constant (e.g. 0.05) for all three trials.
-
-
-
-
-
-****************
-# Summary of Input Data
-
-
-
-```{r}
-summaryTab<-matrix(NA,3,1)
-rownames(summaryTab)<-c('Subpopulation 1 proportion', 
-                        'Subpopulation 2 proportion',
-                        'Alpha (FWER) Requirement')
-summaryTab[1,1] <- p1_user_defined
-summaryTab[2,1] <- 1-p1_user_defined
-summaryTab[3,1] <- alpha_FWER_user_defined
-```
-
-```{r}
-print(xtable::xtable(summaryTab),type='html',include.colnames=FALSE)
-```
+Below, we describe an adaptive design in more detail, and compare the performance of this design to the performance of standard designs. Performance is compared in terms of expected sample size, expected trial duration, and power, with family-wise type I error rate set to be constant (`r alpha_FWER_user_defined`) for all trials.
 
 
 
 *******
 
-# Full list of inputs
+# <a name="Full List of Inputs">Full List of Inputs</a>
 
 ```{r}
 inputVec<-matrix(rep(NA,length=length(allVarNames)),ncol=1)
@@ -114,9 +82,7 @@ pxtablek(inputVec,include.colnames=FALSE)
 ```
 
 *******
-# Output
-
-## Decision Boundary Plots
+# <a name="Decision Boundaries">Decision Boundaries</a>
 
 
 ```{r}
@@ -142,7 +108,7 @@ pxtablek(fixed_H01_design_sample_sizes_and_boundaries_table())
 *******
 
 
-## Performance Comparison Plots
+# <a name="Performance Comparison Plots">Performance Comparison Plots</a>
 
 ```{r}
 power_curve_plot()
@@ -161,7 +127,7 @@ overrun_plot()
 ```
 *******
 
-## Performance Comparison Table
+# <a name="Performance Comparison Table">Performance Comparison Table</a>
 ```{r}
 ptab<-transpose_performance_table(performance_table())
 pxtablek(ptab,include.colnames=FALSE)
@@ -173,7 +139,7 @@ pxtablek(ptab,include.colnames=FALSE)
 **********
 
 
-# Formal Description of the Problem
+# <a name="Formal Description of the Problem">Formal Description of the Problem</a>
 
 Consider the case where we have two subpopulations, referred to as subpopulation $A$ and subpopulation $B$. Let subpopulation $A$ be the subpopulation where we have prior evidence of a stronger treatment effect. Let $π_A$ and $π_B$ denote the proportion of patients in each of the two subpopulations. 
 
@@ -184,9 +150,9 @@ Let $Y_{i,k}$ be the a binary outcome variable for the $i^{th}$ patient recruite
 For subpopulation $A$, denote the probability of a success under treatment as $p_{At}$, and the probability of a success under control as $p_{Ac}$. Similarly for population $B$, let $p_{Bt}$ denote the probability of a success under treatment, and $p_{Bc}$ denote the probability of a success under control. We define the average treatment effect for a given population as difference in the probability of a successful outcome between the treatment and control groups.
 
 
-In the remained of this section we give an overview of the relevant concepts and notation needed to understand and use EAGLE. A more detailed discussion of the theoretical context, and of the parameter calculation procedure, can be found in `r mycitep(bibFile[["Rosenblum2013AdaptMISTIE"]])`.
+In the remained of this section we give an overview of the relevant concepts and notation needed to understand and use EAGLE. A more detailed discussion of the theoretical context, and of the parameter calculation procedure, can be found in `r citep(bibFile[["Rosenblum2013AdaptMISTIE"]])`.
  
-## Hypotheses
+## <a name="Hypotheses">Hypotheses</a>
 
 We focus on testing the null hypothesis for a treatment effect in subpopulation $A$, and the null hypothesis for a treatment effect in the combined population. The two hypotheses are defined respectively as
 
@@ -202,58 +168,61 @@ Whenever any of the trials $AD$, $SC$ or $SA$ is stopped early, there will be so
 
 
 
-## Test Statistics
+## <a name="Test Statistics">Test Statistics</a>
 
 We calculate two z-scores at the end of each stage, one for the treatment effect in the combined population $A$nd one for the treatment effect in subpopulation $A$. 
 
 Denote $Z_{C,k}$ as the standardized Z-score for the estimated treatment effect in the combined population, which is based on the data from all patients with outcomes recorded by the end of stage $k$. When we assume an equal probability of being randomized to either treatment or control, the test statistic $Z_{C,k}$ takes the following form:
 
-\[\begin{split}
-Z_{C,k}&=\left[
+\[
+Z_{C,k}=\left[
 \frac{\sum_{k'=1}^k \sum_{i=1}^{n_k'}Y_{i,k'}T_{i,k'} }
-{\sum_{k'=1}^k \sum_{i=1}^{n_k'}T_{i,k}}
--
+{\sum_{k'=1}^k \sum_{i=1}^{n_k'}T_{i,k}} -
 \frac{\sum_{k'=1}^k \sum_{i=1}^{n_k'} Y_{i,k'}(1-T_{i,k'})} 
 {\sum_{k'=1}^k \sum_{i=1}^{n_k'}(1-T_{i,k})}
-\right] \\
-& \times
-\left\lbrace
+\right] se_{C,k}^{-1}
+\]
+
+The term in square brackets is the difference in sample means between the treatment and control groups, and $se_{C,k}$ is the standard error of this difference in sample means:
+
+\[
+se_{C,k}=
 \left(     \frac{2}{  \sum_{k'=1}^{k} n_{k'}  }       \right)
 \left(
 \sum_{s ∈ \{ A,B\}} π_s[p_{sc}(1-p_{sc}) + p_{st}(1-p_{st})]
 \right)
-\right\rbrace ^{-1/2}
-\end{split}\]
-
-The term in square brackets is the difference in sample means between the treatment and control groups. The term in curly brackets is the variance of this difference in sample means.
-
-Let $Z_{A,k}$ and $Z_{B,k}$ denote the analogous test statistics for the z-scores of the estimated treatment effect in subpopulations $A$ and $B$. The explicit form of $Z_{A,k}$ can be written as follows, where $A_{i,k}$ is an indicator that the $i ^{th}$ subject recruited in stage $k$ is a member of subpopulation $A$:
+\]
 
 
-\[\begin{split}
-Z_{A,k}&=\left[
+Let $Z_{A,k}$ and $Z_{B,k}$ denote the analogous test statistics for the Z-statistics of the estimated treatment effect in subpopulations $A$ and $B$. The explicit form of $Z_{A,k}$ can be written as follows, where $A_{i,k}$ is an indicator that the $i ^{th}$ subject recruited in stage $k$ is a member of subpopulation $A$:
+
+
+\[
+Z_{A,k}=\left[
 \frac{\sum_{k'=1}^k \sum_{i=1}^{n_k'}Y_{i,k'}T_{i,k'}A_{i,k'} }
-{\sum_{k'=1}^k \sum_{i=1}^{n_k'}T_{i,k}A_{i,k'}}
--
+{\sum_{k'=1}^k \sum_{i=1}^{n_k'}T_{i,k}A_{i,k'}} -
 \frac{\sum_{k'=1}^k \sum_{i=1}^{n_k'} Y_{i,k'}(1-T_{i,k'})A_{i,k'}} 
 {\sum_{k'=1}^k \sum_{i=1}^{n_k'}(1-T_{i,k})A_{i,k'}}
-\right] \\
-&\times
-\left\lbrace
+\right] se_{A,k}^{-1} 
+\] 
+ 
+where
+
+ \[
+ se_{A,k}=
 \left(     \frac{2}{\sum_{k'=1}^k \sum_{i=1}^{n_k'}A_{i,k'}}       \right)
 \left(
 π_A[p_{Ac}(1-p_{Ac}) + p_{At}(1-p_{At})]
 \right)
-\right\rbrace ^{-1/2}
-\end{split}\]
+\]
 
 We can write $Z_{B,k}$ in an analagous form using an indicator of memebership in population $B$.
 
-The decision rules defined later on in this section for testing $H_{0C}$ and $H_{0A}$ will consist of critical boundaries for $(Z_{C,1},Z_{C,2},...Z_{C,K})$, and $(Z_{A,1},Z_{A,2},...Z_{A,K})$. To calculate the family-wise Type I error of any given set of decision rules, we make use of the multivariate distribution of $(Z_{C,1},Z_{C,2},... Z_{C,K},$ $ Z_{A,1},Z_{A,2},...Z_{A,K})$, which can be shown to be normal with a known covariance matrix `r mycitep(bibFile[["JennisonTurnbullBook"]])`.
+The decision rules defined later on in this section for testing $H_{0C}$ and $H_{0A}$ will consist of critical boundaries for $(Z_{C,1},Z_{C,2},...Z_{C,K})$, and $(Z_{A,1},Z_{A,2},...Z_{A,K})$. To calculate the family-wise Type I error of any given set of decision rules, we make use of the multivariate distribution of $(Z_{C,1},Z_{C,2},... Z_{C,K}, Z_{A,1},Z_{A,2},...Z_{A,K})$, which can be shown to be normal with a known covariance matrix `r citep(bibFile[["JennisonTurnbullBook"]])`.
 
 
 
-## Family-wise Type I Error
+## <a name="Family-wise Type I Error">Family-wise Type I Error</a>
 
 In context of our hypotheses, the Family-wise Type I error rate refers to the combined rate of false positives from testing either $H_{0C}$ and $H_{0A}$. We say that the Family-wise Type I error rate is controlled at level $α$ when the probability of rejecting at least one true hypothesis is less than $α$, under all possible true underlying states of the world.
 
@@ -264,11 +233,11 @@ For all three designs, $AD$, $SC$, and $SA$, we require the same family-wise typ
 
 
 
-## Decision Rules for Stopping the Trial Early
+## <a name="Decision Rules for Stopping the Trial Early">Decision Rules for Stopping the Trial Early</a>
 
 In the $SC$ trail, our decision rules consist of efficacy and futility boundaries for $H_{0C}$. At each stage $k$, we calculate the test statistic $Z_{C,k}$. If $Z_{C,k}$ is above the efficacy boundary for stage $k$, we reject $H_{0C}$ and end the trial. If the $Z_{C,k}$ is between the efficacy and futility boundaries for stage $k$, we make no conclusion and continue the trial. If $Z_{C,k}$ is below the futility boundary for stage $k$, we end the trial with the conclusion that we have failed to reject $H_{0C}$.
 
-The efficacy boundaries for $SC$ are set to be proportional to those described by Wang and Tsiatis (1987). This means that the efficacy boundary for the $k^{th}$ stage is set to $e_{S,C}\{(K -  1)/k\}^{-δ}$, where $K$ is the total number of stages, $δ$ is a constant in the range $[-.5,.5]$, and $e_{S,C}$ is the constant that ensures the desired family-wise Type I error rate. In order to calculate $e_{S,C}$, we make use of the fact that the random vector of test statistics ($Z_{C,1},Z_{C,2},…Z_{C,K}$) follows a multivariate normal distribution with a known covariance structure `r mycitep(bibFile[["JennisonTurnbullBook"]])`.
+The efficacy boundaries for $SC$ are set to be proportional to those described by Wang and Tsiatis (1987). This means that the efficacy boundary for the $k^{th}$ stage is set to $e_{S,C}\{(K -  1)/k\}^{-δ}$, where $K$ is the total number of stages, $δ$ is a constant in the range $[-.5,.5]$, and $e_{S,C}$ is the constant that ensures the desired family-wise Type I error rate. In order to calculate $e_{S,C}$, we make use of the fact that the random vector of test statistics ($Z_{C,1},Z_{C,2},…Z_{C,K}$) follows a multivariate normal distribution with a known covariance structure `r citep(bibFile[["JennisonTurnbullBook"]])`.
 Under $H_{0C}$ we assume this vector has mean zero. Using the "mvtnorm" package in R to evaluate the multivariate normal distribution function, we find the proportionality constant $e_{S,C}$ such that the null probability of $Z_{C,k}$ exceeding $e_{S,C}\{(K-1)/k\}^{-δ}$ at any stage $k$ is less than or equal to $α$.
 
 In $SC$, as well as in $SA$ and $AD$, we make use of non-binding futility constants that the study administrators can choose to ignore. All three designs are calibrated such that family-wise type I error rate is controlled at level α regardless of whether the futility boundaries are ignored. In calculating power however, we do assume that the futility boundaries are adhered to.
@@ -287,7 +256,7 @@ P(Z_{C,k}>e_{AD,C}\{(K-1)/k\}^{-δ} \text{  or  } Z_{A,k}> e_{AD,A}\{(K-1)/k\}^{
 
 The futility boundaries $l_{A,k}$ and $l_{B,k}$ are defined relative to the test statistics $Z_{A,k}$ and $Z_{B,k}$. These boundaries equal to $f_{AD,C}\{(K-1)/k\}^{-δ}$ and $f_{AD,A}\{(K-1)/k\}^{-δ}$ respectively, where $f_{AD,C}$ and $f_{AD,A}$ can be set by the user.
 
-As described in `r mycitep(bibFile[["Rosenblum2013AdaptMISTIE"]])`, our decision rules in $AD$ consist of the following steps for each stage $k$:
+As described in `r citep(bibFile[["Rosenblum2013AdaptMISTIE"]])`, our decision rules in $AD$ consist of the following steps for each stage $k$:
 
 
 * 1. (Assess Efficacy) If $Z_{C,k} > u_{C,k}$, reject $H_{0C}$. If $Z_{A,k}>u_{A,k}$, reject $H_{0A}$. If either, or both null hypothesis are rejected, stop all enrollment and end the trial.
@@ -317,9 +286,9 @@ EAGLE allows the user to specify two stage specific sample sizes, one for stages
 
 
 
-# Description of Input Parameters
+# <a name="Inputs">Inputs</a>
 
-## Basic Parameters
+## <a name="Basic Parameters">Basic Parameters</a>
 
 * Subpopulation $A$ proportion ($π_A$): The proportion of the population in subpopulation $A$. This is the subpopulation in which we have prior evidence of a stronger treatment effect. 
 
@@ -334,11 +303,10 @@ EAGLE allows the user to specify two stage specific sample sizes, one for stages
 * Proportion of Alpha allocated to H0C ($a_C$): To control the family-wise Type I error rate in the $AD$ design, first the test of $H_{0C}$ is calibrated to have a Type I error rate equal to $a_Cα$. The decision rules for $H_{0A}$ are then calibrated so that the overall family-wise Type I error rate is equal to $(1-a_C)α$.
 
 * Per stage sample size, combined population ($n_1^\star$): In $SC$, this is the number of patients that must be recruited before we end each stage to do an interim analysis (???). In $AD$ it is the number of patients required for stages 1 through $k^\star$.
-%DO I HAVE THIS RIGHT FOR FC???
 
 * Per stage sample size for stages where only sub-population 2 is enrolled ($n_k^\star$): In $SA$ this is the number of patients that must be recruited before we end each stage to do an interim analysis (???). In $AD$, it is the number of patients required for each stage after $k^\star$.
 
-## Advanced Parameters
+## <a name="Advanced Parameters">Advanced Parameters</a>
 
 * Delta (δ): This parameter defines the curvature of the efficacy and futility boundaries, which are all proportional to $\{(K -  1)/k\}^{-δ}$.
 
@@ -355,7 +323,6 @@ EAGLE allows the user to specify two stage specific sample sizes, one for stages
 * Lower bound for treatment effect in sub-population $B$: EAGLE simulates performance metrics under a range of treatment effect sizes for subpopulation $B$. This sets the lower bound for this range.
 
 * Upper bound for treatment effect in sub-population $B$: EAGLE simulates performance metrics under a range of treatment effect sizes for subpopulation $B$. This sets the upper bound for this range.
-%!?!?! NEed to enforce that lower bound is less than upper bound!
 
 * Last stage sub-population $B$ is enrolled under an adaptive design ($k^\star$): In the adaptive design, we don’t enroll any patients from subpopulation $B$ after stage $k^\star$. 
 
@@ -383,9 +350,9 @@ EAGLE allows the user to specify two stage specific sample sizes, one for stages
 
 
 
-# References
+# <a name="References">References</a>
 
-This report was created using the "knitr" R package `r mycitep(bibFile[["knitr"]])`, with citations created using the "knitcitations" R package `r mycitep(bibFile[["knitcitations"]])`.
+This report was created using the "knitr" R package `r citep(bibFile[["knitr"]])`, with citations created using the "knitcitations" R package `r citep(bibFile[["knitcitations"]])`.
 
 
 ```{r}
