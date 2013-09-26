@@ -25,9 +25,6 @@ opts_chunk$set(echo=FALSE, results='asis',fig.path='tempFiguresForKnitrReport/')
 library(knitcitations)
 bibFile<-read.bibtex('EAGLEcite.bib')
 cite_options(linked=FALSE) #You don't have the full links in your bib file, so the links aren't working.
-
-#Styling
-library(knitrBootstrap)
 ```
 
 
