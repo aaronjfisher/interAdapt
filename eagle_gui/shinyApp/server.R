@@ -67,6 +67,7 @@ try({
 },silent=TRUE)
 try({
   if(getItOnline){
+    library(knitcitations)
     library(devtools)
     library(RCurl)
     library(digest) #some reason this is a dependency not auto-loaded by devtools?
@@ -80,6 +81,8 @@ try({
     source_url(paste0(gitDir,"Adaptive_Group_Sequential_Design.R"))
     knitrRmd<-readLines(textConnection(getURL(paste0(gitDir,"knitr_report.Rmd"))))#download.file won't work, so hack some other stuff for now
     writeLines(knitrRmd,"knitr_report.Rmd")
+    EAGLEcite<-readLines(textConnection(getURL(paste0(gitDir,"EAGLEcite.bib"))))#download.file won't work, so hack some other stuff for now
+    writeLines(EAGLEcite,"EAGLEcite.bib")
     print2log("found code online...")
   }
 },silent=TRUE)

@@ -1,7 +1,6 @@
 rm(list=ls())
 library(shiny)
-runApp('/Users/aaronfisher/Documents/JH/Michael - Shiny App /new_gui/github/eagle_gui/shinyApp')
-
+runApp('/Users/aaronfisher/Documents/JH/Michael - Shiny App /new_gui/EAGLE Repo/eagle_gui/shinyApp')
 
 #test install of downloading it from github
 myDir<-'/Users/aaronfisher/Documents/JH/Michael - Shiny App /new_gui/github/eagle_gui/test install/eagle_stable_solo-master'
