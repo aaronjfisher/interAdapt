@@ -222,7 +222,6 @@ shinyServer(function(input, output) {
     if (!is.null(upFile)){
       x<-c(read.csv(file=upFile$datapath, row.names=1, header=FALSE))[[1]]
       names(x)<-allVarNames
-      #regenCalls<-0
       uploadFileTicker<<-0
       output$uploadTime<<-renderText({as.character(Sys.time())})
       print('resetting upload')
