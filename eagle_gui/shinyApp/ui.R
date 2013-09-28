@@ -265,6 +265,11 @@ shinyUI(pageWithSidebar(
   
   br(), pbreak,
 
+  #TEMP CODE
+  conditionalPanel(condition = "input.OutputSelection != '1'",
+  HTML('<i>Computation time for initial plots is approximately 15 seconds </i>'),br(),br()),
+  #END OF TEMP CODE
+
   conditionalPanel(condition = "input.OutputSelection == '1'",
     HTML(paste(readHelpTabHTML,collapse=''))),
 
