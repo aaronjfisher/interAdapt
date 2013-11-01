@@ -239,12 +239,8 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 ## Determine outcomes of each simulated trial
         
 	# record if efficacy boundary ever crossed, for each of H0C and H01:
-	reversal_at_first_cross_H0C_efficacy_boundary_at_or_before_stage_k <- rep(0,iter)
-	reversal_at_first_cross_H01_efficacy_boundary_at_or_after_stage_k <- rep(0,iter)
         ever_cross_H0C_efficacy_boundary_at_or_before_stage_k <- rep(0,iter)
 	ever_cross_H01_efficacy_boundary <- rep(0,iter)
-	#ever_cross_H0C_futility_boundary <- rep(0,iter)
-	#ever_cross_H01_futility_boundary <- rep(0,iter)
 	# record stage at which enrollment stopped, for different populations:
 	subpop_2_stopped <- rep(0,iter)
 	#stopped_subpop_2_previously <- rep(0,iter)
@@ -252,77 +248,44 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 	# record stage (if any) at which null hypothesis rejected for efficacy:
 	reject_H0C <- rep(0,iter)
         reject_H0C_for_first_time <- rep(0,iter)
-	reject_H01_via_step_1 <- rep(0,iter)
-        reject_H01_via_step_2 <- rep(0,iter)
 	reject_H01_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries <- rep(0,iter)
-	H0C_reversal_due_to_pipeline <- rep(0,iter)
-	H01_via_step1_reversal_due_to_pipeline <- rep(0,iter)
-	H01_via_step2_reversal_due_to_pipeline <- rep(0,iter)
-	# record stage (just) after which trial stops
-	#final_stage <- rep(total_number_stages,iter)
+	reject_H01 <- rep(0,iter)
 	# record stage (just) after which large IVH enrollment stops
 	final_stage_C_enrolled_up_through <- rep(total_number_stages,iter)
-        final_stage_S_enrolled_up_through <- rep(total_number_stages,iter)
-	#final_stage_S <- rep(total_number_stages,iter)
+        final_stage_1_enrolled_up_through <- rep(total_number_stages,iter)
 
 	for(stage in 1:total_number_stages)
 	{
-          	reversal_at_first_cross_H0C_efficacy_boundary_at_or_before_stage_k <- ifelse((stage <= k) & (!ever_cross_H0C_efficacy_boundary_at_or_before_stage_k) & Z_mixture_cumulative[stage,]>mixture_efficacy_boundaries[stage] & Z_mixture_cumulative_including_pipeline[stage,]<mixture_efficacy_boundaries_pipeline[stage],1,reversal_at_first_cross_H0C_efficacy_boundary_at_or_before_stage_k)
-		reversal_at_first_cross_H01_efficacy_boundary_at_or_after_stage_k<- ifelse((stage >= k) & (!ever_cross_H01_efficacy_boundary) & Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,] <subpop_1_efficacy_boundaries_pipeline[stage],1,reversal_at_first_cross_H01_efficacy_boundary_at_or_after_stage_k)
 		ever_cross_H0C_efficacy_boundary_at_or_before_stage_k <- ifelse((stage <= k) & Z_mixture_cumulative[stage,]>mixture_efficacy_boundaries[stage] & Z_mixture_cumulative_including_pipeline[stage,]>mixture_efficacy_boundaries_pipeline[stage],1,ever_cross_H0C_efficacy_boundary_at_or_before_stage_k)
 		ever_cross_H01_efficacy_boundary <- ifelse(Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,] >subpop_1_efficacy_boundaries_pipeline[stage],1,ever_cross_H01_efficacy_boundary)
 		#ever_cross_H0C_futility_boundary <- ifelse(Z_mixture_cumulative[stage,]< (- combined_pop_futility_boundaries[stage]),1,ever_cross_H0C_futility_boundary)
 		#ever_cross_H01_futility_boundary <- ifelse(Z_subpop_1_cumulative[stage,]< (-subpop_1_futility_boundaries[stage]),1,ever_cross_H01_efficacy_boundary)
 
 		# Step 1 of algorithm: Determine if any new events where H0C rejected for efficacy:
-		reject_H0C_for_first_time <- ifelse((!all_stopped) & (!subpop_2_stopped) & Z_mixture_cumulative[stage,]>mixture_efficacy_boundaries[stage],1,0)
-		H0C_reversal_due_to_pipeline <- ifelse(reject_H0C_for_first_time & Z_mixture_cumulative_including_pipeline[stage,]<mixture_efficacy_boundaries_pipeline[stage],1,H0C_reversal_due_to_pipeline)
+	reject_H0C_for_first_time <- ifelse((!all_stopped) & (!subpop_2_stopped) & Z_mixture_cumulative[stage,]>mixture_efficacy_boundaries[stage],1,0)
         reject_H0C <- ifelse(reject_H0C_for_first_time,1,reject_H0C)
-        reject_H01_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries <- ifelse(reject_H0C_for_first_time & Z_subpop_1_cumulative[stage,] > OBrienFleming_boundaries[stage],1,reject_H01_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries) ## for use in fixed sequence, fixed mixture design only, to conform to Fixed Sequence procedure as in supp materials of Liu and Anderson       
-        reject_H01_via_step_1 <- ifelse(reject_H0C_for_first_time & Z_subpop_1_cumulative[stage,] > subpop_1_efficacy_boundaries[stage],1,reject_H01_via_step_1)
-        H01_via_step1_reversal_due_to_pipeline <- ifelse(reject_H0C_for_first_time & Z_subpop_1_cumulative[stage,] > subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,] < subpop_1_efficacy_boundaries_pipeline[stage],1,H01_via_step1_reversal_due_to_pipeline)
-
-        all_stopped <- ifelse(reject_H0C_for_first_time,1,all_stopped)
-        subpop_2_stopped <- ifelse(reject_H0C_for_first_time,1,subpop_2_stopped)
-        # Step 2 of algorithm: Determine if stop large IVH for futility
-        subpop_2_stopped <- ifelse((!reject_H0C) & Z_mixture_cumulative[stage,] < (combined_pop_futility_boundaries[stage]),1,subpop_2_stopped)
-        ## if only large IVH stopped, but small IVH enrollment went on, then check H01 for efficacy and then futility:
-		reject_H01_via_step_2 <- ifelse((!all_stopped) & subpop_2_stopped & Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage],1,reject_H01_via_step_2)
-		H01_via_step2_reversal_due_to_pipeline <- ifelse((!all_stopped) & subpop_2_stopped & Z_subpop_1_cumulative[stage,]>subpop_1_efficacy_boundaries[stage] & Z_subpop_1_cumulative_including_pipeline[stage,]< subpop_1_efficacy_boundaries_pipeline[stage],1,H01_via_step2_reversal_due_to_pipeline)
+        reject_H01_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries <- ifelse(reject_H0C_for_first_time & Z_subpop_1_cumulative[stage,] > OBrienFleming_boundaries[stage],1,reject_H01_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries) ## for use in fixed sequence, fixed mixture design only, to conform to Fixed Sequence procedure as in supp materials of Liu and Anderson, 2008       
+        reject_H01 <- ifelse((!all_stopped) & Z_subpop_1_cumulative[stage,] > subpop_1_efficacy_boundaries[stage],1,reject_H01)
+        all_stopped <- ifelse(reject_H0C | reject_H01 | (Z_subpop_1_cumulative[stage,]<subpop_1_futility_boundaries[stage]),1,all_stopped)
+        subpop_2_stopped <- ifelse(all_stopped | (Z_mixture_cumulative[stage,] < combined_pop_futility_boundaries[stage]),1,subpop_2_stopped)
 		
-        all_stopped <- ifelse((!all_stopped) & subpop_2_stopped & (reject_H01_via_step_2 | Z_subpop_1_cumulative[stage,]< (subpop_1_futility_boundaries[stage])),1,all_stopped)
-
         # record at what stage each subpop. stopped
-		final_stage_C_enrolled_up_through <- ifelse(final_stage_C_enrolled_up_through==total_number_stages & subpop_2_stopped==1,stage,final_stage_C_enrolled_up_through)
-        final_stage_S_enrolled_up_through <- ifelse(final_stage_S_enrolled_up_through==total_number_stages & all_stopped==1,stage,final_stage_S_enrolled_up_through)
+	final_stage_C_enrolled_up_through <- ifelse(final_stage_C_enrolled_up_through==total_number_stages & subpop_2_stopped==1,stage,final_stage_C_enrolled_up_through)
+        final_stage_1_enrolled_up_through <- ifelse(final_stage_1_enrolled_up_through==total_number_stages & all_stopped==1,stage,final_stage_1_enrolled_up_through)
 
-		## Rejected hypotheses factoring in pipeline patient outcomes
-
-		# final_stage <- ifelse(final_stage==total_number_stages & (ever_cross_H0C_efficacy_boundary | ever_cross_H01_efficacy_boundary |  all_stopped),stage,final_stage) # ??		
 	}
 
-	# compute each trial's duration:
-duration <- cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]/enrollment_rate_subpop_1 + 1/2 + 11/12 # add 1/2 year for waiting for 180 day outcomes, plus 11/12 year for assumed ramp up period
-	
-	# Compute 0.01 quantile of Z_subpop_2_cumulative conditional on rejecting H_0C
-	#indexarray <- array(c(final_stage_C_enrolled_up_through,1:length(final_stage_C_enrolled_up_through)),c(length(final_stage_C_enrolled_up_through),2))
-	#ZL <- Z_subpop_2_cumulative[indexarray]
-	#quantile_Z_subpop_2_cond_on_reject_H_0C <- quantile(ZL[reject_H0C==1],probs=subpop_2_tradeoff_percentile)
-
-#cov_mat_comp <<- cov(cbind(t(Z_mixture_cumulative[1:4,]),t(Z_subpop_1_cumulative)))
-#print(max(abs(cov_matrix_full-cov_mat_comp)))
 
 return(c(
 #### For adaptive designs
-mean(reject_H0C & (!H0C_reversal_due_to_pipeline)), # power to reject H0C
-mean((reject_H01_via_step_1 & (!H01_via_step1_reversal_due_to_pipeline)) | (reject_H01_via_step_2 & (!H01_via_step2_reversal_due_to_pipeline))), # power to reject H01
-mean((ever_cross_H0C_efficacy_boundary_at_or_before_stage_k & (!reversal_at_first_cross_H0C_efficacy_boundary_at_or_before_stage_k)) | (ever_cross_H01_efficacy_boundary & (!reversal_at_first_cross_H01_efficacy_boundary_at_or_after_stage_k))), # Worst-case Type I error (assuming no futility stopping at all)
-mean(cum_sample_sizes_mixture[final_stage_C_enrolled_up_through]-cum_sample_sizes_subpop_1[final_stage_C_enrolled_up_through]+cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]), #mean sample size under adaptive design
-mean(pmax((cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through]+pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],enrollment_rate_subpop_2*delay_from_enrollment_to_primary_outcome))/enrollment_rate_subpop_2,(cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through]+pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through],enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome))/enrollment_rate_subpop_1))+delay_from_enrollment_to_primary_outcome, ## max of duration corresponding to each subpopulation, including pipeline patients
-mean((reject_H0C & (!H0C_reversal_due_to_pipeline)) | (reject_H01_via_step_1 & (!H01_via_step1_reversal_due_to_pipeline)) | (reject_H01_via_step_2 & (!H01_via_step2_reversal_due_to_pipeline))), # reject at least one null hypothesis for efficacy
+mean(reject_H0C), # power to reject H0C
+mean(reject_H01), # power to reject H01
+mean(ever_cross_H0C_efficacy_boundary_at_or_before_stage_k | ever_cross_H01_efficacy_boundary), # Worst-case Type I error (assuming no futility stopping at all)
+mean(cum_sample_sizes_mixture[final_stage_C_enrolled_up_through]-cum_sample_sizes_subpop_1[final_stage_C_enrolled_up_through]+cum_sample_sizes_subpop_1[final_stage_1_enrolled_up_through]), #mean sample size under adaptive design
+mean(pmax((cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through]+pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],enrollment_rate_subpop_2*delay_from_enrollment_to_primary_outcome))/enrollment_rate_subpop_2,(cum_sample_sizes_subpop_1[final_stage_1_enrolled_up_through]+pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_1_enrolled_up_through],enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome))/enrollment_rate_subpop_1))+delay_from_enrollment_to_primary_outcome, ## max of duration corresponding to each subpopulation, including pipeline patients
+mean(reject_H0C | reject_H01),
 mean(pmin(cum_sample_sizes_subpop_2[total_number_stages]-cum_sample_sizes_subpop_2[final_stage_C_enrolled_up_through],enrollment_rate_subpop_2*delay_from_enrollment_to_primary_outcome)+
-     pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_S_enrolled_up_through],enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome)), # avg. sample size in pipeline in adaptive design
-#mean(as.numeric(combined_pop_futility_boundaries[final_stage_C]!=(-Inf))*((1-p1)/p1)*(enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome) + as.numeric(subpop_1_futility_boundaries[final_stage_S]!=(-Inf))*enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome),# avg. recruited subjects in pipeline in adaptive design
+     pmin(cum_sample_sizes_subpop_1[total_number_stages]-cum_sample_sizes_subpop_1[final_stage_1_enrolled_up_through],enrollment_rate_subpop_1*delay_from_enrollment_to_primary_outcome)), # avg. sample size in pipeline in adaptive design
 
 #### For fixed designs that stop when H0C rejected for efficacy or futility:
 mean(cum_sample_sizes_mixture[final_stage_C_enrolled_up_through])/enrollment_rate_combined_population + delay_from_enrollment_to_primary_outcome  # avg. trial duration: we add delay_from_enrollment_to_primary_outcome (in years) to account for this extra time
@@ -332,10 +295,9 @@ mean(pmin(cum_sample_sizes_mixture[total_number_stages]-cum_sample_sizes_mixture
 mean(reject_H01_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries), # only used in fixed sequence, fixed mixture design
 0,#quantile_Z_subpop_2_cond_on_reject_H_0C,
 ### Reversals due to pipeline patients
-mean(H0C_reversal_due_to_pipeline),
-mean(H01_via_step1_reversal_due_to_pipeline),
-mean(H01_via_step2_reversal_due_to_pipeline)
-))
+0,
+0,
+0))
 }
 
 	
@@ -432,15 +394,13 @@ r10 <- 1/2
 r20 <- 1/2
 k <- last_stage_subpop_2_enrolled_adaptive_design
 
-
-
 futility_boundaries_fixed_design_H0C <<-c(H0C_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),Inf)
 
 futility_boundaries_fixed_design_H01 <<-c(H01_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),Inf)
 
 #Placeholders only here
-subpop_1_futility_boundaries_fixed_design_H0C <- rep(Inf,total_number_stages)
-subpop_1_futility_boundaries_fixed_design_H01 <- rep(Inf,total_number_stages)
+subpop_1_futility_boundaries_fixed_design_H0C <- rep(-Inf,total_number_stages)
+subpop_1_futility_boundaries_fixed_design_H01 <- rep(-Inf,total_number_stages)
 subpop_2_futility_cutoff <<- (Inf)
 
 p1 <- p1_user_defined
