@@ -8,7 +8,10 @@
 
 # Need to make sure the initialized image is set correctly. 
     # For beta testing it's just commented out to maintain consistency.
-
+# If you upload the same dataset twice, it won't notice the change. you have to clear first.
+# search !!! and ???
+# Once we have stable code, make sure the default xlims are right when we load table1 from file.
+# (AF) I believe HJ wrote the renderTable function?
 
   # ______                         _     _      
   # | ___ \                       | |   | |     
@@ -44,9 +47,11 @@ subH01anitize<-function(x){
 
 
 #To print2log errors that we can read in a log later, useful for checking sessions on RStudio/glimmer/spark
-cat(file='session_log.txt',paste(Sys.time(),'\n \n')) #override last session, start new log
-print2log<-function(x,logFileName='session_log.txt'){ #takes a string as input
-  print(x)
+#first override last session/start new log
+#!!!??? In final release, set "print2R" to FALSE
+cat(file='session_log.txt',paste(Sys.time(),'\n \n')) 
+print2log<-function(x,logFileName='session_log.txt',print2R=TRUE){ #takes a string as input
+  if(print2R) print(x)
   cat(file=logFileName,paste(x,'\n'),append=TRUE)
 }
 ###############
@@ -72,6 +77,7 @@ try({
     library(RCurl)
     library(digest) #some reason this is a dependency not auto-loaded by devtools?
     gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/"
+    #The glimmer/spark files contains a line that specifies if the server should host the stable version, or the beta version.
     if(exists('appVersion')) {
       if(appVersion=='stable'){
         gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/"
@@ -87,7 +93,7 @@ try({
   }
 },silent=TRUE)
 
-print2log("...got code!...")
+print2log("...supplementary files found and loaded...")
 
 allVarNames<-c(st[,'inputId'],bt[,'inputId'])
 allVarLabels<-c(st[,'label'],bt[,'label'])
@@ -104,11 +110,11 @@ for(i in 1:dim(bt)[1]){
 }
 
 
-#Answers: do we need to regen table1? Try to see if you have it locally. If you don't, or if you need to update it, do it agian & save (wherever you are, eitehr on glimmer or locally
+#The following code answers the question: do we need to regen table1? Try to see if you have it locally. If you don't, or if you need to update it, do it again & save (wherever you are, either on glimmer, spark, or locally)
 stillNeedTable1<-TRUE
 try({
 load('last_default_inputs.RData') #won't work first time on glimmer, but it's OK
-  if(all(bt==lastBt)&all(st==lastSt)){ #lastBt and lastSt are from the last time we generated table1
+  if(all(bt==lastBt)&all(st==lastSt)){ #lastBt and lastSt are from the last time we generated table1, contained in the RData file we just loaded. If we're a match, then:
       load('last_default_table1_&_xlim.RData')
       stillNeedTable1<-FALSE
       print2log("loaded table1...")
@@ -160,7 +166,6 @@ shinyServer(function(input, output) {
   uploadDatasetTicker<-0
   inCsvValues<-NULL
   inDatasetValues<-NULL
-  output$uploadTime<-renderText({as.character(Sys.time())})  #time when last file was uploaded. Could use for clearing??
 
   #current value of all the data, need to store this if we want to change the sliders to all be animated in interactive mode, but not change their values.
   #all used a comparison against static lastAllVars
@@ -200,9 +205,9 @@ shinyServer(function(input, output) {
   })
 
 
-  params<-reactive({ input$Parameters1 + input$Parameters2 })
+  params<-reactive({ input$Parameters1 + input$Parameters2 }) #one button for advanced, one for basic.
 
-  #when we're not just looking at basic parameters, we force batch mode.
+  #when we're not just looking at basic parameters (which_params!=1), we force batch mode.
   effectivelyBatch<- reactive({input$Batch == "1" | input$Which_params != "1"})
 
 
@@ -230,8 +235,6 @@ shinyServer(function(input, output) {
   # \_____/\___/ \__,_|\__,_| |___/ \__,_|\__\__,_|
 
   #below are 2 reactive chunks to feed to the dynamicBoxes & dynamicSliders
-  
-
 
 
   csvUpload<-reactive({
@@ -241,7 +244,6 @@ shinyServer(function(input, output) {
       x<-c(read.csv(file=upFile$datapath, row.names=1, header=FALSE))[[1]]
       names(x)<-allVarNames
       uploadCsvTicker<<-0
-      output$uploadTime<<-renderText({as.character(Sys.time())}) #Take this out eventually?
       print2log('resetting upload csv all inputs')
     }
     inCsvValues<<-x
@@ -269,7 +271,6 @@ shinyServer(function(input, output) {
       x['p21_user_defined'] <- mean(Y*(S==2)*(A==1))/mean((S==2)*(A==1))
       # HJ -- perform sanity checks?
       uploadDatasetTicker<<-0
-      output$uploadTime<<-renderText({as.character(Sys.time())}) #from when we were trying to see if we could use upload time to help see if we uploaded the same data twice.
       print2log('new Data calculated from')
       print2log(x)
       print2log('resetting upload dataset')      
@@ -292,7 +293,7 @@ shinyServer(function(input, output) {
 
   #NOTE - June 26: When sliders update, regen thinks it needs to be called again because sliders have updated values and you're now in interactive mode.
         #solution -- added lastAllVars (nonreactive) variable that cancels this out.
-  #explanation of uploadCsvTicker: Only if it's the first time do we change the sliders to the uploaded values from the full csv list. If it's not the first time, we use the current value of the variable, taken from allVars.
+  #explanation of uploadCsvTicker: Only if it's the first time since uploading do we change the sliders to the uploaded values from the full csv list. If it's not the first time, we use the current value of the variable, taken from allVars.
   #for uploadDatasetTicker, it's the same basic idea, but we only check it for variables in the vector 'datasetVarNames'.
   sliders <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
     print2log('sliders')
@@ -307,19 +308,20 @@ shinyServer(function(input, output) {
       #each of these cases overrides the previous one
       #case1: null upfile & zero uploadCsvTicker (sliders haven't changed yet)
       value_i<-st[i,'value']
-      #case2: something uploaded in csv input file, and hasn't been used yet (uploadCsvTicker==0)
+      #case2: something uploaded in csv input file, and hasn't been incorporated yet (uploadCsvTicker==0)
       if(!is.null(inCsvValues)) value_i<-inCsvValues[st[i,'inputId']]
       #case3: whatever's there has been called already, ignore uploaded input csv data.
       if(uploadCsvTicker>0) isolate(value_i<-allVars()[st[i,'inputId']])
       #case4: someone just uploaded a dataset that we parsed to get slider values
+        #(only do this for sliders that are in the datasetVarNames vector)
       if(uploadDatasetTicker==0 & (!is.null(inDatasetValues)) & st[i,'inputId'] %in% datasetVarNames)
         value_i<-inDatasetValues[st[i,'inputId']]
       #end of cases
 
       labelListi<-subH0(st[i,'label']) #Labels are stored as non slider text objects, so that we can apply subscripts
       sliderListi<-sliderInput(inputId=st[i,'inputId'], label='', min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'], animate=animate)
-      ind<-length(labelSliderList) #starts at 0
-      labelSliderList[[ind+1]]<-labelListi
+      ind<-length(labelSliderList) #starts at 0, grows on each repeat of this loop
+      labelSliderList[[ind+1]]<-labelListi #alternate labels inbetween sliders
       labelSliderList[[ind+2]]<-sliderListi
     }
     uploadCsvTicker<<-uploadCsvTicker+1
@@ -373,8 +375,8 @@ shinyServer(function(input, output) {
     applyValue<-params()
     totalCalls<<-totalCalls+1
     print2log(paste('total calls =',totalCalls))
-    #ESCAPE --
-    #escape if it's called when dynamic sliders/buttons are still loading
+    #ESCAPE SCENARIOS
+    #escape if it's called when dynamic sliders/buttons are still loading (just when app starts up)
     if(is.null(input$Batch) || is.null(applyValue))
       {print2log('regen null batch or apply -> out') ; return()}
     for(name in allVarNames){
@@ -390,6 +392,9 @@ shinyServer(function(input, output) {
       lastApplyValue <<- applyValue #fixes bug where if you hit apply w/ no changes, the next slider change will interactively call table_constructor()
       return()
     }
+
+
+    #If we haven't escaped, continue...
 
 
     #if Batch==1, we don't want things updating automatically, so we use isolate()
@@ -581,6 +586,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     }
   )
 
+  #functions for downloading table output.
   roundTable<-function(tab,digits){
     newTab<-array(0,dim=dim(tab))
     for(i in 1:dim(tab)[1]){
@@ -591,7 +597,6 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     rownames(newTab)<-rownames(tab)
     return(newTab)
   }
-
   designTable2csv<-function(t1,filename){
       K<-dim(t1[[1]])[2]
       designsCsv<-rbind( 
@@ -605,7 +610,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   }
 
 
-  #Look good, but double check these files below in the future.
+  #!!! Double check these files below once we have new tables with new descision rules ???
   
   output$downloadDesignAD.1<-
   output$downloadDesignAD.2 <- downloadHandler(

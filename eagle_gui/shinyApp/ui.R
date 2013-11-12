@@ -1,3 +1,11 @@
+#NOTES
+#!!!!!!!!!!!!
+# Search for !!! and ???
+# Update websites for need2update variable, both the site we check for "newestVerName" and the site we send people to get updates from.
+# Should we move this to a repo under Michael's username?
+# Need to adjust the title of this webpage?
+# Once the paper draft is finalized, we need to update the knitr rmd file accordingly.
+
 # non-standard plot dimensions
 verName<-'EAGLE.1' #appVersion is already taken for sable v. nonstable
 width <- "90%"          # narrower
@@ -23,7 +31,7 @@ my_headerPanel <- function (title, windowTitle = title, h=h3)
 
 pbreak<-HTML('<P CLASS=breakhere>')
 
-# from Aaron
+
 #Load csv's with info about the input sliders & boxes
 #then build lists of input sliders & boxes
 #slider table & box table
@@ -38,24 +46,6 @@ try({
   readHelpTabHTML<- paste0(readLines('help_tab.html'),collapse='')
   cat("found code locally...", file=stderr())
 
-  #### action buttons
-  # No reason for all the action buttons to do the same thing, so
-  # we add the resource here once. 
-  # Maybe we should test that ./actionbutton/actionbutton.js exists. #AF - this is now incoporated I think :)
-  # We have stolen this file from shinyIncubator.
-  # suppressMessages(addResourcePath(
-  #     prefix='actionbutton', 
-  #     directoryPath=file.path(getwd(), 'actionbutton')
-  # ))  
-      
-  # # adapted from shinyIncubator, so we don't require that package
-  # my_actionButton <- function(inputId, label) {
-  #   tagList(
-  #     singleton(tags$head(tags$script(src = 'actionbutton/actionbutton.js'))),
-  #     tags$button(id=inputId, type="button", class="btn action-button", label)
-  #   )
-  # }
-  ################
   getItOnline<-FALSE #if we haven't gotten an error yet!
 
 },silent=TRUE)
@@ -77,24 +67,6 @@ try({
     readHelpTabRaw <-getURL(paste0(gitDir,"help_tab.html"))
     readHelpTabHTML<-str_replace_all(readHelpTabRaw,'\n','')
 
-    # #################
-    # # TO USE SHINY 0.5 instead of 0.6
-    # # Stolen from shinyIncubator
-    # # needs actionbutton/actionbutton.js
-    # suppressMessages(addResourcePath(
-    #     prefix='actionbutton',
-    #     directoryPath=file.path(getwd(), 'actionbutton')
-    # ))
-    # # adapted from shinyIncubator, so we don't require that package
-    # my_actionButton <- function(inputId, label) {
-    #   tagList(
-    #     singleton(tags$head(tags$script(src = 'actionbutton/actionbutton.js'))),
-    #     tags$button(id=inputId, type="button", class="btn action-button", label)
-    #   )
-    # }
-    # actionButton <- my_actionButton
-    #################
-
     cat("found code online...", file=stderr())
   }
 },silent=TRUE)
@@ -106,27 +78,28 @@ try({
 
 
 #################################
+#################################
+####  THIS IS NO LONGER USED (sliders & input boxes are now dynamic objects defined in the server.R file)
 
+# #build the inputs that will be seen
 
-allVarNames<-c(st[,'inputId'],bt[,'inputId'])
+# allVarNames<-c(st[,'inputId'],bt[,'inputId'])
+# sliderList<-list()
+# boxList<-list()
 
-sliderList<-list()
-boxList<-list()
+# #building sliders
+# for(i in 1:dim(st)[1]){
+# sliderList[[i]]<-sliderInput(inputId=st[i,'inputId'], label=st[i,'label'], min=st[i,'min'], max=st[i,'max'], value=st[i,'value'], step=st[i,'step'], animate=st[i,'animate'])
+# }
+# names(sliderList)<-st[,'inputId']
 
-#build the inputs that will be seen
-#THIS IS NO LONGER USED!!!!?!?!: Since sliders & boxes are now dynamic objects defined in the server.
-#building sliders
-for(i in 1:dim(st)[1]){
-sliderList[[i]]<-sliderInput(inputId=st[i,'inputId'], label=st[i,'label'], min=st[i,'min'], max=st[i,'max'], value=st[i,'value'], step=st[i,'step'], animate=st[i,'animate'])
-}
-names(sliderList)<-st[,'inputId']
-
-#building numerical input boxes
-for(i in 1:dim(bt)[1]){
-boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=bt[i,'value'], step=bt[i,'step'])
-}
-names(boxList)<-bt[,'inputId']
-################################
+# #building numerical input boxes
+# for(i in 1:dim(bt)[1]){
+# boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=bt[i,'value'], step=bt[i,'step'])
+# }
+# names(boxList)<-bt[,'inputId']
+#################################
+#################################
 
 
 
@@ -169,7 +142,7 @@ shinyUI(pageWithSidebar(
   sidebarPanel(
         #TOP PANEL
         selectInput("Which_params", "", c("Show basic parameters" = "1",
-                "Show advanced parameters" = "2", "Save & Load Parameters" = "3") ),
+                "Show advanced parameters" = "2", "Show All Parameters and Save/Load Option" = "3") ),
 
         #SAVE & LOAD
 
@@ -212,22 +185,6 @@ shinyUI(pageWithSidebar(
   ),
 
 
-  # # "Advanced" forces batch mode
-  # sidebarPanel(
-  #       selectInput("Which_params", "", c("Basic parameters" = "1",
-  #               "Advanced parameters" = "2")),
-  #       conditionalPanel(condition = "input.Which_params == '1'",
-  #               selectInput("Batch", "", c("Batch mode" = "1",
-  #                       "Interactive mode" = "2")),
-  #               conditionalPanel(condition = "input.Batch == '1'",
-  #                       my_actionButton("Parameters", "Apply"),
-  #                       br(), br()),
-  #               sliderList),
-  #       conditionalPanel(condition = "input.Which_params == '2'",
-  #               my_actionButton("Parameters", "Apply"),
-  #               br(), br(),
-  #               boxList)
-  # ),
 
 
 
@@ -248,7 +205,7 @@ shinyUI(pageWithSidebar(
   conditionalPanel(need2update, 
     h4('Updates are available!'),
     'An updated version of this software can been downloaded ',
-    a('here',href='http://htmlpreview.github.io/?https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/install_instructions.html'), 
+    a('here',href='https://rawgithub.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/install_instructions.html'), 
     br(),br()
   ),
 
@@ -266,10 +223,12 @@ shinyUI(pageWithSidebar(
   br(), pbreak,
 
   #TEMP CODE
+  #!!!??? Comment this out if table1 from file works well?
   conditionalPanel(condition = "input.OutputSelection != '1'",
   HTML('<i>Computation time for initial plots is approximately 15 seconds </i>'),br(),br()),
   #END OF TEMP CODE
 
+  #About Eagle Tab
   conditionalPanel(condition = "input.OutputSelection == '1'",
     HTML(paste(readHelpTabHTML,collapse=''))),
 
