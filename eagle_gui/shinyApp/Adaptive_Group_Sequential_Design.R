@@ -11,19 +11,19 @@ library(xtable)
 #data.frame(variable_name=c("p1","p10_user_defined"
 #"Subpopulation 1 proportion"),slider_title
 ## Subpopulation 1 proportion (Range: 0 to 1)
-p1_user_defined <- 0.61
+p1_user_defined <- 0.33
 
 ## Prob. outcome = 1 under control:
 ## for Subpop. 1 (Range: 0 to 1)
-p10_user_defined <- 0.33
+p10_user_defined <- 0.25
 ## for Subpop. 2 (Range: 0 to 1)
-p20_user_defined <- 0.12
+p20_user_defined <- 0.20
 
 ## Prob. outcome = 1 under treatment, at alternative:
 ## for Subpop. 1 (Range: 0 to 1)
-p11_user_defined<- 0.33 + 0.125 
+p11_user_defined<- 0.25 + 0.125 
 ## for Subpop. 2 (Range: 0 to 1)
-p21_user_defined<- 0.12 + 0.125
+p21_user_defined<- 0.20 + 0.125
 
 ## Alpha allocation
 # Desired familywise type I error rate (one-sided) (Range: 0 to 1)
@@ -63,7 +63,7 @@ upper_bound_treatment_effect_subpop_2 <- (0.2)
 
 ## Adaptive Design <please make this a section of input boxes>
 
-last_stage_subpop_2_enrolled_adaptive_design <- 4  #(Range: 1 to total_number_stages, which was defined above; if that's hard to set up, then set max at 20)
+last_stage_subpop_2_enrolled_adaptive_design <- 3  #(Range: 1 to total_number_stages, which was defined above; if that's hard to set up, then set max at 20)
 ## Futility boundary proportionality constant for H0C (z-statistic scale)
 H0C_futility_boundary_proportionality_constant_adaptive_design <- 0 #(Range: -10 to 10)
 ## Futility boundary proportionality constant for H01 (z-statistic scale)
