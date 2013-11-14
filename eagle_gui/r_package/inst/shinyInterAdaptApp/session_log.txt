@@ -1,0 +1,17 @@
+2013-11-14 16:03:12 
+ 
+source'ing code... 
+found code locally... 
+...supplementary files found and loaded... 
+loaded table1... 
+sliders 
+0 
+0 
+           sliders updating!!!!!! 
+                    boxes 
+total calls = 1 
+null regen input -> out 
+power plot 
+H0C Boundary Plot 
+adapt table 
+perf table 
