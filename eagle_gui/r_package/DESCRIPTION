@@ -8,7 +8,8 @@ Maintainer: Michael Rosenblum <mrosenbl@jhsph.edu>
 Depends:
     R (>= 3.0.1),
     shiny,
-    mvtnorm
+    mvtnorm,
+    knitr
 License: GPL-2
 LazyData: true
 Collate:
