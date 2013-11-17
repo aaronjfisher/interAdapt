@@ -529,8 +529,8 @@ ltext<-rep(NA,5)
 ltext[1]<-expression(paste("Adaptive, Power H"[0][C]," or H"[0][1]))
 ltext[2]<-expression(paste("Adaptive, Power H"[0][C]))
 ltext[3]<-expression(paste("Adaptive, Power H"[0][1]))
-ltext[4]<-expression(paste("Fixed Design Total Pop. (H"[0][C],")"))
-ltext[5]<-expression(paste("Fixed Design Subpop. 1 Only (H"[0][1],")"))
+ltext[4]<-expression(paste("Standard Design Total Pop. (H"[0][C],")"))
+ltext[5]<-expression(paste("Standard Design Subpop. 1 Only (H"[0][1],")"))
 legend("bottomright",legend=ltext,lty=c(1,2,3,4,5),col=c(1,1,1,3,4),lwd=c(3,3,3,3,3))
 }
 
@@ -549,7 +549,7 @@ lines(x=rev(risk_difference_list),y=table1[,7],lty=2,col=3,lwd=3)
 
 # H01 fixed
 lines(x=rev(risk_difference_list),y=table1[,11],lty=3,col=4,lwd=3)
-legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
+legend("bottomright",legend=c("Adaptive Design","Standard Design Total Pop.","Standard Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
 
 }
 
@@ -568,7 +568,7 @@ lines(x=rev(risk_difference_list),y=table1[,8],lty=2,col=3,lwd=3)
 
 # H01 fixed
 lines(x=rev(risk_difference_list),y=table1[,12],lty=3,col=4,lwd=3)
-legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
+legend("bottomright",legend=c("Adaptive Design","Standard Design Total Pop.","Standard Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
 
 }
 
@@ -587,7 +587,7 @@ lines(x=rev(risk_difference_list),y=table1[,15],lty=2,col=3,lwd=3)
 
 # H01 fixed
 lines(x=rev(risk_difference_list),y=table1[,16],lty=3,col=4,lwd=3)
-legend("bottomright",legend=c("Adaptive Design","Fixed Design Total Pop.","Fixed Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
+legend("bottomright",legend=c("Adaptive Design","Standard Design Total Pop.","Standard Design Subpop. 1 Only"),lty=c(1,2,3),col=c(1,3,4),lwd=c(3,3,3))
 
 }
 
@@ -643,8 +643,8 @@ output_df <- cbind(as.matrix(table1))
 output_df_formatted <- cbind(output_df[,1],output_df[,2],output_df[,3],100*output_df[,4],100*output_df[,5],100*output_df[,6],output_df[,7],output_df[,8],100*output_df[,9],
 #100*output_df[,10],
 output_df[,11],output_df[,12],100*output_df[,13])
-colnames(output_df_formatted) <- c("Subpop.2 Tx. Effect","AD:SS","AD:DUR","AD:Power H0C","AD:Power H01","AD:Power H0C or H01","FC:SS","FC:DUR","FC:Power H0C","FS:SS","FS:DUR","FS:Power H01")
-return(list(output_df_formatted,digits=c(0,2,0,1,0,0,0,0,1,0,0,1,0),caption="Comparison of avg sample size (SS), avg duration (DUR), and power (as a percent), for the following designs: the Adaptive Design (AD), the Fixed Design Enrolling Combined Population (FC), and the Fixed Design Enrolling Subpop. 1 Only (FS). All designs strongly control the familywise Type I error rate at level FWER set using slider onleft."))
+colnames(output_df_formatted) <- c("Subpop.2 Tx. Effect","AD:Sample Size","AD:DUR","AD:Power H0C","AD:Power H01","AD:Power H0C or H01","SC:Sample Size","SC:DUR","SC:Power H0C","SS:Sample Size","SS:DUR","SS:Power H01")
+return(list(output_df_formatted,digits=c(0,2,0,1,0,0,0,0,1,0,0,1,0),caption="Comparison of avg sample size, avg duration (DUR), and power (as a percent), for the following designs: the Adaptive Design (AD), the Standard Design Enrolling Combined Population (SC), and the Standard Design Enrolling Subpop. 1 Only (SS). All designs strongly control the familywise Type I error rate at level FWER set using slider onleft."))
 }
 
 transpose_performance_table<-function(ptable){
@@ -731,7 +731,7 @@ colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(5,(total_number_stages+1)))
 #dig_array[4:7,] <- array(2,c(4,(total_number_stages+1)))
 dig_array[4:5,2:(total_number_stages+1)] <- ifelse(is.na(output_df[4:5,]),0,ifelse(output_df[4:5,]==0,0,2))
-return(list(output_df,digits=dig_array,caption="Cumulative Sample Sizes and Decision Boundaries for Fixed Design Enrolling Combined Population. Each column corresponds to a stage. All thresholds are given on the z-statistic scale."))
+return(list(output_df,digits=dig_array,caption="Cumulative Sample Sizes and Decision Boundaries for Standard Design Enrolling Combined Population. Each column corresponds to a stage. All thresholds are given on the z-statistic scale."))
 
 
 }
@@ -759,7 +759,7 @@ colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(3,(total_number_stages+1)))
 #dig_array[4:7,] <- array(2,c(4,(total_number_stages+1)))
 dig_array[2:3,2:(total_number_stages+1)] <- ifelse(is.na(output_df[2:3,]),0,ifelse(output_df[2:3,]==0,0,2))
-return(list(output_df,digits=dig_array,caption="Cumulative Sample Sizes and Decision Boundaries for Fixed Design enrolling only Subpopulation 1. Each column corresponds to a stage. All thresholds are given on the z-statistic scale."))
+return(list(output_df,digits=dig_array,caption="Cumulative Sample Sizes and Decision Boundaries for Standard Design enrolling only Subpopulation 1. Each column corresponds to a stage. All thresholds are given on the z-statistic scale."))
 
 
 }
