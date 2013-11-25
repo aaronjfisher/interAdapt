@@ -1,0 +1,16 @@
+Package: interAdapt
+Title: interAdapt
+Description: A shiny application for designing adaptive clinical trials
+Version: 0.1
+Author: Aaron Fisher <afisher@jhsph.edu>, Michael Rosenblum
+    <mrosenbl@jhsph.edu>, Harris Jaffee
+Maintainer: Michael Rosenblum <mrosenbl@jhsph.edu>
+Depends:
+    R (>= 3.0.1),
+    shiny,
+    mvtnorm,
+    knitr
+License: GPL-2
+LazyData: true
+Collate:
+    'runInterAdapt.r'

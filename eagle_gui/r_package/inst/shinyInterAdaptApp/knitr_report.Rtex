@@ -1,0 +1,88 @@
+\documentclass{article}
+\begin{document}
+
+
+```{r hello-random, echo=FALSE}
+pxtablek <- function(x, ...) { 
+	if(class(x)=='list'){
+  		print(xtable::xtable(x[[1]], digits=x$digits, caption=x$caption),type='latex', ...) 
+  	}else{
+  		print(xtable::xtable(x),type='latex', ...) 
+  	}
+}
+opts_chunk$set(echo=FALSE, results='asis',fig.path='tempFiguresForKnitrPdfReport/')
+```
+
+Here we can put a little paragraph and mini table that looks like this:
+```{r}
+summaryTab<-matrix(NA,3,1)
+rownames(summaryTab)<-c('Subpopulation 1 proportion', 
+                        'Subpopulation 2 proportion',
+                        'Alpha (FWER) Requirement')
+summaryTab[1,1] <- p1_user_defined
+summaryTab[2,1] <- 1-p1_user_defined
+summaryTab[3,1] <- alpha_FWER_user_defined
+```
+```{r}
+print(xtable::xtable(summaryTab),type='latex',include.colnames=FALSE)
+```
+
+
+*******
+
+Full list of inputs:
+
+```{r}
+inputVec<-matrix(rep(NA,length=length(allVarNames)),ncol=1)
+for(i in 1:length(allVarNames)) inputVec[i]<- input[[ allVarNames[i] ]]
+rownames(inputVec)<-allVarLabels
+pxtablek(inputVec,include.colnames=FALSE)
+```
+
+*******
+
+
+
+
+
+```{r}
+boundary_adapt_plot()
+```
+```{r}
+pxtablek(adaptive_design_sample_sizes_and_boundaries_table())
+```
+*******
+```{r}
+pxtablek(fixed_H0C_design_sample_sizes_and_boundaries_table())
+```
+*******
+```{r}
+pxtablek(fixed_H0S_design_sample_sizes_and_boundaries_table())
+```
+*******
+
+
+
+
+```{r}
+power_curve_plot()
+```
+*******
+```{r}
+expected_sample_size_plot()
+```
+*******
+```{r}
+expected_duration_plot()
+```
+*******
+```{r}
+overrun_plot()
+```
+*******
+```{r}
+ptab<-transpose_performance_table(performance_table())
+pxtablek(ptab,include.colnames=FALSE)
+```
+
+\end{document}
