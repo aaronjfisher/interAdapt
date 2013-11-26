@@ -593,7 +593,7 @@ legend("bottomright",legend=c("Adaptive Design","Standard Design Total Pop.","St
 
 boundary_adapt_plot <-function()
 {
-adapt_boundary_mat<- t(adaptive_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary", "H01 Efficacy Boundary", "H01 Futility Boundary"), ])
+adapt_boundary_mat<- t(adaptive_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "Boundary to Stop Subpop. 2 Enrollment", "H01 Efficacy Boundary", "H01 Futility Boundary"), ])
 fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of Combined Population','Null Hypothesis ( H'[0][C]~') and Subpopulation 1 Null Hypothesis ( H'[0][1]~')'))
 matplot(adapt_boundary_mat,type='o',main=fancyTitle,pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2,, xlab='Stage',ylab='Boundaries on Z-score scale')
 ltext<-rep(NA,4)
@@ -695,7 +695,7 @@ H01_efficacy <- subpop_1_efficacy_boundaries
 H01_futility <- subpop_1_futility_boundaries_adaptive_design
 
 output_df <- rbind(row1,row2,row3,H0C_efficacy,H0C_futility,H01_efficacy,H01_futility)
-row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","H0C Futility Boundary","H01 Efficacy Boundary","H01 Futility Boundary")
+row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","Boundary to Stop Subpop. 2 Enrollment","H01 Efficacy Boundary","H01 Futility Boundary")
 colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(7,(total_number_stages+1)))
 #dig_array[4:7,] <- array(2,c(4,(total_number_stages+1)))
