@@ -12,6 +12,11 @@
 # search !!! and ???
 # Once we have stable code, make sure the default xlims are right when we load table1 from file.
 # (AF) I believe HJ wrote the renderTable function?
+# Adding π to the sliders means you can't edit them in excel anymore, or excel will mess it up when it saves
+# Right now we don't have any more subscripts than in the null hypothesis tests. 
+  # we could add for instance p_{1,2} but this would require more work with our custom "sanitize text" functions
+  #it's find for now, don't bother.
+
 
   # ______                         _     _      
   # | ___ \                       | |   | |     
