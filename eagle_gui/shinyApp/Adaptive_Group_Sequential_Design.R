@@ -34,7 +34,7 @@ alpha_H0C_proportion_user_defined <- 0.24
 
 ## Adaptive Design Per-stage Sample Sizes
 per_stage_sample_size_combined_adaptive_design_user_defined <- 150 #(Range: 0 to 1000)
-per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined  <- 311 #(Range: 0 to 1000)
+per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined  <- 311 #(Range: 0 to 1000)
 
 
 ## End of list of parameters to put in sliders next to plots 
@@ -339,7 +339,7 @@ cum_sample_sizes_subpop_1 <- c(p1_user_defined*ss,rep(0,total_number_stages-k_st
 if(total_number_stages-k_star >0)
 {
 	for(i in (k_star+1):total_number_stages){
-	cum_sample_sizes_subpop_1[i] <-  cum_sample_sizes_subpop_1[i-1]+ per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined
+	cum_sample_sizes_subpop_1[i] <-  cum_sample_sizes_subpop_1[i-1]+ per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined
 	}
 }
 
@@ -483,7 +483,7 @@ for(percent_benefit_subpop_2 in rev(risk_difference_list))
 	#print(c(percent_benefit_subpop_2,cv_large,cv_small))
     outcome_variance_subpop_2 <- p21*(1-p21)/r20+p20*(1-p20)/(1-r20)
 
-power_vec <- get_power(p1=p1_user_defined,total_number_stages,k=last_stage_subpop_2_enrolled_adaptive_design,combined_pop_futility_boundaries_adaptive_design,subpop_1_futility_boundaries_adaptive_design,n1=per_stage_sample_size_combined_adaptive_design_user_defined,n2=per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined,b_C=H0C_efficacy_boundary_proportionality_constant_adaptive_design,b_S=H01_efficacy_boundary_proportionality_constant_adaptive_design,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
+power_vec <- get_power(p1=p1_user_defined,total_number_stages,k=last_stage_subpop_2_enrolled_adaptive_design,combined_pop_futility_boundaries_adaptive_design,subpop_1_futility_boundaries_adaptive_design,n1=per_stage_sample_size_combined_adaptive_design_user_defined,n2=per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined,b_C=H0C_efficacy_boundary_proportionality_constant_adaptive_design,b_S=H01_efficacy_boundary_proportionality_constant_adaptive_design,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
 
 adaptive_df[counter_adaptive,] <- c(power_vec[4]+power_vec[7],power_vec[c(5,1,2,6)])
 overrun_df[counter_adaptive,1] <- power_vec[7]
@@ -594,6 +594,7 @@ legend("bottomright",legend=c("Adaptive Design","Standard Design Total Pop.","St
 boundary_adapt_plot <-function()
 {
 adapt_boundary_mat<- t(adaptive_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "Boundary to Stop Subpop. 2 Enrollment", "H01 Efficacy Boundary", "H01 Futility Boundary"), ])
+adapt_boundary_mat[adapt_boundary_mat==Inf]<-NA
 fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of Combined Population','Null Hypothesis ( H'[0][C]~') and Subpopulation 1 Null Hypothesis ( H'[0][1]~')'))
 matplot(adapt_boundary_mat,type='o',main=fancyTitle,pch=c(19,15,19,15),col=c('black','black','blue','blue'),lty=2,, xlab='Stage',ylab='Boundaries on Z-score scale')
 ltext<-rep(NA,4)
@@ -675,11 +676,11 @@ combined_pop_futility_boundaries_adaptive_design <<- c(H0C_futility_boundary_pro
 subpop_1_futility_boundaries_adaptive_design <<-c(H01_futility_boundary_proportionality_constant_adaptive_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),subpop_1_efficacy_boundaries[total_number_stages])
 
 if(k<total_number_stages){
-row1 <- c(p1*per_stage_sample_size_combined_adaptive_design_user_defined*(1:k),p1*per_stage_sample_size_combined_adaptive_design_user_defined*k+per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined*(1:(total_number_stages-k)))
+row1 <- c(p1*per_stage_sample_size_combined_adaptive_design_user_defined*(1:k),p1*per_stage_sample_size_combined_adaptive_design_user_defined*k+per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined*(1:(total_number_stages-k)))
 
 row2 <- c(p2*per_stage_sample_size_combined_adaptive_design_user_defined*(1:k),rep(p2*per_stage_sample_size_combined_adaptive_design_user_defined*k,total_number_stages-k))
 
-row3 <- c(per_stage_sample_size_combined_adaptive_design_user_defined*(1:k),per_stage_sample_size_combined_adaptive_design_user_defined*k+per_stage_sample_size_when_only_subpop_2_enrolled_adaptive_design_user_defined*(1:(total_number_stages-k)))
+row3 <- c(per_stage_sample_size_combined_adaptive_design_user_defined*(1:k),per_stage_sample_size_combined_adaptive_design_user_defined*k+per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined*(1:(total_number_stages-k)))
 }else{
 row1 <- c(p1*per_stage_sample_size_combined_adaptive_design_user_defined*(1:k))
 
