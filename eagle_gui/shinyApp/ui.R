@@ -15,7 +15,7 @@ height <- "500px"       # more than 400
 need2update<-FALSE
 try({
   library(RCurl)
-  newestVerName<-strsplit(getURL('https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/version.txt'),split='\n')[[1]][1]
+  newestVerName<-strsplit(getURL('https://raw.github.com/aaronjfisher/interAdapt/master/version.txt'),split='\n')[[1]][1]
   if(newestVerName!=verName) need2update<-TRUE
 })
 
@@ -49,57 +49,12 @@ try({
   getItOnline<-FALSE #if we haven't gotten an error yet!
 
 },silent=TRUE)
-try({
-  if(getItOnline){
-
-    library(devtools)
-    library(RCurl)
-    library(digest) #some reason this is a dependency not auto-loaded by devtools?
-    library(stringr)
-    gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/"
-    if(exists('appVersion')) {
-      if(appVersion=='stable'){
-        gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/"
-    }}
-    st<-read.csv(text=getURL(paste0(gitDir,"sliderTable.csv")),header=TRUE,as.is=TRUE)
-    bt<-read.csv(text=getURL(paste0(gitDir,"boxTable.csv")),header=TRUE,as.is=TRUE)
-    source_url(paste0(gitDir,"Adaptive_Group_Sequential_Design.R"))
-    readHelpTabRaw <-getURL(paste0(gitDir,"help_tab.html"))
-    readHelpTabHTML<-str_replace_all(readHelpTabRaw,'\n','')
-
-    cat("found code online...", file=stderr())
-  }
-},silent=TRUE)
+#removed code for finding files online.
 
 
 
 
 
-
-
-#################################
-#################################
-####  THIS IS NO LONGER USED (sliders & input boxes are now dynamic objects defined in the server.R file)
-
-# #build the inputs that will be seen
-
-# allVarNames<-c(st[,'inputId'],bt[,'inputId'])
-# sliderList<-list()
-# boxList<-list()
-
-# #building sliders
-# for(i in 1:dim(st)[1]){
-# sliderList[[i]]<-sliderInput(inputId=st[i,'inputId'], label=st[i,'label'], min=st[i,'min'], max=st[i,'max'], value=st[i,'value'], step=st[i,'step'], animate=st[i,'animate'])
-# }
-# names(sliderList)<-st[,'inputId']
-
-# #building numerical input boxes
-# for(i in 1:dim(bt)[1]){
-# boxList[[i]]<-numericInput(inputId=bt[i,'inputId'], label=bt[i,'label'], min=bt[i,'min'], max=bt[i,'max'], value=bt[i,'value'], step=bt[i,'step'])
-# }
-# names(boxList)<-bt[,'inputId']
-#################################
-#################################
 
 
 
@@ -205,7 +160,7 @@ shinyUI(pageWithSidebar(
   conditionalPanel(need2update, 
     h4('Updates are available!'),
     'An updated version of this software can been downloaded ',
-    a('here',href='https://rawgithub.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/install_instructions.html'), 
+    a('here',href='https://rawgithub.com/aaronjfisher/interAdapt/master/install_instructions.html'), 
     br(),br()
   ),
 
@@ -216,17 +171,10 @@ shinyUI(pageWithSidebar(
   #br(),br(),
 
   #OUTPUT
-  #???!?? need to add some more breaks in here to space out the download buttons.
   radioButtons("OutputSelection", em(strong("Output selection")),
   c("About EAGLE" = "1", Designs = "2", Performance = "3"), selected="About EAGLE"),
   
   br(), pbreak,
-
-  #TEMP CODE
-  #!!!??? Comment this out if table1 from file works well?
-  conditionalPanel(condition = "input.OutputSelection != '1'",
-  HTML('<i>Computation time for initial plots is approximately 15 seconds </i>'),br(),br()),
-  #END OF TEMP CODE
 
   #About Eagle Tab
   conditionalPanel(condition = "input.OutputSelection == '1'",

@@ -53,9 +53,9 @@ subH01anitize<-function(x){
 
 #To print2log errors that we can read in a log later, useful for checking sessions on RStudio/glimmer/spark
 #first override last session/start new log
-#!!!??? In final release, set "print2R" to FALSE
+#In final release, set "print2R" to FALSE
 cat(file='session_log.txt',paste(Sys.time(),'\n \n')) 
-print2log<-function(x,logFileName='session_log.txt',print2R=TRUE){ #takes a string as input
+print2log<-function(x,logFileName='session_log.txt',print2R=FALSE){ #takes a string as input
   if(print2R) print(x)
   cat(file=logFileName,paste(x,'\n'),append=TRUE)
 }

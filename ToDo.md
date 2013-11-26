@@ -31,6 +31,8 @@
 * (After we have a name - ADDPLAN) Make final links and set everything up (make new github repo and new spark host)
 * (After questions about sample size & boundaries) Read over paper again
 * (After Michael reads over final draft) adjust knitr Rmd files. 
+* Update github and spark files.
+* Add user tracking to spark repo (can do after we submit paper)
 
 
 

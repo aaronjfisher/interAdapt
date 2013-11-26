@@ -23,7 +23,7 @@ opts_chunk$set(echo=FALSE, results='asis',fig.path='tempFiguresForKnitrReport/')
 ```{r results='hide', message=FALSE}
 #Citations
 library(knitcitations)
-bibFile<-read.bibtex('EAGLEcite.bib')
+bibFile<-read.bibtex('interAdapt_cite.bib')
 cite_options(linked=FALSE) #You don't have the full links in your bib file, so the links aren't working.
 ```
 
