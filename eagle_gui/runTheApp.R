@@ -2,6 +2,12 @@ rm(list=ls())
 library(shiny)
 runApp('/Users/aaronfisher/Documents/JH/Michael - Shiny App /new_gui/EAGLE Repo/eagle_gui/shinyApp')
 
+library('devtools')
+install_github(username='aaronjfisher',repo='Adaptive_Shiny',subdir='eagle_gui/r_package')
+
+library('interAdapt')
+runInterAdapt()
+
 #test install of downloading it from github
 myDir<-'/Users/aaronfisher/Documents/JH/Michael - Shiny App /new_gui/github/eagle_gui/test install/eagle_stable_solo-master'
 runApp(myDir)
@@ -22,10 +28,27 @@ H0Ctext<-as.character(div(HTML("H<sub>0C</sub>")))
 
 
 
+
 ###############################################################
 ###############################################################
 ###############################################################
 ###############################################################
+
+library(devtools)
+document('interAdapt',clean=TRUE)
+install('interAdapt')
+library(interAdapt)
+help(package=interAdapt)
+?runInterAdapt()
+## Check the doc, pkg
+check_doc("interAdapt")
+system.time(check("interAdapt")) #this last line is
+#similar to running: R CMD check packageName 
+#in the terminal
+
+install.packages('devtools')
+library(devtools)
+install_github(username='aaronjfisher',repo='Adaptive_Shiny',subdir='eagle_gui/r_package')
 
 
 

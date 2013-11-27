@@ -75,28 +75,8 @@ try({
   getItOnline<-FALSE #if we haven't gotten an error yet!
   print2log("found code locally...")
 },silent=TRUE)
-try({
-  if(getItOnline){
-    library(knitcitations)
-    library(devtools)
-    library(RCurl)
-    library(digest) #some reason this is a dependency not auto-loaded by devtools?
-    gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/"
-    #The glimmer/spark files contains a line that specifies if the server should host the stable version, or the beta version.
-    if(exists('appVersion')) {
-      if(appVersion=='stable'){
-        gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/"
-    }}
-    st<-read.csv(text=getURL(paste0(gitDir,"sliderTable.csv")),header=TRUE,as.is=TRUE)
-    bt<-read.csv(text=getURL(paste0(gitDir,"boxTable.csv")),header=TRUE,as.is=TRUE)
-    source_url(paste0(gitDir,"Adaptive_Group_Sequential_Design.R"))
-    knitrRmd<-readLines(textConnection(getURL(paste0(gitDir,"knitr_report.Rmd"))))#download.file won't work, so hack some other stuff for now
-    writeLines(knitrRmd,"knitr_report.Rmd")
-    EAGLEcite<-readLines(textConnection(getURL(paste0(gitDir,"EAGLEcite.bib"))))#download.file won't work, so hack some other stuff for now
-    writeLines(EAGLEcite,"EAGLEcite.bib")
-    print2log("found code online...")
-  }
-},silent=TRUE)
+#removed code for finding files online.
+
 
 print2log("...supplementary files found and loaded...")
 

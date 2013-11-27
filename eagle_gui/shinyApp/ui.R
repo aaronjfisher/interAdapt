@@ -80,7 +80,7 @@ animationOptions(interval = 5000, loop = FALSE, playButton = NULL, pauseButton =
 shinyUI(pageWithSidebar(
 
 
-  my_headerPanel("Group Sequential, Adaptive Enrichment Design Planner"),  
+  my_headerPanel("interAdapt - A Group Sequential, Adaptive Enrichment Design Planner"),  
 
 
 
@@ -172,11 +172,11 @@ shinyUI(pageWithSidebar(
 
   #OUTPUT
   radioButtons("OutputSelection", em(strong("Output selection")),
-  c("About EAGLE" = "1", Designs = "2", Performance = "3"), selected="About EAGLE"),
+  c("About interAdapt" = "1", Designs = "2", Performance = "3"), selected="About interAdapt"),
   
   br(), pbreak,
 
-  #About Eagle Tab
+  #About interAdapt Tab
   conditionalPanel(condition = "input.OutputSelection == '1'",
     HTML(paste(readHelpTabHTML,collapse=''))),
 
