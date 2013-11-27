@@ -10,11 +10,13 @@
 * first pull changes from github
 * Update the decision boundaries in the code to be proportional inverse of n_k/sum(n_k), not to the stage number (because number of patients enrolled varies). Keep sum n_k so that the proportionality constants are on a smaller scale.
 * Adjust boxTable and sliderTable initial values -- change label to be "Per stage sample size for stages where only sub-population 1 is enrolled" instead of "sub-population 2".
-* New name is "interAdapt"? Sleep on it?
+* Name app (check!)
+* Answer email questions about range of subpop2 trt effect
 * Edit table functions in Designs section
 * If you have time, can you fix the plot functions also, for plotting the descision boundaries? (match indexing calls of table to the new rownames of the tables)
 * Write Acknowledgements section (grants?)
 * Write ADDPLAN section (check!)
+* Add comments to code, above each function maybe? The JSS people say they the code to be commented and readable.
  
 
 #### Things to do after Aaron sends back a draft
