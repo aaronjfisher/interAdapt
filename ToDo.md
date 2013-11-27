@@ -27,11 +27,12 @@
 
 
 ## For Aaron to do
-* Ask Jeff what we should use for the license.
-* (After we have a name - ADDPLAN) Make final links and set everything up (make new github repo and new spark host)
-* (After questions about sample size & boundaries) Read over paper again
+* Ask Jeff what we should use for the license (Check!) - He says GPL-2
+* Make final links and set everything up (Check!)
+* (After questions about sample size & boundaries) Read over paper again (Check!)
+    * Still waiting on questions about range of trt effect in subpop2. Also need to ask Michael about the applied analysis section (see !!!! marks in tex file)
 * (After Michael reads over final draft) adjust knitr Rmd files. 
-* Update github and spark files.
+* Update github and spark interAdapt files.
 * Add user tracking to spark repo (can do after we submit paper)
 
 
