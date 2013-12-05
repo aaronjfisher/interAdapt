@@ -94,8 +94,13 @@ risk_difference_list <- seq(lower_bound_treatment_effect_subpop_2,upper_bound_tr
 
 
 combined_pop_futility_boundaries_adaptive_design <- c(H0C_futility_boundary_proportionality_constant_adaptive_design*(((1:(last_stage_subpop_2_enrolled_adaptive_design-1))/(last_stage_subpop_2_enrolled_adaptive_design-1))^Delta),rep(Inf,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design+1))
-subpop_1_futility_boundaries_adaptive_design <-c(H01_futility_boundary_proportionality_constant_adaptive_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),Inf)
-
+# Compute subpop. 1 cumulative sample size vector
+if(total_number_stages>last_stage_subpop_2_enrolled_adaptive_design){
+	subpop_1_sample_size_vector <- c((1:last_stage_subpop_2_enrolled_adaptive_design)*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined,(last_stage_subpop_2_enrolled_adaptive_design*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined) + (1:(total_number_stages-last_stage_subpop_2_enrolled_adaptive_design))*per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined)
+} else {
+	subpop_1_sample_size_vector <- c((1:last_stage_subpop_2_enrolled_adaptive_design)*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined)
+}
+subpop_1_futility_boundaries_adaptive_design <- c(H01_futility_boundary_proportionality_constant_adaptive_design*(subpop_1_sample_size_vector[1:total_number_stages-1]/subpop_1_sample_size_vector[total_number_stages-1])^Delta,H01_efficacy_boundary_proportionality_constant_adaptive_design)
 subpop_2_futility_cutoff <- (-Inf)
 
 combined_pop_futility_boundaries_fixed_design_H0C <-c(H0C_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),Inf)
@@ -454,8 +459,13 @@ subpop_1_efficacy_boundaries <- H01_efficacy_boundary_proportionality_constant_a
 
 
 combined_pop_futility_boundaries_adaptive_design <<- c(H0C_futility_boundary_proportionality_constant_adaptive_design*(((1:(last_stage_subpop_2_enrolled_adaptive_design-1))/(last_stage_subpop_2_enrolled_adaptive_design-1))^Delta),rep(Inf,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design+1))
-subpop_1_futility_boundaries_adaptive_design <<-c(H01_futility_boundary_proportionality_constant_adaptive_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),Inf)
-
+# Compute subpop. 1 cumulative sample size vector
+if(total_number_stages>last_stage_subpop_2_enrolled_adaptive_design){
+	subpop_1_sample_size_vector <- c((1:last_stage_subpop_2_enrolled_adaptive_design)*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined,(last_stage_subpop_2_enrolled_adaptive_design*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined) + (1:(total_number_stages-last_stage_subpop_2_enrolled_adaptive_design))*per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined)
+} else {
+	subpop_1_sample_size_vector <- c((1:last_stage_subpop_2_enrolled_adaptive_design)*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined)
+}
+subpop_1_futility_boundaries_adaptive_design <<- c(H01_futility_boundary_proportionality_constant_adaptive_design*(subpop_1_sample_size_vector[1:total_number_stages-1]/subpop_1_sample_size_vector[total_number_stages-1])^Delta,H01_efficacy_boundary_proportionality_constant_adaptive_design)
 
 print_ss_and_boundaries_flag <- 1
 cv_small <- (p11-p10)/sqrt(p11*(1-p11)/r10+p10*(1-p10)/(1-r10))
@@ -673,7 +683,13 @@ H0C_efficacy_boundaries <- H0C_efficacy_boundary_proportionality_constant_adapti
 subpop_1_efficacy_boundaries <- H01_efficacy_boundary_proportionality_constant_adaptive_design*(((1:total_number_stages)/total_number_stages)^Delta)
 
 combined_pop_futility_boundaries_adaptive_design <<- c(H0C_futility_boundary_proportionality_constant_adaptive_design*(((1:(last_stage_subpop_2_enrolled_adaptive_design-1))/(last_stage_subpop_2_enrolled_adaptive_design-1))^Delta),H0C_efficacy_boundaries[k],rep(NA,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design))
-subpop_1_futility_boundaries_adaptive_design <<-c(H01_futility_boundary_proportionality_constant_adaptive_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),subpop_1_efficacy_boundaries[total_number_stages])
+# Compute subpop. 1 cumulative sample size vector
+if(total_number_stages>last_stage_subpop_2_enrolled_adaptive_design){
+	subpop_1_sample_size_vector <- c((1:last_stage_subpop_2_enrolled_adaptive_design)*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined,(last_stage_subpop_2_enrolled_adaptive_design*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined) + (1:(total_number_stages-last_stage_subpop_2_enrolled_adaptive_design))*per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined)
+} else {
+	subpop_1_sample_size_vector <- c((1:last_stage_subpop_2_enrolled_adaptive_design)*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined)
+}
+subpop_1_futility_boundaries_adaptive_design <<- c(H01_futility_boundary_proportionality_constant_adaptive_design*(subpop_1_sample_size_vector[1:total_number_stages-1]/subpop_1_sample_size_vector[total_number_stages-1])^Delta,subpop_1_efficacy_boundaries[total_number_stages])
 
 if(k<total_number_stages){
 row1 <- c(p1*per_stage_sample_size_combined_adaptive_design_user_defined*(1:k),p1*per_stage_sample_size_combined_adaptive_design_user_defined*k+per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined*(1:(total_number_stages-k)))
