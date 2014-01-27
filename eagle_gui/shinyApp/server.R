@@ -40,11 +40,12 @@ subH0 <- function(x){ #make a function that does the same thing as "strong()" bu
   x <- gsub("</strong>", "", x)
   x <- gsub("H0C", "H<sub>0C</sub>", x)
   x <- gsub("H01", "H<sub>01</sub>", x)
+  x <- gsub("H02", "H<sub>02</sub>", x)
   return(x)
 }
 
 #To be used in our xtable function!
-subH01anitize<-function(x){
+subH01sanitize<-function(x){
   x <- gsub("H0C", "H<sub>0C</sub>", x)
   x <- gsub("H01", "H<sub>01</sub>", x)
   return(x)
@@ -496,7 +497,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
         if (is.null(data) || identical(data, data.frame())) 
             return("")
         return(paste(capture.output(print(xtable(data, ...), include.colnames=include.colnames, 
-            type = "html",sanitize.text.function=subH01anitize,
+            type = "html",sanitize.text.function=subH01sanitize,
             html.table.attributes = paste("class=\"", 
                 #htmlEscape(classNames, TRUE), "\"", sep = ""), 
                 shiny:::htmlEscape(classNames, TRUE), "\"", sep = ""), 
