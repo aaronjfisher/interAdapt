@@ -328,6 +328,12 @@ shinyServer(function(input, output) {
       boxLabeli<-subH0(bt[i,'label'])
       boxListi<-numericInput(inputId=bt[i,'inputId'], label='', min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
       ind<-length(labelBoxList)           
+      #add extra text:
+      if(grepl('Lower bound for treatment effect',bt[i,'label'])){
+        labelBoxList[[ind+1]]<-strong("For use in Plots of Power vs. Average Treatment Effect:")
+        labelBoxList[[ind+2]]<-br()
+        ind<-length(labelBoxList)
+      }
       labelBoxList[[ind+1]]<-boxLabeli
       labelBoxList[[ind+2]]<-boxListi
       labelBoxList[[ind+3]]<-br()      

@@ -80,7 +80,7 @@ animationOptions(interval = 5000, loop = FALSE, playButton = NULL, pauseButton =
 shinyUI(pageWithSidebar(
 
 
-  my_headerPanel("interAdapt - A Group Sequential, Adaptive Enrichment Design Planner"),  
+  my_headerPanel("interAdapt - An Interactive Planner for Group Sequential, Adaptive Enrichment Designs"),  
 
 
 
