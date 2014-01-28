@@ -22,8 +22,6 @@ p20_user_defined <- 0.20
 ## Prob. outcome = 1 under treatment, at alternative:
 ## for Subpop. 1 (Range: 0 to 1)
 p11_user_defined<- 0.25 + 0.125 
-## for Subpop. 2 (Range: 0 to 1)
-p21_user_defined<- 0.20 + 0.125
 
 ## Alpha allocation
 # Desired familywise type I error rate (one-sided) (Range: 0 to 1)
@@ -422,7 +420,6 @@ subpop_2_futility_boundaries <- c(rep(subpop_2_futility_cutoff,last_stage_subpop
 
 p11 <- p11_user_defined
 p10 <- p10_user_defined
-p21 <- p21_user_defined
 p20 <- p20_user_defined
 	
 	
@@ -471,7 +468,7 @@ print_ss_and_boundaries_flag <- 1
 cv_small <- (p11-p10)/sqrt(p11*(1-p11)/r10+p10*(1-p10)/(1-r10))
 outcome_variance_subpop_1 <- p11*(1-p11)/r10+p10*(1-p10)/(1-r10)
 
-risk_difference_list <<- sort(unique(c(seq(max(c(min(c(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,0)),-p20)),min(c(max(c(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,p21_user_defined-p20_user_defined,0)),1-p20)),length=10))))
+risk_difference_list <<- sort(unique(c(seq(max(c(min(c(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,0)),-p20)),min(c(max(c(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,0)),1-p20)),length=10))))
 
 
 
