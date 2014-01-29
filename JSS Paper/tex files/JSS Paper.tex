@@ -31,7 +31,7 @@
 
 \newcommand{\interAdapt}{\textsf{interAdapt }}
 
-\title{\interAdapt – An Interactive Tool for Designing Randomized Trials with Adaptive Enrollment Criteria}
+\title{\interAdapt – An Interactive Tool for Designing and Evaluating Randomized Trials with Adaptive Enrollment Criteria}
 \date{}
 \author{Aaron Fisher, Michael Rosenblum and Harris Jaffee}
 
@@ -90,27 +90,35 @@
 \begin{abstract}
 
 %!!?? In general, I think we should re-write this.
-We consider the problem of designing a randomized trial when there is prior evidence that the experimental treatment might work better in certain subpopulations. We software novel trial designs with built in rules for whether to continue enrolling patients from each subpopulation based on data accrued at interim analyses. In order for the type I error and the power of the trial to be calculable, the decision rules for changing enrollment are all set before the trial starts. We introduce the \interAdapt software, a tool for generating pre-determined decision rules for trial designs with adaptive enrollement criteria. The application compares the performance of the resulting adaptive designs to the performance of comparable standard group sequential designs. 
-Performance is compared in terms of expected sample size, expected trial duration, and power, with family-wise type I error rate set to be constant (e.g. 0.05) for all trials compared. Unlike existing software, \interAdapt is open-source and cross-platform. %!!?? Update this bit about how it relates to ?
+We consider the problem of designing a randomized trial when there is prior evidence that the experimental treatment may be more effective for certain groups of patients, such as those with a certain biomarker or risk score at baseline. Randomized trial designs have been proposed that dynamically adapt enrollment criteria to target precisely those benefiting from treatment. Such trial designs aim to learn if the treatment benefits the overall population, only a certain subpopulation, or neither.
+%It can be challenging to construct such designs, and to evaluate their performance compared to standard designs. To address this challenge,
+We introduce the \interAdapt software tool, which provides a user friendly interface for constructing and evaluating certain adaptive trial designs. These designs are automatically compared to standard (non-adaptive) designs in terms of the following performance criteria:  power, sample size, and trial duration.
+Unlike existing software, \interAdapt is open-source and cross-platform, and is the first to implement the group sequential, adaptive enrichment designs of \cite{Rosenblum2013AdaptMISTIE}. %!!?? Update this bit about how it relates to ?
 
 \end{abstract}
 
 
 \section*{1. Introduction}
+Group sequential, randomized trial designs involve  rules for early stopping based on analyses of accrued data. Such early stopping could occur if there is strong evidence early in the trial of benefits or harms of the new treatment being studied. Adaptive enrichment designs involve rules for changing enrollment criteria, based on data accrued during a trial. We consider designs that incorporate features of both group sequential and adaptive enrichment designs. Such designs have rules for early stopping and for modifying enrollment criteria, based on accrued data in an ongoing trial. A class of such designs is presented by \cite{Rosenblum2013AdaptMISTIE}. We focus on these designs, which
+we refer to simply as ``adaptive designs." We compare the performance of these designs to ``standard designs,'' defined to  be group sequential designs where the enrollment criteria cannot be changed during the trial (but the trial may be stopped early).
 
-A group sequential trial design is one that incorporates pre-determined decision rules for stopping the trial early based on preliminary results. The treatment effect is analyzed at several stages throughout the trial, and each interim analysis may lead the trial to either stop early for treatment efficiacy, if there is strong evidence that the treatment is beneficial, or to stop early for treatment futility, if we have evidence the treatment is ineffective or harmful. In this paper, we will generally use the term ``adaptive design" to refer to a group sequential design where enrollment criteria may also change based on these interim analyses. We use the term ``standard design'' to refer to a group sequential design where the enrollment criteria is fixed. 
+To demonstrate our designs and software, we consider the problem of 
+%The motivating example for our work comes from the
+ planning a Phase III trial for a new surgical treatment of stroke, which is considered by (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}.
+The new treatment is known as Minimally-Invasive Surgery Plus rt-PA for Intracerebral Hemorrhage (MISTIE), and is described in more detail in (Morgan 2008)\cite{MISTIE_prelim2008}. There was more prior data on the efficacy of the treatment for patients with little or no intraventricular hemorrhage (IVH) at baseline (referred to as small IVH patients) than for patients with large IVH volume. The goal of the trial was to determine whether MISTIE is effective for the combined population of those with small or large IVH, and also for the small IVH population. A standard trial design, e.g., one enrolling the combined population throughout the trial, or enrolling only small IVH participants throughout the trial, may be inefficient at simultaneously answering these questions.
+An alternative is to use an adaptive trial design, which would first recruit from the combined population, and then decide whether to restrict enrollment based on results from interim  analyses. %Comparable standard designs would either enroll all , or would restrict to enrolling only patients with small IVH.
+Though we focus on this stroke trial application throughout, our software tool can be applied in many disease areas.
 
-The motivating example for our work comes from the planning of a Phase III trial for a new surgical treatment of stroke (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}.
-The new treatment is known as Minimally-Invasive Surgery Plus rt-PA for Intracerebral Hemorrhage (MISTIE), and is described in more detail in (Morgan 2008)\cite{MISTIE_prelim2008}. For this trial, the investigators were more confident in the efficiacy of the treatment for patients with little or no intraventricular hemorrhage (IVH) at baseline then they were of the treatment's efficacy in patients with high IVH volumes. An adaptive trial in this context would first recruit from all patients regardless of IVH, and then decide whether to continue recruiting patients with higher volumes of IVH based on the results of those currently enrolled. Comparable standard designs would either have no enrollment criteria for IVH volume, or would only ever enroll patients with small IVH.
-
-
-In section 2 we give a formal definition of the problem addressed by these adaptive trial designs. In section 3 we compare our software to the most similar currently available commercial software, AptivSolutions ADDPLAN PE (Patient Enrichment). 
-In Section 4 we describe how to install \interAdapt on a personal computer as an R package, as well as how to access it online through a web browser. Section 5 describes the inputs available when using \textsf{interAdapt}, and discusses the interpretation of the application's output. Section 6 presents an example of how an adaptive design can be created and analyzed with \textsf{interAdapt}. 
+In Section 2, we  formally define the hypothesis testing problem to be addressed different trial designs. In Section 3, we compare our software to the most similar, currently available commercial software, AptivSolutions ADDPLAN PE (Patient Enrichment). 
+In Section 4, we describe how to install \interAdapt on a personal computer as an R package, and how to access it online through a web browser. Section 5 describes the inputs available when using \textsf{interAdapt}, and discusses the interpretation of the application's output. In Section 6, we present an example demonstrating how an adaptive design is  created and analyzed with \textsf{interAdapt}. 
 %Need to use \textsf so that the period isn't an extra space away.
 
-\section*{2. Formal Description of the Problem}
+\section*{2. Problem Description}
 
-Consider the case where we have two subpopulations, referred to as subpopulation $1$ and subpopulation $2$. Let subpopulation $1$ be the subpopulation where we have stronger prior evidence of a treatment effect. Let $π_1$ and $π_2$ denote the proportion of patients in each of the two subpopulations. 
+Consider the case where we have two subpopulations, referred to as subpopulation $1$ and subpopulation $2$. These must be specified before the trial starts, and be defined in terms of participant attributes measured at baseline (e.g., having a high initial severity of disease or a certain biomarker value). 
+We focus on situations where  there is suggestive, prior evidence that the treatment may be more likely to benefit subpopulation $1$.
+%though it is possible that the treatment will benefit both subpopulations.
+Let $π_1$ and $π_2$ denote the proportion of patients in subpopulations 1 and 2, respectively. 
 
 Both the adaptive and standard designs discussed here consist of ongoing enrollment, and include predetermined rules for stopping the trial early based on interim analyses of currently enrolled patients. We discretize each trial into $K$ stages, and say that the $k ^{th}$ stage will be completed once a pre-specified number of additional patients ($n_k$) have been enrolled. We allow the user to separately set the number of patients enrolled in the standard and adaptive designs, so these designs need not nessecarily have the same number of patients enrolled at each stage. In stages when both subpopulations are being recruited, we assume that $π_1 n_k$ of the patients recruited in stage $k$ are from subpopulation $1$, and $π_2n_k$ are from subpopulation $2$. An interim analysis is done at the end of each stage, which may lead us to stop the trial early if there is either strong evidence of treatment efficacy, or strong evidence of treatment futility.
 
@@ -263,7 +271,7 @@ The decision rules outputted by \interAdapt represent the feature that enrollmen
 
 
 
-\section*{3. Comparable Software}
+\section*{3. Related Software}
 %Say that our design is an example of enrichment. 
 
 The most comparable available software is AptivSolutions ADDPLAN PE (Patient Enrichment), an impressive, commercial software that implements certain types of adaptive enrichment designs. It has many features that our software does not have. Conversely, there are features of our software that ADDPLAN PE does not have. First, ADDPLAN PE does not implement the class of designs from (Rosenblum etal. 2013)\cite{Rosenblum2013AdaptMISTIE}. Second, in ADDPLAN PE, the user must a priori designate a particular stage (e.g., stage 2) at which a change to enrollment may be made, even though there may be large a priori uncertainty as to when sufficient information will have accrued to make such a decision. In contrast, our software is more flexible, in that one can select designs (by setting $k^*$ to the maximum number of stages) in which the decision to change enrollment criteria can be made at any stage.  
@@ -463,7 +471,7 @@ Now we turn to the output of \interAdapt that results from the default parameter
 
 \section*{Summary}
 
-In this paper we introduce the \interAdapt application for designing and simulating trials with adaptive enrollment criteria. We provide an overview of the theoretical problem the application addresses, and give an explanation of the application’s inputs and outputs.
+We described the \interAdapt application for designing and simulating trials with adaptive enrollment criteria. We provided an overview of the theoretical problem the application addresses, and gave an explanation of the application’s inputs and outputs.
 
 
 
