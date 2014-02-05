@@ -62,24 +62,24 @@ H01_futility_boundary_proportionality_constant_adaptive_design <- 0 #(Range: -10
 ## Parameters used only by standard designs
 # Futility boundary proportionality constant for standard design enrolling combined population (z-statistic scale)
 H0C_futility_boundary_proportionality_constant_fixed_design <- -0.1 #(Range: -10 to 10)
+# Per stage sample size for standard design enrolling combined population
+per_stage_sample_size_combined_fixed_design_H0C <- 90 #(Range: 0 to 1000)
 # Futiltiy boundary proportionality constant for standard design enrolling subpopulation 1 only
 H01_futility_boundary_proportionality_constant_fixed_design <- -0.1 ##(Range: -10 to 10)
-
-## List of global variables not accessible by user; these are functions of above variables, but are updated everytime table_constructor is called
-
-per_stage_sample_size_combined_fixed_design_H0C <- 90 #(Range: 0 to 1000)
+# Per stage sample size for standard design enrolling on subpopulation 1 
 per_stage_sample_size_combined_fixed_design_H01 <- 106 #(Range: 0 to 1000)
 
+## List of global variables not directly accessible by user; these are functions of above variables, but are updated everytime table_constructor is called
 H0C_efficacy_boundary_proportionality_constant_fixed_design <- 2.04
 H01_efficacy_boundary_proportionality_constant_fixed_design <- 2.04
 H0C_efficacy_boundary_proportionality_constant_adaptive_design <- 2.54
 H01_efficacy_boundary_proportionality_constant_adaptive_design <- 2.12
-
+# List of treatment effect values (on risk difference scale) at which power, expected sample size, and expected duration will be evaluated 
 risk_difference_list <- seq(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,length=7)
 
-
+# Construct stopping boundaries for adaptive design based on user-input proportionality constants:
 subpopulation_2_stopping_boundaries_adaptive_design <- c(subpopulation_2_stopping_boundary_proportionality_constant_adaptive_design*(((1:(last_stage_subpop_2_enrolled_adaptive_design-1))/(last_stage_subpop_2_enrolled_adaptive_design-1))^Delta),rep(Inf,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design+1))
-# Compute subpop. 1 cumulative sample size vector
+# Compute subpopulation 1 cumulative sample size vector for adaptive design
 if(total_number_stages>last_stage_subpop_2_enrolled_adaptive_design){
 	subpop_1_sample_size_vector <- c((1:last_stage_subpop_2_enrolled_adaptive_design)*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined,(last_stage_subpop_2_enrolled_adaptive_design*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined) + (1:(total_number_stages-last_stage_subpop_2_enrolled_adaptive_design))*per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined)
 } else {
@@ -88,17 +88,17 @@ if(total_number_stages>last_stage_subpop_2_enrolled_adaptive_design){
 subpop_1_futility_boundaries_adaptive_design <- c(H01_futility_boundary_proportionality_constant_adaptive_design*(subpop_1_sample_size_vector[1:total_number_stages-1]/subpop_1_sample_size_vector[total_number_stages-1])^Delta,H01_efficacy_boundary_proportionality_constant_adaptive_design)
 subpop_2_futility_cutoff <- (-Inf)
 
+# Construct stopping boundaries for standard designs based on user-input proportionality constants:
 combined_pop_futility_boundaries_fixed_design_H0C <-c(H0C_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),Inf)
 subpop_1_futility_boundaries_fixed_design_H0C <-c(rep(Inf,total_number_stages-1),Inf)
 
 combined_pop_futility_boundaries_fixed_design_H01 <-c(H01_futility_boundary_proportionality_constant_fixed_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),Inf)
 subpop_1_futility_boundaries_fixed_design_H01 <-c(rep(Inf,total_number_stages-1),Inf)
 
-
-# function to compute power (or Type I error) for given design vector (n1,n2,b_C,b_S) and data generating distribution;
-# the data generating distribution is defined by the coefficient of variation for small IVH patients: cv_subpop_1
-# and the coefficient of variation for large IVH patients: cv_subpop_2. 
-get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundaries,subpop_1_futility_boundaries,n1,n2,b_C,b_S,cv_subpop_1,cv_subpop_2,subpop_2_futility_boundaries=rep(-Inf,total_number_stages),outcome_variance_subpop_1,outcome_variance_subpop_2){
+# Function to compute power and Type I error for given design and data generating distribution.
+# The data generating distribution is defined by the coefficient of variation for subpopulation 1 patients: SNR_subpop_1
+# and the coefficient of variation for subpopulation 2 patients: SNR_subpop_2. 
+get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundaries,subpop_1_futility_boundaries,n1,n2,b_C,b_S,SNR_subpop_1,SNR_subpop_2,subpop_2_futility_boundaries=rep(-Inf,total_number_stages),outcome_variance_subpop_1,outcome_variance_subpop_2){
 	p2 <- (1-p1)
 	#maximum_per_stage_sample_size <- 500
 	# Enrollment rate subpop. 1 (patients per year)
@@ -150,20 +150,20 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 
 ## generate z-statistic increments
 	Z_subpop_1_increment <- array(0,c(length(all_relevant_subpop_1_sample_sizes),iter)) 
-	Z_subpop_1_increment[1,] <- rnorm(iter)+cv_subpop_1*sqrt(all_relevant_subpop_1_sample_sizes[1])
+	Z_subpop_1_increment[1,] <- rnorm(iter)+SNR_subpop_1*sqrt(all_relevant_subpop_1_sample_sizes[1])
 	if(length(all_relevant_subpop_1_sample_sizes)>1)
 	{	for(i in 2:length(all_relevant_subpop_1_sample_sizes))
 		{
-			Z_subpop_1_increment[i,] <- rnorm(iter)+cv_subpop_1*sqrt(all_relevant_subpop_1_sample_sizes[i]-all_relevant_subpop_1_sample_sizes[i-1])
+			Z_subpop_1_increment[i,] <- rnorm(iter)+SNR_subpop_1*sqrt(all_relevant_subpop_1_sample_sizes[i]-all_relevant_subpop_1_sample_sizes[i-1])
 		}
 	}
 	Z_subpop_2_increment <- array(0,c(length(all_relevant_subpop_2_sample_sizes),iter)) 
-	Z_subpop_2_increment[1,] <- rnorm(iter)+cv_subpop_2*sqrt(all_relevant_subpop_2_sample_sizes[1])
+	Z_subpop_2_increment[1,] <- rnorm(iter)+SNR_subpop_2*sqrt(all_relevant_subpop_2_sample_sizes[1])
 	if(length(all_relevant_subpop_2_sample_sizes)>1)
 	{
 		for(i in 2:length(all_relevant_subpop_2_sample_sizes))
 		{
-			Z_subpop_2_increment[i,] <- rnorm(iter)+cv_subpop_2*sqrt(all_relevant_subpop_2_sample_sizes[i]-all_relevant_subpop_2_sample_sizes[i-1])
+			Z_subpop_2_increment[i,] <- rnorm(iter)+SNR_subpop_2*sqrt(all_relevant_subpop_2_sample_sizes[i]-all_relevant_subpop_2_sample_sizes[i-1])
 		}
 	}
 ## generate partial sums of increments
@@ -189,7 +189,7 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
 		index <- which(all_relevant_subpop_1_sample_sizes==cum_sample_sizes_subpop_1_pipeline[i])
 		Z_subpop_1_cumulative_including_pipeline[i,] <- Z_subpop_1_partial_weighted_sum_of_increments[index,]
 	}
-	# For Large IVH
+	# For subpopulation 2
 	Z_subpop_2_partial_weighted_sum_of_increments <- Z_subpop_2_increment
 	if(length(all_relevant_subpop_2_sample_sizes)>1)
 	{
@@ -240,7 +240,7 @@ get_power <- function(p1,total_number_stages=5,k,combined_pop_futility_boundarie
         reject_H0C_for_first_time <- rep(0,iter)
 	reject_H01_exactly_when_stopped_subpop_2_using_OBrienFleming_boundaries <- rep(0,iter)
 	reject_H01 <- rep(0,iter)
-	# record stage (just) after which large IVH enrollment stops
+	# record stage (just) after which subpopulation 2 enrollment stops
 	final_stage_C_enrolled_up_through <- rep(total_number_stages,iter)
         final_stage_1_enrolled_up_through <- rep(total_number_stages,iter)
 
@@ -452,7 +452,7 @@ if(total_number_stages>last_stage_subpop_2_enrolled_adaptive_design){
 subpop_1_futility_boundaries_adaptive_design <<- c(H01_futility_boundary_proportionality_constant_adaptive_design*(subpop_1_sample_size_vector[1:total_number_stages-1]/subpop_1_sample_size_vector[total_number_stages-1])^Delta,H01_efficacy_boundary_proportionality_constant_adaptive_design)
 
 print_ss_and_boundaries_flag <- 1
-cv_small <- (p11-p10)/sqrt(p11*(1-p11)/r10+p10*(1-p10)/(1-r10))
+SNR_small <- (p11-p10)/sqrt(p11*(1-p11)/r10+p10*(1-p10)/(1-r10))
 outcome_variance_subpop_1 <- p11*(1-p11)/r10+p10*(1-p10)/(1-r10)
 
 risk_difference_list <<- sort(unique(c(seq(max(c(min(c(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,0)),-p20)),min(c(max(c(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,0)),1-p20)),length=10))))
@@ -473,26 +473,21 @@ for(percent_benefit_subpop_2 in rev(risk_difference_list))
 	p21 <- p20 + percent_benefit_subpop_2 #need to max sure min & max are .001 & .999, see next two lines
 	p21<-max(p21,.001)
 	p21<-min(p21,.999)
-	cv_large <- (p21-p20)/sqrt(p21*(1-p21)/r20+p20*(1-p20)/(1-r20)) 
-	#print(c(percent_benefit_subpop_2,cv_large,cv_small))
+	SNR_large <- (p21-p20)/sqrt(p21*(1-p21)/r20+p20*(1-p20)/(1-r20)) 
     outcome_variance_subpop_2 <- p21*(1-p21)/r20+p20*(1-p20)/(1-r20)
 
-power_vec <- get_power(p1=p1_user_defined,total_number_stages,k=last_stage_subpop_2_enrolled_adaptive_design,subpopulation_2_stopping_boundaries_adaptive_design,subpop_1_futility_boundaries_adaptive_design,n1=per_stage_sample_size_combined_adaptive_design_user_defined,n2=per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined,b_C=H0C_efficacy_boundary_proportionality_constant_adaptive_design,b_S=H01_efficacy_boundary_proportionality_constant_adaptive_design,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
+power_vec <- get_power(p1=p1_user_defined,total_number_stages,k=last_stage_subpop_2_enrolled_adaptive_design,subpopulation_2_stopping_boundaries_adaptive_design,subpop_1_futility_boundaries_adaptive_design,n1=per_stage_sample_size_combined_adaptive_design_user_defined,n2=per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined,b_C=H0C_efficacy_boundary_proportionality_constant_adaptive_design,b_S=H01_efficacy_boundary_proportionality_constant_adaptive_design,SNR_subpop_1=SNR_small,SNR_subpop_2=SNR_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
 
 adaptive_df[counter_adaptive,] <- c(power_vec[4]+power_vec[7],power_vec[c(5,1,2,6)])
 overrun_df[counter_adaptive,1] <- power_vec[7]
 counter_adaptive <- counter_adaptive + 1
 
-power_vec <- get_power(p1=p1_user_defined,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_fixed_design_H0C,subpop_1_futility_boundaries=subpop_1_futility_boundaries_fixed_design_H0C,n1=per_stage_sample_size_combined_fixed_design_H0C,n2=0,b_C=H0C_efficacy_boundary_proportionality_constant_fixed_design,b_S=Inf,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
+power_vec <- get_power(p1=p1_user_defined,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_fixed_design_H0C,subpop_1_futility_boundaries=subpop_1_futility_boundaries_fixed_design_H0C,n1=per_stage_sample_size_combined_fixed_design_H0C,n2=0,b_C=H0C_efficacy_boundary_proportionality_constant_fixed_design,b_S=Inf,SNR_subpop_1=SNR_small,SNR_subpop_2=SNR_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
 fixed_mixture_df[counter_mixture,] <- c(power_vec[9] + power_vec[10],power_vec[c(8,1)],power_vec[11])
 overrun_df[counter_mixture,2] <- power_vec[10]
 counter_mixture <- counter_mixture +1
 
-
-#load("min_sum_ss_configuration_small_IVH_only.rdata")
-
-
-power_vec <- get_power(p1=1,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_fixed_design_H01,subpop_1_futility_boundaries=subpop_1_futility_boundaries_fixed_design_H01,n1=per_stage_sample_size_combined_fixed_design_H01,n2=0,b_C=H01_efficacy_boundary_proportionality_constant_fixed_design,b_S=Inf,cv_subpop_1=cv_small,cv_subpop_2=cv_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
+power_vec <- get_power(p1=1,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_fixed_design_H01,subpop_1_futility_boundaries=subpop_1_futility_boundaries_fixed_design_H01,n1=per_stage_sample_size_combined_fixed_design_H01,n2=0,b_C=H01_efficacy_boundary_proportionality_constant_fixed_design,b_S=Inf,SNR_subpop_1=SNR_small,SNR_subpop_2=SNR_large,subpop_2_futility_boundaries=c(rep(subpop_2_futility_cutoff,k),rep(Inf,total_number_stages-k)),outcome_variance_subpop_1,outcome_variance_subpop_2)
 fixed_small_only_df[counter_small,] <- c(power_vec[9] + power_vec[10],power_vec[c(8,1)])
 overrun_df[counter_small,3] <- power_vec[10]
 
