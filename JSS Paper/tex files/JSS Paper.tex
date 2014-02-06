@@ -99,7 +99,7 @@ Unlike existing software, \interAdapt is open-source and cross-platform, and is 
 
 \section*{1. Introduction}
 Group sequential, randomized trial designs involve rules for early stopping based on analyses of accrued data. Such early stopping could occur if there is strong evidence early in the trial of benefits or harms of the new treatment being studied. Adaptive enrichment designs expand on group sequential designs but including rules for changing enrollment criteria based on preliminary data accrued in the ongoing trial.
-Here, we introduce the \interAdapt software tool, which provides a user-friend interface for exploring certain types of adaptive enrichment designs, and for comparing these designs against standard, group sequential designs with non-adaptive enrollment criteria. The software can either be run locally, as an R package, or accessed online through a web browser.
+Here, we introduce the \interAdapt software tool, which provides a user-friend interface for exploring certain types of adaptive enrichment designs, and for comparing these designs against standard, group sequential designs with non-adaptive enrollment criteria. The software can either be run locally, as an R package, or accessed online through a web browser. 
 
 \interAdapt specifically considers the class of designs presented by \cite{Rosenblum2013AdaptMISTIE}, which
 we refer to simply as ``adaptive designs." The software compares the performance of these designs to ``standard designs,'' defined to  be group sequential designs where the enrollment criteria cannot be changed during the trial (but the trial may be stopped early). 
@@ -377,7 +377,8 @@ A detailed explanation of each input is given below.
 
 \item Participants enrolled per year from combined population: The number of patients that can be recruited per year in the combined population. This affects the estimated duration of the trials. The recruitment rates for  subpopulations $1$ and $2$ are equal to the combined population recruitment rate multiplied by $π_1$ and $π_2$ respectively. %Right??!!! This is new!!!???
 
-\item Delay time from enrollment to primary outcome in years: The between when an individual is enrolled in the study, and when their final outcome is measured. This value affects the expected number of overruning patients, and the expected duration of the trial.
+%!!!!!! We now assume measurments are measured without delay
+%\item Delay time from enrollment to primary outcome in years: The between when an individual is enrolled in the study, and when their final outcome is measured. This value affects the expected number of overruning patients, and the expected duration of the trial.
 
 %!!!??? are these right? See email to Michael.
 \item Lower bound for treatment effect in sub-population $2$: \interAdapt simulates performance metrics under a range of treatment effect sizes for subpopulation $2$. This sets the lower bound for this range.
