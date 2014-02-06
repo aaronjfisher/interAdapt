@@ -73,6 +73,7 @@ H0C_efficacy_boundary_proportionality_constant_standard_design <- 2.04
 H01_efficacy_boundary_proportionality_constant_standard_design <- 2.04
 H0C_efficacy_boundary_proportionality_constant_adaptive_design <- 2.54
 H01_efficacy_boundary_proportionality_constant_adaptive_design <- 2.12
+subpop_1_efficacy_boundaries_adaptive_design <- H01_efficacy_boundary_proportionality_constant_adaptive_design*((1:total_number_stages)/total_number_stages)^Delta
 # List of treatment effect values (on risk difference scale) at which power, expected sample size, and expected duration will be evaluated 
 risk_difference_list <- seq(lower_bound_treatment_effect_subpop_2,upper_bound_treatment_effect_subpop_2,length=7)
 
@@ -104,8 +105,6 @@ get_power <- function(design_type="adaptive",p1,total_number_stages=5,k,combined
 	# Enrollment rate subpop. 2 (patients per year)
 	enrollment_rate_subpop_2 <- (1-p1_user_defined)*enrollment_rate_combined_population #(Range: 0-1000)
 	pipeline_boundary_deflation_factor <- (-Inf)
-	subpop_2_tradeoff_percentile <- 0
-	OBrienFleming_boundaries <- 2.04*sqrt(total_number_stages/(1:total_number_stages)) # used only in standard designs
 
 	# These are sample sizes of number who have final outcomes available at each interim analysis; they do not yet include patients in pipeline
 	combined_population_stagewise_sample_sizes <- c(rep(n1,k),rep(n2,total_number_stages-k))
@@ -131,12 +130,9 @@ get_power <- function(design_type="adaptive",p1,total_number_stages=5,k,combined
     cum_sample_sizes_combined_population_pipeline <- cum_sample_sizes_subpop_1_pipeline+cum_sample_sizes_subpop_2_pipeline 
 
 	combined_population_efficacy_boundaries <- b_C*c((cum_sample_sizes_combined_population[1:k]/cum_sample_sizes_combined_population[k])^Delta,rep(Inf,total_number_stages-k))
-	subpop_1_efficacy_boundaries <- b_S*(((1:total_number_stages)/total_number_stages)^Delta)
+	subpop_1_efficacy_boundaries <- b_S*(cum_sample_sizes_subpop_1/cum_sample_sizes_subpop_1[total_number_stages])^Delta
         
 	combined_population_efficacy_boundaries_pipeline <- b_C*c((cum_sample_sizes_combined_population_pipeline[1:k]/cum_sample_sizes_combined_population[k])^Delta,rep(Inf,total_number_stages-k))*pipeline_boundary_deflation_factor
-
-# for use in decisions once all pipeline patients finish. Note that denominator: cum_sample_sizes_combined_population[k] is correct--this makes boundaries lower at final tests that include pipeline patients compared to tests for deciding when to stop enrollment.
-	subpop_1_efficacy_boundaries_pipeline <- b_S*(((1:total_number_stages)/total_number_stages)^Delta)*pipeline_boundary_deflation_factor
 
 ## Get list of sample sizes corresponding to either interim analysis or analysis after stop including all pipeline patients
 	all_relevant_subpop_1_sample_sizes <- sort(unique(c(cum_sample_sizes_subpop_1,cum_sample_sizes_subpop_1_pipeline)))
@@ -304,18 +300,18 @@ if(k_star>1)
 	cov_matrix <- diag(k_star)
 for(i in 1:k_star){for(j in 1:k_star) cov_matrix[i,j] <- sqrt(min(ss[i],ss[j])/max(ss[i],ss[j]))}
 
-sqrt_vector <- ((1:k_star)/k_star)^Delta
+boundary_vector_with_unit_proportionality_constant <- ((1:k_star)/k_star)^Delta
 
 OF_prop_constant_upper_bnd <- 10
 OF_prop_constant_lower_bnd <- 0
 while(OF_prop_constant_upper_bnd-OF_prop_constant_lower_bnd > 0.000001)
 {
 	OF_prop_constant_midpt <- mean(c(OF_prop_constant_lower_bnd,OF_prop_constant_upper_bnd))
-	type_I_error <- 1-(pmvnorm(lower=rep(-Inf,k_star),upper=OF_prop_constant_midpt*sqrt_vector,mean=rep(0,k_star),sigma=cov_matrix))
+	type_I_error <- 1-(pmvnorm(lower=rep(-Inf,k_star),upper=OF_prop_constant_midpt*boundary_vector_with_unit_proportionality_constant,mean=rep(0,k_star),sigma=cov_matrix))
 	if(type_I_error < alpha_H0C) OF_prop_constant_upper_bnd <- OF_prop_constant_midpt else OF_prop_constant_lower_bnd <- OF_prop_constant_midpt
 }
 H0C_prop_const <- OF_prop_constant_midpt
-OF_final_boundaries_H0C <- OF_prop_constant_midpt*sqrt_vector
+OF_final_boundaries_H0C <- OF_prop_constant_midpt*boundary_vector_with_unit_proportionality_constant
 
 ## Generate boundaries for subpopulation 1
 # First construct cumulative sample sizes
@@ -340,20 +336,21 @@ for(i in 1:k_star){
 	for(j in 1:total_number_stages){
 	cov_matrix_full[j+k_star,i] <-cov_matrix_full[i,j+k_star] <- sqrt((min(cum_sample_sizes_subpop_1[i],cum_sample_sizes_subpop_1[j])/max(cum_sample_sizes_subpop_1[i],cum_sample_sizes_subpop_1[j]))*(p1*outcome_variance_subpop_1/(p1*outcome_variance_subpop_1+p2*outcome_variance_subpop_2)))}}
 # Do binary search to set efficacy threshold for subpopulation 1.
-sqrt_vector_subpop_1 <- ((1:total_number_stages)/total_number_stages)^Delta
+boundary_vector_with_unit_proportionality_constant_subpop_1 <- (cum_sample_sizes_subpop_1/cum_sample_sizes_subpop_1[total_number_stages])^Delta
+#((1:total_number_stages)/total_number_stages)^Delta
 
 OF_prop_constant_upper_bnd <- 10
 OF_prop_constant_lower_bnd <- 0
 while(OF_prop_constant_upper_bnd-OF_prop_constant_lower_bnd > 0.000001)
 {
 	OF_prop_constant_midpt <- mean(c(OF_prop_constant_lower_bnd,OF_prop_constant_upper_bnd))
-	type_I_error <- 1-(pmvnorm(lower=rep(-Inf,k_star+total_number_stages),upper=c(OF_final_boundaries_H0C,OF_prop_constant_midpt*sqrt_vector_subpop_1),mean=rep(0,k_star+total_number_stages),sigma=cov_matrix_full))
+	type_I_error <- 1-(pmvnorm(lower=rep(-Inf,k_star+total_number_stages),upper=c(OF_final_boundaries_H0C,OF_prop_constant_midpt*boundary_vector_with_unit_proportionality_constant_subpop_1),mean=rep(0,k_star+total_number_stages),sigma=cov_matrix_full))
 	
 	if(type_I_error < alpha_FWER) OF_prop_constant_upper_bnd <- OF_prop_constant_midpt else OF_prop_constant_lower_bnd <- OF_prop_constant_midpt
 }
 H01_prop_const <- OF_prop_constant_midpt
-OF_final_boundaries_H01 <- OF_prop_constant_midpt*sqrt_vector_subpop_1
-return(c(H0C_prop_const,H01_prop_const))
+OF_final_boundaries_H01 <- OF_prop_constant_midpt*boundary_vector_with_unit_proportionality_constant_subpop_1
+return(c(H0C_prop_const,H01_prop_const,boundary_vector_with_unit_proportionality_constant_subpop_1))
 }
 
 # Construct table of values to display in plots
@@ -392,18 +389,19 @@ outcome_variance_subpop_2_under_null <- p20*(1-p20)/r20+p20*(1-p20)/(1-r20)
 prop_consts <- get_adaptive_efficacy_boundaries(alpha_FWER_user_defined,alpha_H0C_proportion_user_defined*alpha_FWER_user_defined,outcome_variance_subpop_1_under_null,outcome_variance_subpop_2_under_null)
 H0C_efficacy_boundary_proportionality_constant_adaptive_design <<- prop_consts[1] 
 H01_efficacy_boundary_proportionality_constant_adaptive_design <<- prop_consts[2] 
+adaptive_design_boundary_vector_with_unit_proportionality_constant_subpop_1 <- prop_consts[3:(3+total_number_stages-1)]
 
 ## Get efficacy boundary for standard design H0C, and required sample size to achieve desired_power_H0C_standard_design
 ss <- 1:total_number_stages
 cov_matrix <- diag(total_number_stages)
 for(i in 1:total_number_stages){for(j in 1:total_number_stages) cov_matrix[i,j] <- sqrt(min(ss[i],ss[j])/max(ss[i],ss[j]))}
-sqrt_vector <- ((1:total_number_stages)/total_number_stages)^Delta
+boundary_vector_with_unit_proportionality_constant <- ((1:total_number_stages)/total_number_stages)^Delta
 OF_prop_constant_upper_bnd <- 10
 OF_prop_constant_lower_bnd <- 0
 while(OF_prop_constant_upper_bnd-OF_prop_constant_lower_bnd > 0.000001)
 {
 	OF_prop_constant_midpt <- mean(c(OF_prop_constant_lower_bnd,OF_prop_constant_upper_bnd))
-	type_I_error <- 1-(pmvnorm(lower=rep(-Inf,total_number_stages),upper=c(OF_prop_constant_midpt*sqrt_vector),mean=rep(0,total_number_stages),sigma=cov_matrix))
+	type_I_error <- 1-(pmvnorm(lower=rep(-Inf,total_number_stages),upper=c(OF_prop_constant_midpt*boundary_vector_with_unit_proportionality_constant),mean=rep(0,total_number_stages),sigma=cov_matrix))
 
 	if(type_I_error < alpha_FWER_user_defined) OF_prop_constant_upper_bnd <- OF_prop_constant_midpt else OF_prop_constant_lower_bnd <- OF_prop_constant_midpt
 }
@@ -412,7 +410,7 @@ H01_efficacy_boundary_proportionality_constant_standard_design <<- OF_prop_const
 
 H0C_efficacy_boundaries <- H0C_efficacy_boundary_proportionality_constant_adaptive_design*c(((1:k)/k)^Delta,rep(Inf,total_number_stages-k))
 
-subpop_1_efficacy_boundaries <- H01_efficacy_boundary_proportionality_constant_adaptive_design*(((1:total_number_stages)/total_number_stages)^Delta)
+subpop_1_efficacy_boundaries_adaptive_design <<- H01_efficacy_boundary_proportionality_constant_adaptive_design*adaptive_design_boundary_vector_with_unit_proportionality_constant_subpop_1
 
 subpopulation_2_stopping_boundaries_adaptive_design <<- c(subpopulation_2_stopping_boundary_proportionality_constant_adaptive_design*(((1:(last_stage_subpop_2_enrolled_adaptive_design-1))/(last_stage_subpop_2_enrolled_adaptive_design-1))^Delta),rep(Inf,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design+1))
 # Compute subpop. 1 cumulative sample size vector
@@ -629,8 +627,6 @@ p2 <- 1-p1
 
 H0C_efficacy_boundaries <- H0C_efficacy_boundary_proportionality_constant_adaptive_design*c(((1:k)/k)^Delta,rep(NA,total_number_stages-k))
 
-subpop_1_efficacy_boundaries <- H01_efficacy_boundary_proportionality_constant_adaptive_design*(((1:total_number_stages)/total_number_stages)^Delta)
-
 subpopulation_2_stopping_boundaries_adaptive_design <<- c(subpopulation_2_stopping_boundary_proportionality_constant_adaptive_design*(((1:(last_stage_subpop_2_enrolled_adaptive_design-1))/(last_stage_subpop_2_enrolled_adaptive_design-1))^Delta),Inf,rep(NA,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design))
 # Compute subpop. 1 cumulative sample size vector
 if(total_number_stages>last_stage_subpop_2_enrolled_adaptive_design){
@@ -638,7 +634,7 @@ if(total_number_stages>last_stage_subpop_2_enrolled_adaptive_design){
 } else {
 	subpop_1_sample_size_vector <- c((1:last_stage_subpop_2_enrolled_adaptive_design)*per_stage_sample_size_combined_adaptive_design_user_defined*p1_user_defined)
 }
-subpop_1_futility_boundaries_adaptive_design <<- c(H01_futility_boundary_proportionality_constant_adaptive_design*(subpop_1_sample_size_vector[1:total_number_stages-1]/subpop_1_sample_size_vector[total_number_stages-1])^Delta,subpop_1_efficacy_boundaries[total_number_stages])
+subpop_1_futility_boundaries_adaptive_design <<- c(H01_futility_boundary_proportionality_constant_adaptive_design*(subpop_1_sample_size_vector[1:total_number_stages-1]/subpop_1_sample_size_vector[total_number_stages-1])^Delta,subpop_1_efficacy_boundaries_adaptive_design[total_number_stages])
 
 if(k<total_number_stages){
 row1 <- c(p1*per_stage_sample_size_combined_adaptive_design_user_defined*(1:k),p1*per_stage_sample_size_combined_adaptive_design_user_defined*k+per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined*(1:(total_number_stages-k)))
@@ -657,7 +653,7 @@ row3 <- c(per_stage_sample_size_combined_adaptive_design_user_defined*(1:k))
 H0C_efficacy <-  H0C_efficacy_boundaries
 #H0C_efficacy[H0C_efficacy==Inf] <- rep(0,5-k)
 subpopulation_2_stopping_boundaries_adaptive_design_copy <- subpopulation_2_stopping_boundaries_adaptive_design
-H01_efficacy <- subpop_1_efficacy_boundaries
+H01_efficacy <- subpop_1_efficacy_boundaries_adaptive_design
 H01_futility <- subpop_1_futility_boundaries_adaptive_design
 
 output_df <- rbind(row1,row2,row3,H0C_efficacy,subpopulation_2_stopping_boundaries_adaptive_design_copy,H01_efficacy,H01_futility)
