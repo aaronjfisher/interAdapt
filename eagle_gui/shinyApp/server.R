@@ -329,8 +329,15 @@ shinyServer(function(input, output) {
       boxListi<-numericInput(inputId=bt[i,'inputId'], label='', min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
       ind<-length(labelBoxList)           
       #add extra text:
+      #Ex 1 - follows 'Lower bound for...'
       if(grepl('Lower bound for treatment effect',bt[i,'label'])){
         labelBoxList[[ind+1]]<-strong("For use in Plots of Power vs. Average Treatment Effect:")
+        labelBoxList[[ind+2]]<-br()
+        ind<-length(labelBoxList)
+      }
+      #Ex2 - follows "Delta"
+      if(grepl('Delta',bt[i,'label'])){
+        labelBoxList[[ind+1]]<-strong("Applies to all Parameters:")
         labelBoxList[[ind+2]]<-br()
         ind<-length(labelBoxList)
       }
@@ -440,13 +447,6 @@ shinyServer(function(input, output) {
 	regen()
   print2log('duration plot')
 	expected_duration_plot()
-  })
-
-  #overruns <- function() plot(1:2, main="Overruns")
-  output$overruns <- renderPlot({
-	regen()
-  print2log('overruns plot')
-	overrun_plot()
   })
 
 
