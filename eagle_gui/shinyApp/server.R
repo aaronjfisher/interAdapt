@@ -452,16 +452,16 @@ shinyServer(function(input, output) {
 
   #############
   #Boundary Plots
-  output$fixed_H0C_boundary_plot <-renderPlot({
+  output$standard_H0C_boundary_plot <-renderPlot({
     regen()
     print2log('H0C Boundary Plot')
-    boundary_fixed_H0C_plot()
+    boundary_standard_H0C_plot()
   })
 
-  output$fixed_H01_boundary_plot <-renderPlot({
+  output$standard_H01_boundary_plot <-renderPlot({
     regen()
     print2log('H01 Boundary Plot')
-    boundary_fixed_H01_plot()
+    boundary_standard_H01_plot()
   })
 
   output$adapt_boundary_plot <-renderPlot({
@@ -518,18 +518,18 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 	adaptive_design_sample_sizes_and_boundaries_table()
   })
 
-  output$fixed_H0C_design_sample_sizes_and_boundaries_table.2 <-
-  output$fixed_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
+  output$standard_H0C_design_sample_sizes_and_boundaries_table.2 <-
+  output$standard_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
 	regen()
   print2log('H0C table')
-	fixed_H0C_design_sample_sizes_and_boundaries_table()
+	standard_H0C_design_sample_sizes_and_boundaries_table()
   })
 
-  output$fixed_H01_design_sample_sizes_and_boundaries_table.2 <-
-  output$fixed_H01_design_sample_sizes_and_boundaries_table <-renderTable({
+  output$standard_H01_design_sample_sizes_and_boundaries_table.2 <-
+  output$standard_H01_design_sample_sizes_and_boundaries_table <-renderTable({
 	regen()
   print2log('H01 table')
-	fixed_H01_design_sample_sizes_and_boundaries_table()
+	standard_H01_design_sample_sizes_and_boundaries_table()
   })
 
   output$performance_table <- renderTable(expr={
@@ -618,7 +618,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     filename =  paste0('DesignFC_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
     content = function(filename) {
-      t1<-fixed_H0C_design_sample_sizes_and_boundaries_table()
+      t1<-standard_H0C_design_sample_sizes_and_boundaries_table()
       designTable2csv(t1,filename)
     }
   )
@@ -627,7 +627,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     filename =  paste0('DesignFS_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
     content = function(filename) {
-      t1<-fixed_H01_design_sample_sizes_and_boundaries_table()
+      t1<-standard_H01_design_sample_sizes_and_boundaries_table()
       designTable2csv(t1,filename)
     }
   )
