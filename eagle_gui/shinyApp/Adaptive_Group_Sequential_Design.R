@@ -448,17 +448,18 @@ for(percent_benefit_subpop_2 in rev(risk_difference_list))
 
 power_vec <- get_power(design_type="adaptive",p1=p1_user_defined,total_number_stages,k=last_stage_subpop_2_enrolled_adaptive_design,combined_population_stopping_boundaries_adaptive_design,subpop_1_futility_boundaries_adaptive_design,subpopulation_2_stopping_boundaries_adaptive_design,n1=per_stage_sample_size_combined_adaptive_design_user_defined,n2=per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined,b_C=H0C_efficacy_boundary_proportionality_constant_adaptive_design,b_S=H01_efficacy_boundary_proportionality_constant_adaptive_design,SNR_subpop_1=SNR_subpop_1,SNR_subpop_2=SNR_subpop_2,outcome_variance_subpop_1,outcome_variance_subpop_2)
 
-adaptive_df[counter_adaptive,] <-  power_vec[c(1,1,2,3,4)]# Expected sample size, Expected Duration, Power to Reject H0C, Power to reject H01, Power to reject at least one of H0C or H01
+adaptive_df[counter_adaptive,] <-  c(power_vec[1],power_vec[1]/enrollment_rate_combined_population,power_vec[c(2,3,4)])# Expected sample size, Expected Duration, Power to Reject H0C, Power to reject H01, Power to reject at least one of H0C or H01
 overrun_df[counter_adaptive,1] <- 0
 counter_adaptive <- counter_adaptive + 1
 
+
 power_vec <- get_power(design_type="standard",p1=p1_user_defined,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_standard_design_H0C,subpop_1_futility_boundaries=subpop_1_futility_boundaries_standard_design_H0C,subpop_2_futility_boundaries=subpop_2_futility_boundaries_standard_design_H0C,n1=per_stage_sample_size_combined_standard_design_H0C,n2=0,b_C=H0C_efficacy_boundary_proportionality_constant_standard_design,b_S=Inf,SNR_subpop_1=SNR_subpop_1,SNR_subpop_2=SNR_subpop_2,outcome_variance_subpop_1,outcome_variance_subpop_2)
-standard_combined_population_df[counter_combined_population,] <- power_vec[c(1,1,2,2)]
+standard_combined_population_df[counter_combined_population,] <- c(power_vec[1],power_vec[1]/enrollment_rate_combined_population,power_vec[2],0)
 overrun_df[counter_combined_population,2] <- 0
 counter_combined_population <- counter_combined_population +1
 
 power_vec <- get_power(design_type="standard",p1=1,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_standard_design_H01,subpop_1_futility_boundaries=subpop_1_futility_boundaries_standard_design_H01,subpop_2_futility_boundaries=subpop_2_futility_boundaries_standard_design_H01,n1=per_stage_sample_size_combined_standard_design_H01,n2=0,b_C=H01_efficacy_boundary_proportionality_constant_standard_design,b_S=Inf,SNR_subpop_1=SNR_subpop_1,SNR_subpop_2=SNR_subpop_2,outcome_variance_subpop_1,outcome_variance_subpop_2)
-standard_subpop_1_only_df[counter_subpop_1,] <- power_vec[c(1,1,2)]
+standard_subpop_1_only_df[counter_subpop_1,] <- c(power_vec[1],power_vec[1]/(p1*enrollment_rate_combined_population),power_vec[2])
 overrun_df[counter_subpop_1,3] <- 0
 
 counter_subpop_1 <- counter_subpop_1 +1
