@@ -1,7 +1,8 @@
 #To Do
 
-## Things to talk about
-* All set for now
+## For use to talk about
+* Citaiton style? Manually add things like (Rosenblum et al) or change citation syle?
+
 
 ## For Michael to do
 
@@ -27,12 +28,10 @@
 
 
 ## For Aaron to do
-* Edit JSS.tex to take out delay & overrun references
-* Add lines "The software requires user's default web browser to be set to either Firefox " to paper & about tab
-* change R code to say "To exit press escape"
-Add upload CSV to documentation!???!??
-Add note on how duration is nessecarily proportional to sample size for AD, because it can be slower after k* if more patients, even considering no  delay time (which we no longer will mention). Duration is generally slower duration for SS than SC, if they have the same total sample size. The two enrollment rates don't affect eachother. Recruiting one subpop doesn't slow recruitment of the other.
-Send Michael pdf with remaining comments
+* Add lines "The software requires user's default web browser to be set to either Firefox" to paper & about tab
+* Add upload CSV to documentation!???!??
+* Add note on how duration is nessecarily proportional to sample size for AD, because it can be slower after k* if more patients, even considering no  delay time (which we no longer will mention). Duration is generally slower duration for SS than SC, if they have the same total sample size. The two enrollment rates don't affect eachother. Recruiting one subpop doesn't slow recruitment of the other.
+* Send Michael pdf with remaining comments
 * Ask Michael about !!!! marks in tex file
 * (After Michael reads over final draft) adjust knitr Rmd files. 
 * Change links at the head of the knitr files to point to github and interAdapt.
