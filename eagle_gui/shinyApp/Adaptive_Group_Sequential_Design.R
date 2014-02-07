@@ -254,9 +254,10 @@ if(design_type=="adaptive"){
 	}
 return(c(
 mean(cum_sample_sizes_subpop_1[final_stage_subpop_1_enrolled_up_through]+cum_sample_sizes_subpop_2[final_stage_subpop_2_enrolled_up_through]),
+mean(cum_sample_sizes_subpop_1[final_stage_subpop_1_enrolled_up_through])/(p1*enrollment_rate_combined_population), # expected duration
 mean(reject_H0C), # power to reject H0C
 mean(reject_H01), # power to reject H01
-mean(reject_H0C | reject_H01) # power to reject H01
+mean(reject_H0C | reject_H01) # power to reject H01 or H0C
 ))
 } else if(design_type=="standard"){  
     # record if efficacy boundary ever crossed:
@@ -446,7 +447,7 @@ for(percent_benefit_subpop_2 in rev(risk_difference_list))
 
 power_vec <- get_power(design_type="adaptive",p1=p1_user_defined,total_number_stages,k=last_stage_subpop_2_enrolled_adaptive_design,combined_population_stopping_boundaries_adaptive_design,subpop_1_futility_boundaries_adaptive_design,subpopulation_2_stopping_boundaries_adaptive_design,n1=per_stage_sample_size_combined_adaptive_design_user_defined,n2=per_stage_sample_size_when_only_subpop_1_enrolled_adaptive_design_user_defined,b_C=H0C_efficacy_boundary_proportionality_constant_adaptive_design,b_S=H01_efficacy_boundary_proportionality_constant_adaptive_design,SNR_subpop_1=SNR_subpop_1,SNR_subpop_2=SNR_subpop_2,outcome_variance_subpop_1,outcome_variance_subpop_2)
 
-adaptive_df[counter_adaptive,] <-  c(power_vec[1],power_vec[1]/enrollment_rate_combined_population,power_vec[c(2,3,4)])# Expected sample size, Expected Duration, Power to Reject H0C, Power to reject H01, Power to reject at least one of H0C or H01
+adaptive_df[counter_adaptive,] <-  power_vec # Expected sample size, Expected Duration, Power to Reject H0C, Power to reject H01, Power to reject at least one of H0C or H01
 overrun_df[counter_adaptive,1] <- 0
 counter_adaptive <- counter_adaptive + 1
 
