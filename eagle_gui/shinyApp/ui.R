@@ -76,6 +76,7 @@ animationOptions(interval = 5000, loop = FALSE, playButton = NULL, pauseButton =
 
 
 
+cat('\n Running interAdapt...\n To exit interAdapt, select the R window and press escape, or close the browser window')
 
 shinyUI(pageWithSidebar(
 
@@ -106,7 +107,8 @@ shinyUI(pageWithSidebar(
             strong('Save current parameters to file:'),br(),
             downloadButton('downloadInputs', 'Save Inputs'),
             br(),br(),
-            strong('Load previous parameters from file:'),
+            strong('Load previous parameters from file:'),br(),
+            HTML('(Press Apply after loading)'),
             fileInput('uploadCsvInput', '',
                     accept=c('text/csv', 'text/comma-separated-values,text/plain')),
             strong('Upload trial data from file:'),
@@ -216,7 +218,6 @@ shinyUI(pageWithSidebar(
     	tabPanel("Power", my_plotOutput("power_curve_plot")),
     	tabPanel("Sample Size", my_plotOutput("expected_sample_size_plot")),
     	tabPanel("Duration", my_plotOutput("expected_duration_plot")),
-    	tabPanel("Overruns", my_plotOutput("overruns")),
       selected='Power'),
     pbreak,
     tableOutput("performance_table"),
