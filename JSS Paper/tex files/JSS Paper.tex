@@ -33,7 +33,7 @@
 
 \title{\interAdapt – An Interactive Tool for Designing and Evaluating Randomized Trials with Adaptive Enrollment Criteria}
 \date{}
-\author{Aaron Fisher, Michael Rosenblum and Harris Jaffee}
+\author{Aaron Fisher, Harris Jaffee, and Michael Rosenblum}
 
 \begin{document}
 \maketitle
@@ -89,7 +89,7 @@
 %Double check citations to make sure they work and that bib files are the same.
 \begin{abstract}
 
-We consider the problem of designing a randomized trial when there is prior evidence that the experimental treatment may be more effective for certain groups of patients, such as those with a certain biomarker or risk score at baseline. Randomized trial designs have been proposed that dynamically adapt enrollment criteria to target precisely those benefiting from treatment. Such trial designs aim to learn if the treatment benefits the overall population, only a certain subpopulation, or neither.
+We consider the problem of designing a randomized trial when there is prior evidence that the experimental treatment may be more effective for certain groups of participants, such as those with a certain biomarker or risk score at baseline. Randomized trial designs have been proposed that dynamically adapt enrollment criteria based on accrued data. Such trial designs aim to learn if the treatment benefits the overall population, only a certain subpopulation, or neither.
 %It can be challenging to construct such designs, and to evaluate their performance compared to standard designs. To address this challenge,
 We introduce the \interAdapt software tool, which provides a user friendly interface for constructing and evaluating certain adaptive trial designs. These designs are automatically compared to standard (non-adaptive) designs in terms of the following performance criteria:  power, sample size, and trial duration.
 Unlike existing software, \interAdapt is open-source and cross-platform, and is the first to implement the group sequential, adaptive enrichment designs of \cite{Rosenblum2013AdaptMISTIE}. %!!?? Update this bit about how it relates to ?
@@ -98,74 +98,81 @@ Unlike existing software, \interAdapt is open-source and cross-platform, and is 
 
 
 \section*{1. Introduction}
-Group sequential, randomized trial designs involve rules for early stopping based on analyses of accrued data. Such early stopping could occur if there is strong evidence early in the trial of benefits or harms of the new treatment being studied. Adaptive enrichment designs expand on group sequential designs but including rules for changing enrollment criteria based on preliminary data accrued in the ongoing trial.
-Here, we introduce the \interAdapt software tool, which provides a user-friend interface for exploring certain types of adaptive enrichment designs, and for comparing these designs against standard, group sequential designs with non-adaptive enrollment criteria. The software can either be run locally, as an R package, or accessed online through a web browser. 
+Group sequential, randomized trial designs involve rules for early stopping based on analyses of accrued data. Such early stopping could occur if there is strong evidence early in the trial of benefits or harms of the new treatment being studied. Adaptive enrichment designs include rules for changing enrollment criteria based on data accrued in the ongoing trial. For example, enrollment may be restricted to a certain subpopulation if strong early evidence indicates no benefit for the complementary population.
+We focus on the  class of designs introduced by \cite{Rosenblum2013AdaptMISTIE}, which combines features of both group sequential and adaptive enrichment designs. For conciseness, we refer to designs in this class as  ``adaptive designs."
+These are contrasted with ``standard designs," 
+defined to  be group sequential designs where the enrollment criteria cannot be changed during the trial (but the trial may be stopped early). 
 
-\interAdapt specifically considers the class of designs presented by \cite{Rosenblum2013AdaptMISTIE}, which
-we refer to simply as ``adaptive designs." The software compares the performance of these designs to ``standard designs,'' defined to  be group sequential designs where the enrollment criteria cannot be changed during the trial (but the trial may be stopped early). 
-
-\interAdapt is designed to be used by clinical investigators, and provides information that can help users quickly determine if an adaptive design offers a tangible improvement over standard designs in the context of their specific trial. All calculations are based on simulations, which run in less than 1 minute on a standard commercial laptop. Several user inputs are available to allow the user to describe the context of their trial. Alternatively, users can upload data from previous studies, and \interAdapt will automatically compute the relevant parameters for the current trial. Once entered, the full set of input parameters can be saved to the user's computer for use in future sessions. Results of the design comparisons can be immediately downloaded in the form of either csv-tables, or printable, html-based reports.
+We introduce the \interAdapt software tool, which provides a user-friendly interface for exploring certain types of adaptive enrichment designs, and for comparing these to standard designs.
+The software can either be run locally as an R package, or accessed online through a web browser. 
+\interAdapt is designed to be used by statisticians and clinical investigators to plan randomized trials. The software provides information that can help users quickly determine if certain adaptive designs offer tangible benefits compared to standard designs, in the context of their specific trial goals and constraints. Calculations typically require less than 1 minute on a standard commercial laptop. Several user inputs are available to allow the user to describe the context of his/her trial. Alternatively, users can upload data from previous studies, and \interAdapt will automatically compute the relevant parameters for the trial being planned. Once entered, the full set of input parameters can be saved to the user's computer for use in future sessions. Results of the design comparisons can be immediately downloaded in the form of either csv-tables, or printable, html-based reports.
 
 
 To demonstrate our designs and software, we consider the problem of 
 %The motivating example for our work comes from the
  planning a Phase III trial for a new surgical treatment of stroke, which is considered by (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}.
-The new treatment is known as Minimally-Invasive Surgery Plus rt-PA for Intracerebral Hemorrhage (MISTIE), and is described in more detail in (Morgan 2008)\cite{MISTIE_prelim2008}. Leading up to this trial, there was more prior data on the efficacy of the treatment for patients with little or no intraventricular hemorrhage (IVH) at baseline (referred to as small IVH patients) than for patients with large IVH volume. The goal of the trial was to determine whether MISTIE is effective for the combined population of those with small or large IVH, and, if not, to determine whether MISTIE is effective for the small IVH population. A standard trial design, e.g., one enrolling the combined population throughout the trial, or enrolling only small IVH participants throughout the trial, may be inefficient at simultaneously answering these questions.
-An alternative is to use an adaptive trial design, which would first recruit from the combined population, and then decide whether to restrict enrollment based on results from interim  analyses. %Comparable standard designs would either enroll all , or would restrict to enrolling only patients with small IVH.
+The new treatment is  called Minimally-Invasive Surgery Plus rt-PA for Intracerebral Hemorrhage (MISTIE), and is described in detail in (Morgan 2008)\cite{MISTIE_prelim2008}. 
+Previous trials had almost exclusively enrolled participants with little or no intraventricular hemorrhage (IVH) at baseline (referred to as small IVH participants).
+However, it was conjectured that the treatment may also benefit  participants with large IVH volume at baseline.  
+The goal of the Phase III trial being planned was to determine whether MISTIE is effective for the combined population of those with small or large IVH, and, if not, to determine whether MISTIE is effective for the small IVH population (for whom there was greater prior evidence). A standard trial design, e.g., one enrolling the combined population throughout the trial, or one enrolling only small IVH participants throughout the trial, may be inefficient at simultaneously answering these questions.
+An alternative is to use an adaptive trial design, which would first recruit from the combined population, and then decide whether to restrict enrollment based on results from interim  analyses. %Comparable standard designs would either enroll all , or would restrict to enrolling only participants with small IVH.
 Though we focus on this stroke trial application throughout, our software tool can be applied in many disease areas.
 
 %Need to use \textsf{interAdapt} so that the period isn't an extra space away.
-In Section 2, we  formally define the hypothesis testing problem to be addressed different trial designs. In Section 3, we compare our software to the most similar, currently available commercial software, AptivSolutions ADDPLAN PE (Patient Enrichment). 
+In Section 2, we  formally define the hypothesis testing problem to be addressed by different trial designs. In Section 3, we compare our software to the most similar, currently available commercial software, AptivSolutions ADDPLAN PE (participant Enrichment). 
 In Section 4, we describe how to install \interAdapt on a personal computer, and how to access it online through a web browser. Section 5 describes the inputs available when using \textsf{interAdapt}, and discusses the interpretation of the application's output. In Section 6, we present an example demonstrating how an adaptive design is  created and analyzed with \textsf{interAdapt}. 
 
 \section*{2. Problem Description}
-
+We consider the problem of testing whether a new treatment is superior to control.
 Consider the case where we have two subpopulations, referred to as subpopulation $1$ and subpopulation $2$. These must be specified before the trial starts, and be defined in terms of participant attributes measured at baseline (e.g., having a high initial severity of disease or a certain biomarker value). 
 We focus on situations where  there is suggestive, prior evidence that the treatment may be more likely to benefit subpopulation $1$.
+In the MISTIE trial example, subpopulation 1 refers to small IVH participants, and subpopulation 2 refers to large IVH participants.
 %though it is possible that the treatment will benefit both subpopulations.
-Let $π_1$ and $π_2$ denote the proportion of patients in subpopulations 1 and 2, respectively. 
+Let $π_1$ and $π_2$ denote the proportion of participants in subpopulations 1 and 2, respectively. 
 
-Both the adaptive and standard designs discussed here consist of ongoing enrollment, and include predetermined rules for stopping the trial early based on interim analyses of currently enrolled patients. We discretize each trial into $K$ stages, and say that the $k ^{th}$ stage will be completed once a certain number of additional patients have been enrolled. The number of pateints required to end the $k^{th}$ stage depends on the trial design, and may also depend on deterministic decision rules applied to the data acrued in previous stages. In stages when both subpopulations are being recruited, we assume that the proportion of newly recruited patients who are in subpopulation 1 is equal to $π_1$. An interim analysis is done at the end of each stage, which may lead us to stop the trial early if there is either strong evidence of treatment efficacy, or strong evidence of treatment futility.
 
-Let $Y_{i,k}$ be the a binary outcome variable for the $i^{th}$ patient recruited in stage $k$, where $Y_{i,k}=1$ indicates a successful outcome. Let $T_{i,k}$ be an indicator of the event that the $i^{th}$ patient recruited in stage $k$ is assigned to the treatment. \interAdapt assumes equal probability of being assigned to either treatment or control.
+Both the adaptive and standard designs discussed here involve enrollment over time, and include predetermined rules for stopping the trial early based on interim analyses. Each trial consists of $K$ stages. 
+In stages when both subpopulations are enrolled, we assume that the proportion of newly recruited participants  in each subpopulation $s \in \{1,2\}$ is equal to the corresponding population proportion $\pi_s$. %An interim analysis is done at the end of each stage, which may lead to stoping the trial early.
 
-For subpopulation $1$, denote the probability of a successful outcome under treatment as $p_{1t}$, and the probability of a successful outcome under control as $p_{1c}$. Similarly for population $2$, let $p_{2t}$ denote the probability of a success under treatment, and $p_{2c}$ denote the probability of a success under control. We define the average treatment effect for a given population as difference in the probability of a successful outcome between the treatment and control groups.
+Let $Y_{i,k}$ be the a binary outcome variable for the $i^{th}$ participant recruited in stage $k$, where $Y_{i,k}=1$ indicates a successful outcome. Let $T_{i,k}$ be an indicator of   the $i^{th}$ participant recruited in stage $k$ being assigned to the treatment. We assume there is an equal probability of being assigned to  treatment or control.
+
+For subpopulation $1$, denote the probability of a successful outcome under treatment as $p_{1t}$, and the probability of a successful outcome under control as $p_{1c}$. Similarly for population $2$, let $p_{2t}$ denote the probability of a success under treatment, and $p_{2c}$ denote the probability of a success under control. 
+We assume each of $p_{1c},p_{1t},p_{2c},p_{2t}$ is in the interval $(0,1)$.
+We define the true average treatment effect for a given population to be the difference in the probability of a successful outcome comparing treatment versus control.
 
 
 In the remainder of this section we give an overview of the relevant concepts needed to understand and use \textsf{interAdapt}. A more detailed discussion of the theoretical context, and of the parameter calculation procedure, can be found in (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}.
  
 \subsection*{Hypotheses}
-
-We focus on testing the null hypothesis of no treatment effect in subpopulation $1$, and the null hypothesis of no treatment effect in the combined population. The two hypotheses are defined respectively as
+We focus on testing the null hypothesis that on average, the treatment is no better than control for subpopulation $1$, and the analogous null hypothesis for the combined population. These two null hypotheses are defined, respectively, as
 
 \begin{itemize}
 \item $H_{01}$: $p_{1t}-p_{1c}≤0$;%The treatment effect in subpopulation $1$ is less than or equal to zero.
 \item $H_{0C}$: $π_1(p_{1t}-p_{1c}) + π_2(p_{2t}-p_{2c}) ≤ 0$. %The average treatment effect in the combined population is less than or equal to zero.	
 \end{itemize}
+\interAdapt compares different designs for testing these null hypotheses. 
+An adaptive design testing both null hypotheses is compared to a standard design testing only $H_{0C}$, and to a standard design testing only $H_{01}$. 
+We refer to the adaptive design as $AD$, and refer to these two standard designs as $SC$ and $SS$, respectively. All three trials contain $K$ stages, and the decision to entirely stop the trial early can be made at the end of any stage. The trials differ in that $SC$ and $SS$ never change their enrollment criteria, while $AD$ may switch to enroll only participants from subpopulation $1$.
 
-\interAdapt shows the decision rules for an adaptive design testing both of these hypotheses. The application compares this adaptive design to the standard design testing only $H_{0C}$, and to the standard design testing only $H_{01}$. We refer to the adaptive design as $AD$, and refer to the two standard designs as $SC$ and $SS$ respectively. All three trials contain $K$ stages, and the decision to entirely stop the trial early can be made at the end of any stage. The trials differ in that $SC$ and $SS$ never change their enrollment criteria, while $AD$ may switch to enroll only patients from subpopulation $1$.
+Note that the standard designs discussed here are not the same as those discussed in section 6.1 of (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}, which test both hypothesis simultaneously. Implementing standard designs such as those discussed in (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE} into the software is an area of future research.
 
-Note that the designs discussed here are not the same as the standard designs discussed in section 6.1 of (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}, which test both hypothesis simultaneously. Implementing standard designs such as those discussed in (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE} into the software is an area of future research.
-
-%!!!!!! Mention somewhere that we assume outcomes are observed without delay (or with negligible delay), immediately after patients are enrolled.
-%Old Note:Whenever any of the trials $AD$, $SC$ or $SS$ is stopped early, there will be some patients who have been enrolled but who’s outcomes have not yet been measured. These patients are referred to as “overrunning” or “pipeline” patients. \interAdapt currently discards measurements from these overruning patients in the final analysis. Incorporating these measurements is a goal for future work.
-%AF note to self: Michael has mentioned that there are a few ways to do this. Jason does a bayesian prediction of passing a threshold once the patients come in. There are also ways to set "double thresholds," one threshold for when to stop, and one (usually lower) threshold for whether or not to declare significant results once the overrunning patients are measured.
+%!!!!!! Mention somewhere that we assume outcomes are observed without delay (or with negligible delay), immediately after participants are enrolled.
+%Old Note:Whenever any of the trials $AD$, $SC$ or $SS$ is stopped early, there will be some participants who have been enrolled but who’s outcomes have not yet been measured. These participants are referred to as “overrunning” or “pipeline” participants. \interAdapt currently discards measurements from these overruning participants in the final analysis. Incorporating these measurements is a goal for future work.
+%AF note to self: Michael has mentioned that there are a few ways to do this. Jason does a bayesian prediction of passing a threshold once the participants come in. There are also ways to set "double thresholds," one threshold for when to stop, and one (usually lower) threshold for whether or not to declare significant results once the overrunning participants are measured.
 
 
 
 \subsection*{Test Statistics}
-
-We calculate three z-statistics at the end of each stage, one for the treatment effect in the combined population, and one for the treatment effect in each subpopulation. 
-
-Denote $Z_{C,k}$ as the z-statistic for the estimated treatment effect in the combined population, which is based on the data from all patients with outcomes recorded by the end of stage $k$. The test statistic $Z_{C,k}$ takes the following form:
+Three z-statistics are computed at the end of each stage $k$. The first is based on all enrolled participants in the combined population, the second is based on all enrolled participants in subpopulation 1, and the third is based on all enrolled participants in subpopulation 2.  Each z-statistic is a standardized difference in sample means comparing treatment versus control arms.
+Let $Z_{C,k}$ denote the z-statistic for the combined population, which  takes the following form:
 
 \begin{equation*}\begin{split}
 Z_{C,k}&=\left[
 \frac{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}Y_{i,k'}T_{i,k'} }
-{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}T_{i,k}}
+{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}T_{i,k'}}
 -
 \frac{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}} Y_{i,k'}(1-T_{i,k'})} 
-{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}(1-T_{i,k})}
+{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}(1-T_{i,k'})}
 \right] \\
 & \htx{1}{} \times
 \left\lbrace
@@ -175,20 +182,16 @@ Z_{C,k}&=\left[
 }
 \right\rbrace ^{-1/2}
 \end{split}\end{equation*}
-
-
 The term in square brackets is the difference in sample means between the treatment and control groups. The term in curly braces is the variance of this difference in sample means.
 
-Let $Z_{1,k}$ and $Z_{2,k}$ denote the analogous test statistics for the z-statistics of the estimated treatment effect in subpopulations $1$ and $2$. The explicit form of $Z_{1,k}$ can be written as follows, where $A_{i,k}$ is the indicator that the $i ^{th}$ subject recruited in stage $k$ is a member of subpopulation $1$:
-
-
+Let $Z_{1,k}$ and $Z_{2,k}$ denote analogous z-statistics restricted to participants in subpopulation $1$ and $2$, respectively. The z-statistic for subpopulation 1 can be written as follows, where $A_{i,k}$ is the indicator that the $i ^{th}$ subject recruited in stage $k$ is in subpopulation $1$:
 \begin{equation*}\begin{split}
 Z_{1,k}&=\left[
 \frac{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}Y_{i,k'}T_{i,k'}A_{i,k'} }
-{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}T_{i,k}A_{i,k'}}
+{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}T_{i,k'}A_{i,k'}}
 -
 \frac{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}} Y_{i,k'}(1-T_{i,k'})A_{i,k'}} 
-{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}(1-T_{i,k})A_{i,k'}}
+{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}(1-T_{i,k'})A_{i,k'}}
 \right] \\
 & \htx{1}{} \times
 \left\lbrace
@@ -198,27 +201,28 @@ Z_{1,k}&=\left[
 }
 \right\rbrace ^{-1/2}
 \end{split}\end{equation*}
+The z-statsistic $Z_{2,k}$ is similar to the above, except replacing each occurrence of $A_{i,k'}$ by $(1-A_{i,k'})$.
 
-We can write $Z_{2,k}$ in an analagous form using an indicator of memebership in population $2$.
-
-The decision rules defined later on in this section for testing $H_{0C}$ and $H_{01}$ consist of critical boundaries for $(Z_{C,1},Z_{C,2},...Z_{C,K})$, $(Z_{1,1},Z_{1,2},...Z_{1,K})$, and $(Z_{2,1},Z_{2,2},...Z_{2,K})$. To calculate the familywise Type I error of any given set of decision rules, we make use of the multivariate distribution of $(Z_{C,1},Z_{C,2},... Z_{C,K}, Z_{1,1},Z_{1,2},...Z_{1,K})$, which can be shown to be normal with a known covariance matrix (Jennison and Turnbull, 1999, Chapter 3)\cite{JennisonTurnbullBook}.
-
+The decision rules defined later on in this section involve boundaries for $(Z_{C,1},Z_{C,2},...Z_{C,K})$,\\ $(Z_{1,1},Z_{1,2},...Z_{1,K})$, and $(Z_{2,1},Z_{2,2},...Z_{2,K})$. To calculate the familywise Type I error of any given set of decision rules, we make use of the multivariate distribution of $(Z_{C,1},Z_{C,2},... Z_{C,K}, Z_{1,1},Z_{1,2},...Z_{1,K})$, which under the assumptions in \cite{Rosenblum2013AdaptMISTIE} is asymptotically normal with a known covariance matrix (Jennison and Turnbull, 1999, Chapter 3)\cite{JennisonTurnbullBook}.
 
 
-\subsection*{Familywise Type I Error}
-
-In the context of our hypotheses, the Familywise Type I error rate refers to the combined rate of false positives from testing either $H_{0C}$ and $H_{01}$. We say that the Familywise Type I error rate is controlled at level $α$ when the probability of rejecting at least one true hypothesis is less than $α$.
-
-For all three designs, $AD$, $SC$, and $SS$, we require the familywise Type I error rate to be $α$. Since the two standard designs $SS$ and $SC$ each only test a single hypothesis, their familywise Type I error rates equal the Type I error rates of their respective hypothesis tests. We discuss the control of the familywise Type I error rate for the $AD$ design in the next section.
+\subsection*{Type I Error Control}
+The familywise Type I error rate is the probability of rejecting one or more true null hypotheses.
+%^In the context of our hypotheses, the Familywise Type I error rate refers to the combined rate of false positives from testing either $H_{0C}$ and $H_{01}$. 
+For a given design, we say that the familywise Type I error rate is strongly controlled at level $α$ if the probability of rejecting at least one true null hypothesis (among $H_{0C}, H_{01}$) is at most $α$, regardless of the true values of $p_{1c},p_{1t},p_{2c},p_{2t}$.
+For all three designs, $AD$, $SC$, and $SS$, we require the familywise Type I error rate to be strongly controlled at level $α$. 
+Since the two standard designs $SS$ and $SC$ each only test a single null hypothesis, the familywise Type I error rate for each is equal to the corresponding Type I error rate. 
+%We discuss 
+% control of the familywise Type I error rate for the $AD$ design in the next section.
 
 %% A more detailed verion of this paragraph from a previous draft, probably better as it is now:
 %%Note that since $SC$ and $SS$ do not test the same hypotheses as $AD$, they are not directly comparable. It is possible to combine $SC$ and $SS$ in order to test both $H_{0C}$ and $H_{01}$, but the trials cannot be done simultaneously without doubling the recruitment rate. Instead, the trials could be combined in sequence by first conducting $SC$, and then conducting $SS$ only if $SC$ does not find a significant effect. This sequence however allow for twice the maximum number of stages (2K). A multiple hypothesis testing correction would also have to be employed in any combination of $SC$ and $SS$. A more detailed discussion of how $SC$ and $SS$ can be combined, and how these combinations compare against $AD$, is given in (MISTIE PAPER). 
 
 
 
-\subsection*{Decision Rules for Stopping}
+\subsection*{Decision Rules for Early Stopping and for Modifying Enrollment Criteria}
 
-The $SC$ decision rules consist of efficacy and futility boundaries for $H_{0C}$. At each stage $k$, we calculate the test statistic $Z_{C,k}$. If $Z_{C,k}$ is above the efficacy boundary for stage $k$, we reject $H_{0C}$ and end the trial. If $Z_{C,k}$ is between the efficacy and futility boundaries for stage $k$, we continue the trial. If $Z_{C,k}$ is below the futility boundary for stage $k$, we end the trial with the conclusion that we have failed to reject $H_{0C}$. \interAdapt makes the simplification that the number of patients enrolled in each stage of $SC$ is constant ($n_{SC}$), and allows the user to input this per-stage enrollment rate.
+The decision rules for the standard design $SC$ consist of efficacy and futility boundaries for $H_{0C}$. At the end of each stage $k$,  the test statistic $Z_{C,k}$ is calculated. If $Z_{C,k}$ is above the efficacy boundary for stage $k$, we reject $H_{0C}$ and end the trial. If $Z_{C,k}$ is between the efficacy and futility boundaries for stage $k$, we continue the trial. If $Z_{C,k}$ is below the futility boundary for stage $k$, we end the trial with the conclusion that we have failed to reject $H_{0C}$. \interAdapt makes the simplification that the number of participants enrolled in each stage of $SC$ is constant ($n_{SC}$), and allows the user to input this per-stage sample size.
 
 The efficacy boundaries for $SC$ are set to be proportional to those described by Wang and Tsiatis (1987). This means that the efficacy boundary for the $k^{th}$ stage is set to $e_{SC}\{(\sum_{k'=1}^{K} n_{k'})/n_k\}^{-δ}$, where $K$ is the total number of stages, $δ$ is a constant in the range $[-.5,.5]$, and $e_{SC}$ is the constant calibrated to ensure the desired familywise Type I error rate. In order to calculate $e_{SC}$, we make use of the fact that the random vector of test statistics ($Z_{C,1},Z_{C,2},…Z_{C,K}$) follows a multivariate normal distribution with a known covariance structure (Jennison and Turnbull, 1999, Chapter 3)\cite{JennisonTurnbullBook}.
 Using the ``mvtnorm'' package \cite{mvtnorm} in R to evaluate the multivariate normal distribution function, we find the proportionality constant $e_{SC}$ such that the null probability of $Z_{C,k}$ exceeding $e_{SC}\{(\sum_{k'=1}^{K} n_{k'})/n_k\}^{-δ}$ at any stage $k$ is less than or equal to $α$.
@@ -227,7 +231,7 @@ In $SC$, as well as in $SS$ and $AD$, we make use of non-binding futility consta
 
 Futility boundaries for the first $K-1$ stages of $SC$ are proportional to $\{(\sum_{k'=1}^{K} n_{k'})/n_k\}^{-δ}$, but with a different proportionality constant, $f_{SC}$. The constant $f_{SC}$ is negative by default, though this is not required. In the $K ^{th}$ stage of the trial, \interAdapt sets the futility bound to be equal to the efficacy bound. This ensures that $Z_{C,K}$ eventually crosses either the efficacy bound or less futility bound.
 
-The decision boundaries for $Z_{1,k}$ in the $SS$ design are defined by exactly the same form. The efficacy boundary for the $k^{th}$ stage is set equal to $e_{SS}\{(\sum_{k'=1}^{K} n_{k'})/n_k\}^{-δ}$, where $e_{SS}$ is the constant that ensures the appropriate Type I error rate. The first $K-1$ futility boundaries for $H_{01}$ are set equal to $f_{SS}\{(\sum_{k'=1}^{K} n_{k'})/n_k\}^{-δ}$,  where $f_{SS}$ is a constant that can be set by the user. The futility boundary in stage $K$ is set equal to the final efficacy boundary in stage $K$. The user can specify the number of patients to enroll in each stage ($n_{SS}$). This per-stage enrollment rate is set to be constant across stages.
+The decision boundaries for $Z_{1,k}$ in the $SS$ design are defined by exactly the same form. The efficacy boundary for the $k^{th}$ stage is set equal to $e_{SS}\{(\sum_{k'=1}^{K} n_{k'})/n_k\}^{-δ}$, where $e_{SS}$ is the constant that ensures the appropriate Type I error rate. The first $K-1$ futility boundaries for $H_{01}$ are set equal to $f_{SS}\{(\sum_{k'=1}^{K} n_{k'})/n_k\}^{-δ}$,  where $f_{SS}$ is a constant that can be set by the user. The futility boundary in stage $K$ is set equal to the final efficacy boundary in stage $K$. The user can specify the number of participants to enroll in each stage ($n_{SS}$). This per-stage enrollment rate is set to be constant across stages.
 
 Decision boundaries for $AD$ vary from those of the standard designs two ways. First, because $AD$ simultaneously tests $H_{0C}$ and $H_{01}$ it has two sets of decision boundaries. For the $k^{th}$ stage of $AD$, let $u_{C,k}$ and $u_{1,k}$ denote the efficacy boundaries for $H_{0C}$ and $H_{01}$ respectively. The boundaries $u_{C,k}$ and $u_{1,k}$ are set equal to $e_{AD,C}\{(\sum_{k'=1}^{K} n_{k'})/n_k\}^{-δ}$ and $e_{AD,1}\{(\sum_{k'=1}^{K} n_{k'})/n_k\}^{-δ}$ respectively, where $e_{AD,C}$  and $e_{AD,1}$ are constants set such that the probability of rejecting either hypothesis under the global null hypothesis is zero. 
 %There are several pairs of $e_{AD,C}$  and $e_{AD,1}$ that satisfy this condition for the Type I error rate. For each possible $ e_{AD,C}$ there is a one to one correspondence with a $e_{AD,1}$, which ensures that the probability of rejecting either hypothesis under the global null is zero. 
@@ -237,7 +241,7 @@ The boundaries for stopping the $AD$ design without rejecting the null hypothese
 The second way that the decision boundaries of $AD$ differ from those of the standard designs is that we allow more flexibility in the futility boundaries. In each stage $k$, our adaptive design has the option of stopping enrollment in subpopulation 2, based on the treatment effect estimate $Z_{2,k}$. \interAdapt also allows the user to specify a final stage for testing an effect in the total population, denoted by stage $k^*$. Regardless of the results at stage $k^*$, we always stop enrolling from subpopulation $2$ at the end stage $k^*$, if we have not done so already. The futility boundaries $l_{2,k}$ are not defined for $k>k^*$.
 
 
-For the $AD$ design, the user can specify two stage specific sample sizes, one for stages when both populations are enrolled ($k≤k^*$), and one for stages where only patients in subpopulation $1$ are enrolled ($k>k^*$). We refer to these two sample sizes as $n_1^*$ and $n_k^*$ respectively.
+For the $AD$ design, the user can specify two stage specific sample sizes, one for stages when both populations are enrolled ($k≤k^*$), and one for stages where only participants in subpopulation $1$ are enrolled ($k>k^*$). We refer to these two sample sizes as $n_1^*$ and $n_k^*$ respectively.
 %!!! What are sample sizes for SC AND SS??
 
 As described in (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}, our decision rules in $AD$ consist of the following steps for each stage $k$:
@@ -250,8 +254,8 @@ As described in (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}, our deci
 %(In your draft you say "stop enrolling in all future stages including current one"? What does that mean??)
 	\subitem  3.a If $Z_{1,k} > u_{1,k}$, reject $H_{01}$ and stop all enrollment.
 	\subitem  3.b If $Z_{1,k} ≤ l_{1,k}$ or if this is the final stage of the trial, conclude that we've fail to reject either $H_{0C}$ or $H_{01}$, and stop all enrollment.
-	\subitem  3.c Else, continue to enroll patients from subpopulation $1$. If $k<k^*$ then $π_1n_1^*$ patients should be enrolled in the next stage. If $k≥k^*$, then $n_k^*$ patients should be enrolled in the next stage. For all future stages, ignore steps (1-2), and proceed directly to steps (3.a-3.c).
-\item  4. (Continue Enrollment from Combined Population) Else, continue by enrolling $\pi_1 n_1^*$ patients from subpopulation 1 and $\pi_2 n_1^*$ patients from subpopulation 2 for the next stage. Then return to step 1.
+	\subitem  3.c Else, continue to enroll participants from subpopulation $1$. If $k<k^*$ then $π_1n_1^*$ participants should be enrolled in the next stage. If $k≥k^*$, then $n_k^*$ participants should be enrolled in the next stage. For all future stages, ignore steps (1-2), and proceed directly to steps (3.a-3.c).
+\item  4. (Continue Enrollment from Combined Population) Else, continue by enrolling $\pi_1 n_1^*$ participants from subpopulation 1 and $\pi_2 n_1^*$ participants from subpopulation 2 for the next stage. Then return to step 1.
 \end{description}
 
 The decision rules outputted by \interAdapt represent the feature that enrollment of subpopulation 2 cannot continue after stage $k^*$ by setting the futility boundary $l_{2,k^*}$ equal infinity. This ensures that $Z_{2,k^*}<l_{2,k^*}$. 
@@ -282,7 +286,7 @@ The fact that familywise Type I error rate is controled under the global null im
 \section*{3. Related Software}
 %Say that our design is an example of enrichment. 
 
-The most comparable available software is AptivSolutions ADDPLAN PE (Patient Enrichment), an impressive, commercial software that implements certain types of adaptive enrichment designs. It has many features that our software does not have. Conversely, there are features of our software that ADDPLAN PE does not have. First, ADDPLAN PE does not implement the class of designs from (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}. Second, in ADDPLAN PE, the user must a priori designate a particular stage (e.g., stage 2) at which a change to enrollment may be made, even though there may be large a priori uncertainty as to when sufficient information will have accrued to make such a decision. In contrast, our software is more flexible, in that one can select designs (by setting $k^*$ to the maximum number of stages) in which the decision to change enrollment criteria can be made at any stage.  
+The most comparable available software is AptivSolutions ADDPLAN PE (participant Enrichment), an impressive, commercial software that implements certain types of adaptive enrichment designs. It has many features that our software does not have. Conversely, there are features of our software that ADDPLAN PE does not have. First, ADDPLAN PE does not implement the class of designs from (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}. Second, in ADDPLAN PE, the user must a priori designate a particular stage (e.g., stage 2) at which a change to enrollment may be made, even though there may be large a priori uncertainty as to when sufficient information will have accrued to make such a decision. In contrast, our software is more flexible, in that one can select designs (by setting $k^*$ to the maximum number of stages) in which the decision to change enrollment criteria can be made at any stage.  
 
 \interAdapt also has the benefits of being cross-platform and open-source, while ADDPLAN PE is commercial software that is only compatible with the Windows OS.
 
@@ -327,7 +331,7 @@ runInterAdapt()
 \section*{5. User Interface}
 
 Inputs to \interAdapt can be entered in the side panel on the left, with outputs are shown in the main panel on the right. %Could consider adding a figure, but it's probably fine.
-The parameters in the input panel let the user describe known or assumed characteristics of their populations of interest, as well as their trial design parameters. Input parameters include the proportion of patients in each subpopulation, the patient recruitment rate in each subpopulation, and the desired familywise Type I error rate. The output section displays the decision boundaries and trial designs that will satisfy the requirements specified by the user. It also compares the performance of the three designs, $AD$, $SC$ and $SS$. Performance is compared in terms of power, expected sample size, and expected trial duration.
+The parameters in the input panel let the user describe known or assumed characteristics of their populations of interest, as well as their trial design parameters. Input parameters include the proportion of participants in each subpopulation, the participant recruitment rate in each subpopulation, and the desired familywise Type I error rate. The output section displays the decision boundaries and trial designs that will satisfy the requirements specified by the user. It also compares the performance of the three designs, $AD$, $SC$ and $SS$. Performance is compared in terms of power, expected sample size, and expected trial duration.
 
 All tables generated by \interAdapt can be downloaded as csv files by clicking on the download button beneath the table. Users can also download an automated report of the results by clicking the ``Generate Report'' button at the bottom of the output panel. This report is generated with the ``knitr'' package for R \cite{knitr}. Citations in the report are created using the ``knitcitations'' package \cite{knitcitations}.
 
@@ -337,7 +341,7 @@ Parameters in the input panel are organized into two sections, basic parameters 
 
 Basic parameters can be entered using either “Batch mode” or “Interactive mode”. In Batch mode, \interAdapt will not analyze the entered parameters until the “Apply” button is pressed. This allows for several parameters to be changed at once without waiting for \interAdapt to recalculate the results after each individual change. In Interactive mode, \interAdapt will automatically recalculate the results after each change, allowing the user to quickly see the effect of changing one specific input parameter. Switching between Batch mode and Interactive mode can be done using the dropdown menu at the top of the Basic Parameters section. Interactive mode is not available when entering advanced parameters.
 
-To save the current set of inputs, select the dropdown menu titled “Show basic parameters” and select “Show All Parameters and Save/Load Option". From here, you can save the current parameters as a csv file, or load a previously saved csv file of inputs. Regardless of whether \interAdapt is being run online or locally, these saved csv files are always stored on the user's computer. You may also load a 3-column dataset into \interAdapt in the form of a csv, where each row contains information about a patient in the trial. The first column must contain binary indicators of subpopulation, where 1 denotes subpopulation 1, and 2 denotes subpopulation 2. The second column must contain an indicator of the treatment arm ($T_i$), and the third column must contain the binary outcome measurement ($Y_i$). The first row of this dataset file is expected to be a header row of labels, rather than values for the first individual. From this dataset, \interAdapt will calculate $π_1$, $p_{1c}$, $p_{1t}$, $p_{2c}$, and $p_{2t}$, and adjust the input sliders accordingly.
+To save the current set of inputs, select the dropdown menu titled “Show basic parameters” and select “Show All Parameters and Save/Load Option". From here, you can save the current parameters as a csv file, or load a previously saved csv file of inputs. Regardless of whether \interAdapt is being run online or locally, these saved csv files are always stored on the user's computer. You may also load a 3-column dataset into \interAdapt in the form of a csv, where each row contains information about a participant in the trial. The first column must contain binary indicators of subpopulation, where 1 denotes subpopulation 1, and 2 denotes subpopulation 2. The second column must contain an indicator of the treatment arm ($T_i$), and the third column must contain the binary outcome measurement ($Y_i$). The first row of this dataset file is expected to be a header row of labels, rather than values for the first individual. From this dataset, \interAdapt will calculate $π_1$, $p_{1c}$, $p_{1t}$, $p_{2c}$, and $p_{2t}$, and adjust the input sliders accordingly.
 
 A detailed explanation of each input is given below.
 
@@ -346,16 +350,16 @@ A detailed explanation of each input is given below.
 
 \item Subpopulation $1$ proportion ($π_1$): The proportion of the population in subpopulation $1$. This is the subpopulation in which we have prior evidence of a stronger treatment effect. 
 
-\item Probability outcome = 1 under control, subpopulation $1$ ($p_{1c}$): The probability of experiencing a successful outcome for control patients in subpopulation $1$. This is used in estimating power and expected sample size of each design.
+\item Probability outcome = 1 under control, subpopulation $1$ ($p_{1c}$): The probability of experiencing a successful outcome for control participants in subpopulation $1$. This is used in estimating power and expected sample size of each design.
 
-\item Probability outcome = 1 under control, subpopulation $2$ ($p_{2c}$): The probability of experiencing a successful outcome for control patients in subpopulation $2$. This is used in estimating power and expected sample size of each design.
+\item Probability outcome = 1 under control, subpopulation $2$ ($p_{2c}$): The probability of experiencing a successful outcome for control participants in subpopulation $2$. This is used in estimating power and expected sample size of each design.
 
-\item Probability outcome = 1 under treatment for sub-population $1$ ($p_{1t}$): The probability of experiencing a successful outcome for treated patients in subpopulation $1$. Note that a specific effect size is not specified for subpopulation $2$. Instead, \interAdapt generates the relevant performance metrics for a range of several possible effect sizes in subpopulation $2$. This range can be specified in the Advanced Parameters section.%!!!!! wrong!
+\item Probability outcome = 1 under treatment for sub-population $1$ ($p_{1t}$): The probability of experiencing a successful outcome for treated participants in subpopulation $1$. Note that a specific effect size is not specified for subpopulation $2$. Instead, \interAdapt generates the relevant performance metrics for a range of several possible effect sizes in subpopulation $2$. This range can be specified in the Advanced Parameters section.%!!!!! wrong!
 
-\item Per stage sample size, combined population ($n_1^*$): The number of patients enrolled in stages 1 through $k^*$ of $AD$. Per stage enrollment for $SC$ and $SS$ can be entered in the advanced parameters section.
+\item Per stage sample size, combined population ($n_1^*$): The number of participants enrolled in stages 1 through $k^*$ of $AD$. Per stage enrollment for $SC$ and $SS$ can be entered in the advanced parameters section.
 
 
-\item Per stage sample size for stages where only sub-population 1 is enrolled ($n_k^*$): The number of patients required for each stage after stage $k^*$, in the $AD$ design.
+\item Per stage sample size for stages where only sub-population 1 is enrolled ($n_k^*$): The number of participants required for each stage after stage $k^*$, in the $AD$ design.
 
 \item Alpha (FWER) Requirement ($α$): The familywise Type I error rate for all hypotheses in the trial. In $AD$, this is the probability of falsely rejecting either $H_{0C}$ or $H_{01}$. In $SC$ it is the probability of falsely rejecting $H_{0C}$. In $SS$ it is the probability of falsely rejecting $H_{01}$.
 
@@ -376,7 +380,7 @@ A detailed explanation of each input is given below.
 
 \item Total number of stages (K): The total number of stages for all three designs. 
 
-\item Participants enrolled per year from combined population: The number of patients that can be recruited per year in the combined population. This affects the estimated duration of the trials. The recruitment rates for  subpopulations $1$ and $2$ are equal to the combined population recruitment rate multiplied by $π_1$ and $π_2$ respectively. %Right??!!! This is new!!!???
+\item Participants enrolled per year from combined population: The number of participants that can be recruited per year in the combined population. This affects the estimated duration of the trials. The recruitment rates for  subpopulations $1$ and $2$ are equal to the combined population recruitment rate multiplied by $π_1$ and $π_2$ respectively. %Right??!!! This is new!!!???
 
 %!!!??? are these right? See email to Michael.
 \item Lower bound for treatment effect in sub-population $2$: \interAdapt simulates performance metrics under a range of treatment effect sizes for subpopulation $2$. This sets the lower bound for this range.
@@ -384,11 +388,11 @@ A detailed explanation of each input is given below.
 \item Upper bound for treatment effect in sub-population $2$: \interAdapt simulates performance metrics under a range of treatment effect sizes for subpopulation $2$. This sets the upper bound for this range.
 %!?!?! Need to enforce that lower bound is less than upper bound!!??
 
-\item Last stage sub-population $1$ is enrolled under an adaptive design ($k^*$): In the adaptive design, we don’t enroll any patients from subpopulation $2$ after stage $k^*$. %!!! Adjust labels for this in boxTable and code!!!!???
+\item Last stage sub-population $1$ is enrolled under an adaptive design ($k^*$): In the adaptive design, we don’t enroll any participants from subpopulation $2$ after stage $k^*$. %!!! Adjust labels for this in boxTable and code!!!!???
 
-\item Per stage sample size for standard group sequential design enrolling combined pop ($n_{SC}$): The number of patients enrolled in each stage for $SC$.
+\item Per stage sample size for standard group sequential design enrolling combined pop ($n_{SC}$): The number of participants enrolled in each stage for $SC$.
 
-\item Per stage sample size for standard group sequential design enrolling only subpop. 1 ($n_{SS}$): The number of patients enrolled in each stage for $SS$.
+\item Per stage sample size for standard group sequential design enrolling only subpop. 1 ($n_{SS}$): The number of participants enrolled in each stage for $SS$.
 
 \item $H_{0C}$ futility boundary proportionality constant for the adaptive design ($f_{AD,C}$): This is used to calculate the futility boundary for $H_{0C}$ in the adaptive design, which is set to $f_{AD,C}\{(\sum_{k'=1}^{K} n_{k'})/n_k\}^{-δ}$ in stage $k$.
 
@@ -404,7 +408,7 @@ A detailed explanation of each input is given below.
 
 \subsection*{Outputs}
 
-The output panel of the user interface is split into three sections, ``About interAdapt", ``Designs'' output and ``Performance'' output. The ``About interAdapt'' section gives a brief introduction to the software, and a link to the full software documentation. The Designs output gives a road plan for how to conduct each of the three trials: $FA$, $AD$ and $SC$. This includes the efficacy boundaries; user specified non-binding futility boundaries, and number of patients to recruit by the end of each stage. Performance output compares the three designs in terms of their power, expected sample size, and expected duration. 
+The output panel of the user interface is split into three sections, ``About interAdapt", ``Designs'' output and ``Performance'' output. The ``About interAdapt'' section gives a brief introduction to the software, and a link to the full software documentation. The Designs output gives a road plan for how to conduct each of the three trials: $FA$, $AD$ and $SC$. This includes the efficacy boundaries; user specified non-binding futility boundaries, and number of participants to recruit by the end of each stage. Performance output compares the three designs in terms of their power, expected sample size, and expected duration. 
 The radio buttons at the top of the output section can be used to switch between these three sections. 
 
 
@@ -413,7 +417,7 @@ The radio buttons at the top of the output section can be used to switch between
 
 The designs output gives information on how to conduct each of the three trials. Tabs at the top of the page can be used to navigate between the results for each design. Each of the first three tabs each correspond with one of the designs, and the fourth tab shows all three designs side by side. 
 
-In the “Adaptive” tab, the table at the bottom of the page shows the required number of patients that must be recruited by the end of each stage.For each stage $k$, the table also gives efficacy boundaries for $Z_{1,k}$ and $Z_{C,k}$, and futility boundaries for $Z_{1,k}$ and $Z_{2,k}$. Because we always stop enrolling subpopulation $2$ after stage $k^*$, futility boundaries for $Z_{2,k}$ in stage $k^*$ and later stages are not given. For the same reason, efficacy boundaries for $Z_{C,k}$ are not given for stages $k>k^*$. A plot at the top of the page shows these efficacy and futility boundaries for $Z_{C,k}$, $Z_{1,k}$ and $Z_{2,k}$ over all stages of the trial.
+In the “Adaptive” tab, the table at the bottom of the page shows the required number of participants that must be recruited by the end of each stage.For each stage $k$, the table also gives efficacy boundaries for $Z_{1,k}$ and $Z_{C,k}$, and futility boundaries for $Z_{1,k}$ and $Z_{2,k}$. Because we always stop enrolling subpopulation $2$ after stage $k^*$, futility boundaries for $Z_{2,k}$ in stage $k^*$ and later stages are not given. For the same reason, efficacy boundaries for $Z_{C,k}$ are not given for stages $k>k^*$. A plot at the top of the page shows these efficacy and futility boundaries for $Z_{C,k}$, $Z_{1,k}$ and $Z_{2,k}$ over all stages of the trial.
 
 The two tabs for the standard designs have a comprable layout. Note that the efficacy boundaries for $SS$ and $SC$ are identical. This is because the efficacy boundary depends only on the null distribution of z-statistics, which unaffected by the choice of study population. The two standard trials each pull from only one subpopulation, so their efficacy boundaries are the same.
 
@@ -433,24 +437,24 @@ In general, power of a trial can be increased by increasing the per-stage sample
 
 The power of $SS$ is constant with respect to the true treatment effect in subpopulation $2$, as we'd expect since $SS$ does not take any data from subpopulation $2$. The expected sample size and expected duration for $SS$ are also constant with respect to the true treatment effect in subpopulation $2$.
 
-In the plot of expected sample size for each design, we see that trials tend to need to recruit more patients when the treatment effect is weak. For designs testing for an effect in the combined population, this means that the expected sample size will be highest when the weighted average treatment effect across subpopulations is weak. If the treatment effect is significantly positive in subpopulation $1$, the highest possible expected sample size may come at a negative value for the true treatment effect in subpopulation $2$. In general, lowering $K$ or $k^*$, increasing the futility bounds ($f_{SC}$, $f_{SS}$, $f_{AD,C}$, or $f_{AD,S}$), or relaxing the required Type I error rate ($α$), can all decrease the expected sample size.
+In the plot of expected sample size for each design, we see that trials tend to need to recruit more participants when the treatment effect is weak. For designs testing for an effect in the combined population, this means that the expected sample size will be highest when the weighted average treatment effect across subpopulations is weak. If the treatment effect is significantly positive in subpopulation $1$, the highest possible expected sample size may come at a negative value for the true treatment effect in subpopulation $2$. In general, lowering $K$ or $k^*$, increasing the futility bounds ($f_{SC}$, $f_{SS}$, $f_{AD,C}$, or $f_{AD,S}$), or relaxing the required Type I error rate ($α$), can all decrease the expected sample size.
 
-The plot of expected trial duration for each design shows patterns very similar to those in the plot of expected sample size. A trial's duration is defined as the time until the last patient's outcome is measured. Like expected sample size, the expected duration can be decreased by lowering $K$ or $k^*$, increasing the futility bounds ($f_{SC}$, $f_{SS}$, $f_{AD,C}$, or $f_{AD,S}$), or relaxing $α$. Increasing the recruitment rate can also shorten the expected duration of a trial.
+The plot of expected trial duration for each design shows patterns very similar to those in the plot of expected sample size. A trial's duration is defined as the time until the last participant's outcome is measured. Like expected sample size, the expected duration can be decreased by lowering $K$ or $k^*$, increasing the futility bounds ($f_{SC}$, $f_{SS}$, $f_{AD,C}$, or $f_{AD,S}$), or relaxing $α$. Increasing the recruitment rate can also shorten the expected duration of a trial.
 
 
 
 \section*{6. Example of Entering Input and Interpreting Output}
 
-The default inputs to \interAdapt come from the motivating example of the MISTIE Phase III trial. This section presents a summary of this trial, and of the design goals of the investigators, as described in (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}. The MISTIE trial studied a new surgical treatment for stroke, and measured patient's outcomes by their disability score on the modified Rankin Scale (mRS) 180 days after enrollment. A successful outcome was defined as a mRS score less than or equal to 3. %Still measured 180 days after enrollment, or sooner???!!! New draft of paper seems to have it different than before, and says you "focus on the case of outcomes measured soon after enrollment"
+The default inputs to \interAdapt come from the motivating example of the MISTIE Phase III trial. This section presents a summary of this trial, and of the design goals of the investigators, as described in (Rosenblum et al. 2013)\cite{Rosenblum2013AdaptMISTIE}. The MISTIE trial studied a new surgical treatment for stroke, and measured participant's outcomes by their disability score on the modified Rankin Scale (mRS) 180 days after enrollment. A successful outcome was defined as a mRS score less than or equal to 3. %Still measured 180 days after enrollment, or sooner???!!! New draft of paper seems to have it different than before, and says you "focus on the case of outcomes measured soon after enrollment"
 
-The Phase II trial for the MISTIE treatment had only enrolled patients with with little or no intraventricular hemorrhage (IVH). More specifically, patients had been categorized as ``small IVH'' if their IVH volume was less than 10ml, and did not require a catheter for intracranial pressure monitoring. Otherwise, pateints were classified as ``large IVH.'' The Phase II trial only recruited small IVH patients, and yeiled a treatment effect estimate of 12.1\% [95\% CI: (-2.7\%, 26.9\%)]. The investigators thought that the treatment could also be effective in large IVH pateints, but no data had yet been collected to test this. Thus, we refer to the subpopulation of small IVH patients as subpopulation $1$, as there was more prior evidence of treatment efficacy in this subpopulation.
+The Phase II trial for the MISTIE treatment had only enrolled participants with with little or no intraventricular hemorrhage (IVH). More specifically, participants had been categorized as ``small IVH'' if their IVH volume was less than 10ml, and did not require a catheter for intracranial pressure monitoring. Otherwise, pateints were classified as ``large IVH.'' The Phase II trial only recruited small IVH participants, and yeiled a treatment effect estimate of 12.1\% [95\% CI: (-2.7\%, 26.9\%)]. The investigators thought that the treatment could also be effective in large IVH pateints, but no data had yet been collected to test this. Thus, we refer to the subpopulation of small IVH participants as subpopulation $1$, as there was more prior evidence of treatment efficacy in this subpopulation.
 
  The study designers were concerned with the calibrating power and alpha level of the Phase III trial under the following three scenarios:
 
 
 \begin{description}
 \item  (a) The average treatment effect is $12.5\%$ for both small and large IVH pateints;
-\item  (b) The average treatment effect is $12.5\%$ for small IVH patients, and zero large IVH patients;
+\item  (b) The average treatment effect is $12.5\%$ for small IVH participants, and zero large IVH participants;
 \item  (c) The treatment effect is zero both subpopulations. 
 \end{description}
 
@@ -462,7 +466,7 @@ In the context of these scenarios, the study coordinators had three goals:
 \item  (iii) A familywise Type I error rate (α) of .025.
 \end{description}
 
-Prior research by (Hanley 2012)\cite{Hanley2012} indicated that the proportion of patients with small IVH ($π_1$) was .33, that the probability of a positive outcome under control was .25 for small IVH patients ($p_{1c}$), and that the probability of a positive outcome under control was .2 for large IVH patients ($p_{2c}$).  If the true treatment effect in subpopulation $1$ was 12.5\% then the probability of a positive outcome under treatment for patients in subpopulation $1$ ($p_{1t}$) would be approximately 12.5\%+25\%=37.5\%.
+Prior research by (Hanley 2012)\cite{Hanley2012} indicated that the proportion of participants with small IVH ($π_1$) was .33, that the probability of a positive outcome under control was .25 for small IVH participants ($p_{1c}$), and that the probability of a positive outcome under control was .2 for large IVH participants ($p_{2c}$).  If the true treatment effect in subpopulation $1$ was 12.5\% then the probability of a positive outcome under treatment for participants in subpopulation $1$ ($p_{1t}$) would be approximately 12.5\%+25\%=37.5\%.
 
 Since the adaptive design $AD$ tests $H_{0C}$ as well as $H_{01}$, it must achieve all three goals (i)-(iii). The standard design $SC$ need only achieve (i) and (iii), and the standard design $SS$ need only achieve (ii) and (iii). Recall that \interAdapt allows the user to specify a range of treatment values for subpopulation $2$, and will display the power of the trial designs across this range. By default, \interAdapt sets the range of values for the treatment affect in subpopulation $2$ to [-.2, .2], letting the user see the power of all three designs under scenarios (a) and (b). %!!!!????? adjust this!!??
  
