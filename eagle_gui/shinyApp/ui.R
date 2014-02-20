@@ -76,7 +76,7 @@ animationOptions(interval = 5000, loop = FALSE, playButton = NULL, pauseButton =
 
 
 
-cat('\n Running interAdapt...\n To exit interAdapt, select the R window and press escape')
+cat('\n Running interAdapt...\n To exit interAdapt, click on the R window and press escape, then close interAdapt tab in web browser')
 
 shinyUI(pageWithSidebar(
 

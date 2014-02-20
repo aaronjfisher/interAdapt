@@ -463,7 +463,7 @@ return(data.frame(cbind(rev(risk_difference_list),adaptive_df,standard_combined_
 ## Construct Power Curve Plot for display in user interface
 power_curve_plot <- function()
 {
-plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(0,1),main="Power versus Average Treatment Effect",xlab="Avg. Treatment Effect on Risk Difference Scale in Subpopulation 2",ylab="Power")
+plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(0,1),main="Power versus Average Treatment Effect in Subpopulation 2",xlab="Avg. Treatment Effect on Risk Difference Scale in Subpopulation 2",ylab="Power")
 
 lines(x=rev(risk_difference_list),y=table1[,6],lty=1,col=1,lwd=3)
 # H0C adaptive
@@ -477,11 +477,11 @@ lines(x=rev(risk_difference_list),y=table1[,9],lty=4,col=3,lwd=3)
 # H01 standard
 lines(x=rev(risk_difference_list),y=table1[,13],lty=5,col=4,lwd=3)
 ltext<-rep(NA,5)
-ltext[1]<-expression(paste("Adaptive, Power H"[0][C]," or H"[0][1]))
-ltext[2]<-expression(paste("Adaptive, Power H"[0][C]))
-ltext[3]<-expression(paste("Adaptive, Power H"[0][1]))
-ltext[4]<-expression(paste("Standard Design Total Pop. (H"[0][C],")"))
-ltext[5]<-expression(paste("Standard Design Subpop. 1 Only (H"[0][1],")"))
+ltext[1]<-expression(paste("Adaptive, Power to Reject at Least one of H"[0][C]," or H"[0][1]))
+ltext[2]<-expression(paste("Adaptive, Power to Reject H"[0][C]))
+ltext[3]<-expression(paste("Adaptive, Power to Reject H"[0][1]))
+ltext[4]<-expression(paste("Standard Design Total Pop., Power to Reject H"[0][C],""))
+ltext[5]<-expression(paste("Standard Design Subpop. 1 Only, Power to Reject H"[0][1],""))
 legend("bottomright",legend=ltext,lty=c(1,2,3,4,5),col=c(1,1,1,3,4),lwd=c(3,3,3,3,3))
 }
 
@@ -490,7 +490,7 @@ expected_sample_size_plot <- function()
 {
 min_ess <- 0
 max_ess <- max(c(table1[,2],table1[,7],table1[,11]))
-plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_ess,max_ess),main="Expected Sample Size versus Average Treatment Effect",xlab="Avg. Treatment Effect on Risk Difference Scale in Subpopulation 2",ylab="Expected Sample Size")
+plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_ess,max_ess),main="Expected Sample Size versus Average Treatment Effect in Subpopulation 2",xlab="Avg. Treatment Effect on Risk Difference Scale in Subpopulation 2",ylab="Expected Sample Size")
 
 # adaptive
 lines(x=rev(risk_difference_list),y=table1[,2],lty=1,col=1,lwd=3)
@@ -509,7 +509,7 @@ expected_duration_plot <- function()
 {
 min_dur <- 0
 max_dur <- max(c(table1[,3],table1[,8],table1[,12]))
-plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_dur,max_dur),main="Expected Duration versus Average Treatment Effect",xlab="Avg. Treatment Effect on Risk Difference Scale in Subpopulation 2",ylab="Expected Duration in Years")
+plot(0,type="n",xlim=c(min(risk_difference_list),max(risk_difference_list)),ylim=c(min_dur,max_dur),main="Expected Duration versus Average Treatment Effect in Subpopulation 2",xlab="Avg. Treatment Effect on Risk Difference Scale in Subpopulation 2",ylab="Expected Duration in Years")
 
 # adaptive
 lines(x=rev(risk_difference_list),y=table1[,3],lty=1,col=1,lwd=3)
@@ -526,39 +526,39 @@ legend("bottomright",legend=c("Adaptive Design","Standard Design Total Pop.","St
 ## Construct diagram of efficacy and futility boundaries for adaptive design
 boundary_adapt_plot <-function()
 {
-adapt_boundary_mat<- t(adaptive_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "Boundary to Stop Subpop. 2 Enrollment", "H01 Efficacy Boundary", "H01 Futility Boundary"), ])
+adapt_boundary_mat<- t(adaptive_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundaries u(C,k) for z-statistics Z(C,k)", "Boundaries l(2,k) for Z(2,k) to Stop Subpop. 2 Enrollment", "H01 Efficacy Boundaries u(1,k) for Z(1,k)", "Boundaries l(1,k) for Z(1,k) to Stop All Enrollment"), ])
 adapt_boundary_mat[adapt_boundary_mat==Inf]<-NA
 fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of Combined Population','Null Hypothesis ( H'[0][C]~') and Subpopulation 1 Null Hypothesis ( H'[0][1]~')'))
 matplot(adapt_boundary_mat,type='o',main=fancyTitle,pch=c(0,1,2,3),col=c('red','red','blue','blue'),lty=2,cex=1.5, xlab='Stage',ylab='Boundaries on Z-score scale')
 ltext<-rep(NA,4)
-ltext[1]<-expression(paste("H"[0][C]," Efficacy Boundary"))
-ltext[2]<-expression(paste("Stopping Boundary Subpop. 2 Enrollment"))
-ltext[3]<-expression(paste('H'[0][1],' Efficacy Boundary'))
-ltext[4]<-expression(paste('H'[0][1],' Futility Boundary'))
+ltext[1]<-expression(paste("H"[0][C]," Efficacy Boundaries"))
+ltext[2]<-expression(paste("Boundaries l(2,k) for Z(2,k) to Stop Subpop. 2"))
+ltext[3]<-expression(paste('H'[0][1],' Efficacy Boundaries'))
+ltext[4]<-expression(paste("Boundaries l(1,k) for Z(1,k) to Stop All Enrollment"))
 legend('topright',ltext,pch=c(0,1,2,3),col=c('red','red','blue','blue'),lty=2,cex=1.25) 
 }
 
 ## Construct diagram of efficacy and futility boundaries for design enrolling combined population
 boundary_standard_H0C_plot <-function()
 {
-H0C_boundary_mat<- t(standard_H0C_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundary", "H0C Futility Boundary"), ])
+H0C_boundary_mat<- t(standard_H0C_design_sample_sizes_and_boundaries_table()[[1]][c("H0C Efficacy Boundaries for z-statistics Z(C,k)", "H0C Futility Boundaries for z-statistics Z(C,k)"), ])
 fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of', 'Combined Population Null Hypothesis ( H'[0][C]~')'))
 matplot(H0C_boundary_mat,type='o',main=fancyTitle,lty=2,pch=c(0,1),col='red', xlab='Stage',ylab='Boundaries on Z-score scale',cex=1.5)
 ltext<-rep(NA,2)
-ltext[1]<-expression(paste('H'[0][C],' Efficacy Boundary'))
-ltext[2]<-expression(paste('H'[0][C],' Futility Boundary'))
+ltext[1]<-expression(paste('H'[0][C],' Efficacy Boundaries'))
+ltext[2]<-expression(paste('H'[0][C],' Futility Boundaries'))
 legend('topright',ltext,lty=2,pch=c(0,1),col='red',cex=1.25)
 }
 
 ## Construct diagram of efficacy and futility boundaries for design enrolling only subpopulation 1
 boundary_standard_H01_plot <-function()
 {
-H01_boundary_mat<- t(standard_H01_design_sample_sizes_and_boundaries_table()[[1]][c("H01 Efficacy Boundary", "H01 Futility Boundary"), ])
+H01_boundary_mat<- t(standard_H01_design_sample_sizes_and_boundaries_table()[[1]][c("H01 Efficacy Boundaries for z-statistics Z(1,k)", "H01 Futility Boundaries for z-statistics Z(1,k)"), ])
 fancyTitle<-expression(atop('Decision Boundaries for Sequential Test of', 'Combined Population Null Hypothesis ( H'[0][1]~')'))
 matplot(H01_boundary_mat,type='o',main=fancyTitle,lty=2,pch=c(0,1),col='blue', xlab='Stage',ylab='Boundaries on Z-score scale',cex=1.5)
 ltext<-rep(NA,2)
-ltext[1]<-expression(paste('H'[0][1],' Efficacy Boundary'))
-ltext[2]<-expression(paste('H'[0][1],' Futility Boundary'))
+ltext[1]<-expression(paste('H'[0][1],' Efficacy Boundaries'))
+ltext[2]<-expression(paste('H'[0][1],' Futility Boundaries'))
 legend('topright',ltext,lty=2,pch=c(0,1),col='blue',cex=1.25)
 }
 
@@ -626,7 +626,7 @@ H01_efficacy <- subpop_1_efficacy_boundaries_adaptive_design
 H01_futility <- subpop_1_futility_boundaries_adaptive_design
 
 output_df <- rbind(row1,row2,row3,H0C_efficacy,subpopulation_2_stopping_boundaries_adaptive_design_copy,H01_efficacy,H01_futility)
-row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","Boundary to Stop Subpop. 2 Enrollment","H01 Efficacy Boundary","H01 Futility Boundary")
+row.names(output_df) <- c("Cumulative Sample Size Subpop. 1","Cumulative Sample Size Subpop. 2","Cumulative Sample Size Combined Pop.","H0C Efficacy Boundaries u(C,k) for z-statistics Z(C,k)","Boundaries l(2,k) for Z(2,k) to Stop Subpop. 2 Enrollment","H01 Efficacy Boundaries u(1,k) for Z(1,k)","Boundaries l(1,k) for Z(1,k) to Stop All Enrollment")
 colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(7,(total_number_stages+1)))
 
@@ -658,7 +658,7 @@ H0C_futility <- futility_boundaries_standard_design_H0C
 
 
 output_df <- rbind(row1,row2,row3,H0C_efficacy,H0C_futility)
-row.names(output_df) <- c("Cum. Sample Size Subpop. 1","Cum. Sample Size: Subpop. 2","Cum. Sample Size Combined Pop.","H0C Efficacy Boundary","H0C Futility Boundary")
+row.names(output_df) <- c("Cumulative Sample Size Subpop. 1","Cumulative Sample Size Subpop. 2","Cumulative Sample Size Combined Pop.","H0C Efficacy Boundaries for z-statistics Z(C,k)","H0C Futility Boundaries for z-statistics Z(C,k)")
 colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(5,(total_number_stages+1)))
 
@@ -687,7 +687,7 @@ H01_efficacy <-  H01_efficacy_boundaries
 H01_futility <- futility_boundaries_standard_design_H01
 
 output_df <- rbind(row1,H01_efficacy,H01_futility)
-row.names(output_df) <- c("Cum. Sample Size","H01 Efficacy Boundary","H01 Futility Boundary")
+row.names(output_df) <- c("Cumulative Sample Size","H01 Efficacy Boundaries for z-statistics Z(1,k)","H01 Futility Boundaries for z-statistics Z(1,k)")
 colnames(output_df) <- 1:total_number_stages
 dig_array <- array(0,c(3,(total_number_stages+1)))
 #dig_array[4:7,] <- array(2,c(4,(total_number_stages+1)))
