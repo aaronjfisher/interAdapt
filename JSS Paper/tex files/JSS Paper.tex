@@ -26,7 +26,6 @@
 \newcommand{\sjtn}[1]{\sum_{#1=1}^{n} } %in 
 \newcommand{\sntk}[1]{\sum_{n=1}^{#1} } %in math
 \newcommand{\siid}{\sim_{iid} } %in math
-\newcommand{\lr}[1]{\left( #1 \right) } %in math
 
 
 
@@ -69,10 +68,14 @@ Unlike existing software, \pkg{interAdapt} is open-source and cross-platform, an
 
 % *Final error check on the software, once it's all put together. 
 % *Once we have the final draft of the paper, we need to update the Rmd files that generate the knitr reports. Then we can put fixed versions of the \proglang{R} files on the Spark server.
-% *Also update the interAdapt github repo
+% *Also update the interAdapt github repo with new code, and put a new version of this pdf on there.
+% *version control files are in the main directory of the interAdapt github repo
 
-%Notes on converting this file to the shiny Rmd report file.
-% When copy pasting to Rmd, you need to take out \lr{}, \htx, \item, \subitem, * → \star. Sections to #, chenge ``quoted item'' to ''quoted item''
+% Notes on converting this file to the shiny Rmd report file.
+% Generally, the only part of the Rmd file you'll need to update is the formal description of the problem. You'll need to update this thing subsection by subsection though. Take special care in the test statistics section, as this requires you to split up the definition of standard errors.
+% When copy pasting to Rmd, you need to take out  \htx, \item & \subitem, * → \star. \sections to # (actually don't change these, just paste around them in the Rmd file), change ``quoted item'' to ''quoted item'', \label -> 
+% \lr{} and begin equation has been replaced (the 2nd was replaced with \[ \].
+% replace \citep with `r citep(bibFile[["JennisonTurnbullBook"]])`
 %in multi line eq's, can't start a line with "-" (minus sign). Also, I don't think we can do multi-line equations... Now I have them stuck on one line.
 %Comments will no longer be commented out!
 %Double check citations to make sure they work and that bib files are the same.
@@ -156,7 +159,7 @@ Note that the standard designs discussed here are not the same as those discusse
 Three z-statistics are computed at the end of each stage $k$. The first is based on all enrolled participants in the combined population, the second is based on all enrolled participants in subpopulation 1, and the third is based on all enrolled participants in subpopulation 2.  Each z-statistic is a standardized difference in sample means, comparing outcomes in the treatment arm versus the control arm.
 Let $Z_{C,k}$ denote the z-statistic for the combined population, which  takes the following form:
 
-\begin{equation*}\begin{split}
+\[\begin{split}
 Z_{C,k}&=\left[
 \frac{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}Y_{i,k'}T_{i,k'} }
 {\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}T_{i,k'}}
@@ -171,11 +174,12 @@ Z_{C,k}&=\left[
 \sum_{s ∈ \{ 1,2\}} π_s[p_{sc}(1-p_{sc}) + p_{st}(1-p_{st})]
 \right)
 \right\rbrace ^{-1/2}
-\end{split}\end{equation*}
+\end{split}\]
+
 The term in square brackets is the difference in sample means between the treatment and control groups. The term in curly braces is the variance of this difference in sample means.
 
 Let $Z_{1,k}$ and $Z_{2,k}$ denote analogous z-statistics restricted to participants in subpopulation $1$ and $2$ respectively. The z-statistic for subpopulation 1 can be written as follows, where $A_{i,k}$ is the indicator that the $i ^{th}$ subject recruited in stage $k$ is in subpopulation $1$:
-\begin{equation*}\begin{split}
+\[\begin{split}
 Z_{1,k}&=\left[
 \frac{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}Y_{i,k'}T_{i,k'}A_{i,k'} }
 {\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}T_{i,k'}A_{i,k'}}
@@ -190,7 +194,7 @@ Z_{1,k}&=\left[
 π_1[p_{1c}(1-p_{1c}) + p_{1t}(1-p_{1t})]
 \right)
 \right\rbrace ^{-1/2}
-\end{split}\end{equation*}
+\end{split}\]
 The z-statsistic $Z_{2,k}$ is similar to the above, with each occurrence of $A_{i,k'}$ replaced by $(1-A_{i,k'})$.
 
 The decision rules defined later on in this section involve boundaries for $(Z_{C,1},Z_{C,2},...Z_{C,K})$,\\ $(Z_{1,1},Z_{1,2},...Z_{1,K})$, and $(Z_{2,1},Z_{2,2},...Z_{2,K})$. To calculate the familywise Type I error of any given set of decision rules, \pkg{interAdapt} makes use of the multivariate distribution of $(Z_{C,1},Z_{C,2},...$ $Z_{C,K}, Z_{1,1},Z_{1,2},...$ $Z_{1,K})$, which, under the assumptions in \citep{Rosenblum2013AdaptMISTIE}, is asymptotically normal with a known covariance matrix \citep{JennisonTurnbullBook}.%(Jennison and Turnbull, 1999, Chapter 3)
@@ -255,12 +259,12 @@ The decision rules outputted by \pkg{interAdapt} represent the feature that enro
 
 To correctly calibrate $e_{AD,C}$  and $e_{AD,1}$, \pkg{interAdapt} first chooses $e_{AD,C}$ such the probability of falsely rejecting $H_{0C}$ is $a_c α$, where $a_c$ is a fraction between 0 and 1 that can be specified by the user. Then, conditional on $e_{AD,C}$, \pkg{interAdapt} finds the smallest constant $e_{AD,1}$ such that, under the global null of no treatment effect in either subpopulation, we have %the probability of rejecting either $H_{01}$ or $H_{0C}$ at any stage is less than or equal to $α$. %via a binary search.
 
-\begin{equation*}\begin{split}
+\[
 \Prob \left(
 Z_{C,k}>e_{AD,C} \left\{\frac{\sum_{k'=1}^{K} n_{k'}}{\sum_{k'=1}^{k}n_{k'}}\right\}^{-δ} \text{  or  } 
 Z_{1,k}> e_{AD,1}\left\{\frac{\sum_{k'=1}^{K} n_{k'}}{\sum_{k'=1}^{k}n_{k'}}\right\}^{-δ}\text{  for any $k$}
 \right) ≤ α 
-\end{split}\end{equation*}
+\]
 
 The fact that familywise Type I error rate is controled under the global null implies that it is also strongly controled under all hypotheses \citep{Rosenblum2013AdaptMISTIE}. 
 

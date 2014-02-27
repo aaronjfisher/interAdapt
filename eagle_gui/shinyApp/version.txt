@@ -1,4 +1,0 @@
-EAGLE.1
-Sept 2013
-
-Only the first line of this file is used to check the version number

@@ -29,13 +29,13 @@ cite_options(linked=FALSE) #You don't have the full links in your bib file, so t
 
 
 
-This report was created using the EAGLE software for generating and analyzing trial designs with adaptive enrollment criteria. EAGLE can be accessed online at
+This report was created using the *interAdapt* software for generating and analyzing trial designs with adaptive enrollment criteria. *interAdapt* can be accessed online at
 
-http://spark.rstudio.com/mrosenblum/eagle_gui_demo
+http://spark.rstudio.com/mrosenblum/interAdapt
 
-Additional documentation for the EAGLE, including instructions on how to download the application for offline use, can be found at
+Additional documentation for the *interAdapt*, including instructions on how to download the application for offline use, can be found at
 
-http://www.biostat.jhsph.edu/~afisher/AdaptiveShiny/About_Eagle.pdf
+https://rawgithub.com/aaronjfisher/interAdapt/master/About_interAdapt.pdf
 
 ### Table of Contents:
 * <a href="#Introduction"> Introduction </a>
