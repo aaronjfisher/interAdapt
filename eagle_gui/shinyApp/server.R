@@ -330,7 +330,7 @@ shinyServer(function(input, output) {
       ind<-length(labelBoxList)           
       #add extra text:
       #Ex 1 - follows 'Lower bound for...'
-      if(grepl('Lower bound for treatment effect',bt[i,'label'])){
+      if(grepl('Lowest value to plot',bt[i,'label'])){
         labelBoxList[[ind+1]]<-strong("For use in Plots of Power vs. Average Treatment Effect for Subpopulation 2:")
         labelBoxList[[ind+2]]<-br()
         ind<-length(labelBoxList)
