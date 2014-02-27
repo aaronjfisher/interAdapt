@@ -28,19 +28,6 @@
 
 
 ## For Aaron to do
-* See Harris email
-* Ask about sum nk/nk stuff
-* 
-I think we need to define the per-stage sample sizes n_k in the JSS
-paper. Also, the expressions of the type:
-\{(\sum_{k'=1}^{K} n_{k'})/n_k\}^{-\delta}
-should be
-\{(\sum_{k'=1}^{K} n_{k'})/(\sum_{k'=1}^{k})\}^{-\delta}
-correct?
-
-* I think this is done, but keep an eye out as you read, you search replaced all the "we" statements.
-    *   michael email: Can you change all instances of "we find the proportionality constant..." and "we compute..." etc., to be something like: "the proportionality constant is computed by interAdapt ..." and "interAdapt computes". I want it to be clear that interAdapt computes these for the user.
-* Send Michael pdf with remaining comments
 * Ask Michael about !!!! marks in tex file
 * (After Michael reads over final draft) adjust knitr Rmd files.
     * need to change links to documentation, and to EAGLE named stuff.

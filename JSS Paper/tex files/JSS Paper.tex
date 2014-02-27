@@ -62,55 +62,24 @@ Unlike existing software, \pkg{interAdapt} is open-source and cross-platform, an
 \begin{document}
 \maketitle
 
-%Notes for Michael
-%Changed all the notation to to match, except for p_01 and p_10, which I left as p_0t and p_1c, etc.
-%It looks like there's some checks to ensure that the range on the x axis of the plots always includes zero? I wasn't sure, so I just formally added this contraint to the min/max arguments on the upper/lower bounds in boxTable.csv
-%SS now refers to the standard design in the subpop, NOT the sample size
-%changed the word "fixed" to "standard" in Design.R plot/table labels, but did not change the variable names from _fixed_ to _standard_ as I worried this might cause us merge conflicts. In the future, it would might be a clean idea to search and replace them. To the user it won't matter of course.
-%Need acknowledgements section talking about the grant
+%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%
+% After making changes to this file:
 
-
-
-% Our adaptive designs have a prespecified parameter $k^*$ such that
-% only subpopulation 1 may be enrolled during each stage $k>k^*$.
-% For each $k>k^*$, if the trial continues after stage $k-1$, then $n_k$
-% participants from subpopulation 1 are enrolled during stage $k$.
-% If enrollment is restricted to subpopulation 1 at the end of  some
-% stage $k' < k^*$, then for
-% each subsequent stage $k$ before the trial is stopped: if $k \leq
-% k^*$, $\pi_1 n_k$ participants from subpopulation 1 are enrolled; if
-% $k>k^*$ (i.e., it was preplanned that only subpopulation 1 could be
-% enrolled during stage $k$), then $n_k$ participants from subpopulation
-% 1 are enrolled in stage $k$.
-
-
-
-% Also a few other minor things to do:
 % *Final error check on the software, once it's all put together. 
 % *Once we have the final draft of the paper, we need to update the Rmd files that generate the knitr reports. Then we can put fixed versions of the \proglang{R} files on the Spark server.
-% *We also may want to create a different repository on github, one that doesn't have all our extra comments and history in it. Or maybe not, I'm not sure what the convention is there.
-%Because it's possibly to cross both an efficacy boundary and a futility boundary in the same step, we always check for efficacy first?
-
-
-%Sync your notation to match his in the paper.
-%ALSO NEED TO SYNC UP NOTATION IN \pkg{interAdapt}!
-
-%Notes on notation (From AF)
-%I changed A_ik to T_ik (treatment indicator)
-%Also, changed p_10 to p_1c
-%Otherwise it should be the same notation as the MISTIE paper.
-%Standard designs are abbreviated as SS and SC
-	%(Need to update labels in \pkg{interAdapt} stuff. Design.R, boxtable,slider table, and knitr.)
-%As you suggested the proportionality constants are now in the form of, for example, f_{SC} (for futility constant for standard design in the combined population,), e_{AD,1} (efficacy proportionality constant for subpop $1$ in the adaptive design. 
-%a_C is the proportion of α allocated for HOC.
-
-%!!! Do we need to cite Shiny?
+% *Also update the interAdapt github repo
 
 %Notes on converting this file to the shiny Rmd report file.
 % When copy pasting to Rmd, you need to take out \lr{}, \htx, \item, \subitem, * → \star. Sections to #, chenge ``quoted item'' to ''quoted item''
 %in multi line eq's, can't start a line with "-" (minus sign). Also, I don't think we can do multi-line equations... Now I have them stuck on one line.
 %Comments will no longer be commented out!
 %Double check citations to make sure they work and that bib files are the same.
+
+%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%
+
 
 
 
@@ -197,10 +166,10 @@ Z_{C,k}&=\left[
 \right] \\
 & \htx{1}{} \times
 \left\lbrace
-\lr{     \frac{2}{  \sum_{k'=1}^{k} n_{k'}  }       }
-\lr{
+\left(     \frac{2}{  \sum_{k'=1}^{k} n_{k'}  }       \right)
+\left(
 \sum_{s ∈ \{ 1,2\}} π_s[p_{sc}(1-p_{sc}) + p_{st}(1-p_{st})]
-}
+\right)
 \right\rbrace ^{-1/2}
 \end{split}\end{equation*}
 The term in square brackets is the difference in sample means between the treatment and control groups. The term in curly braces is the variance of this difference in sample means.
@@ -216,10 +185,10 @@ Z_{1,k}&=\left[
 \right] \\
 & \htx{1}{} \times
 \left\lbrace
-\lr{     \frac{2}{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}A_{i,k'}}       }
-\lr{
+\left(     \frac{2}{\sum_{k'=1}^k \sum_{i=1}^{n_{k'}}A_{i,k'}}       \right)
+\left(
 π_1[p_{1c}(1-p_{1c}) + p_{1t}(1-p_{1t})]
-}
+\right)
 \right\rbrace ^{-1/2}
 \end{split}\end{equation*}
 The z-statsistic $Z_{2,k}$ is similar to the above, with each occurrence of $A_{i,k'}$ replaced by $(1-A_{i,k'})$.
@@ -487,7 +456,7 @@ The default inputs to \pkg{interAdapt} come from the motivating example of the M
 
 The Phase II trial for the MISTIE treatment had only enrolled participants with with little or no intraventricular hemorrhage (IVH). More specifically, participants had been categorized as ``small IVH'' if their IVH volume was less than 10ml, and did not require a catheter for intracranial pressure monitoring. Otherwise, pateints were classified as ``large IVH.'' The Phase II trial only recruited small IVH participants, and yeiled a treatment effect estimate of 12.1\% [95\% CI: (-2.7\%, 26.9\%)]. The investigators thought that the treatment could also be effective in large IVH pateints, but no data had yet been collected to test this. Thus, we refer to the subpopulation of small IVH participants as subpopulation $1$, as there was more prior evidence of treatment efficacy in this subpopulation.
 
- The study designers were concerned with the calibrating power and alpha level of the Phase III trial under the following three scenarios:
+The study designers were concerned with the calibrating power and alpha level of the Phase III trial under the following three scenarios:
 
 
 \begin{description}
