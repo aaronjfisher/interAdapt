@@ -1,21 +1,7 @@
-  # ______ _   _ _____  _____ _ 
-  # | ___ \ | | |  __ \/  ___| |
-  # | |_/ / | | | |  \/\ `--.| |
-  # | ___ \ | | | | __  `--. \ |
-  # | |_/ / |_| | |_\ \/\__/ /_|
-  # \____/ \___/ \____/\____/(_)
-                              
+# Notes
+# Make sure the default xlims are right when we load table1 from file.
+# Avoid unicode
 
-# Need to make sure the initialized image is set correctly. 
-    # For beta testing it's just commented out to maintain consistency.
-# If you upload the same dataset twice, it won't notice the change. you have to clear first.
-# search !!! and ???
-# Once we have stable code, make sure the default xlims are right when we load table1 from file.
-# (AF) I believe HJ wrote the renderTable function?
-# Adding π to the sliders means you can't edit them in excel anymore, or excel will mess it up when it saves
-# Right now we don't have any more subscripts than in the null hypothesis tests. 
-  # we could add for instance p_{1,2} but this would require more work with our custom "sanitize text" functions
-  #it's find for now, don't bother.
 
 
   # ______                         _     _      
@@ -66,24 +52,20 @@ print2log<-function(x,logFileName='session_log.txt',print2R=FALSE){ #takes a str
 
 print2log("source'ing code...")
 
-#Get the csv file either online or locally
-getItOnline<-TRUE
-try({
-  #loading & saving table 1 is done elsewhere, all through local file management
-  source("Adaptive_Group_Sequential_Design.R", local=TRUE)
-  st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
-  bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
-  getItOnline<-FALSE #if we haven't gotten an error yet!
-  print2log("found code locally...")
-},silent=TRUE)
-#removed code for finding files online.
+#Load initial inputs and source code
+source("Adaptive_Group_Sequential_Design.R", local=TRUE)
+st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
+bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
+getItOnline<-FALSE #if we haven't gotten an error yet!
+print2log("found code locally...")
 
 
 print2log("...supplementary files found and loaded...")
 
+#process initial inputs
 allVarNames<-c(st[,'inputId'],bt[,'inputId'])
 allVarLabels<-c(st[,'label'],bt[,'label'])
-lastAllVars<-rep(0,length(allVarNames))
+lastAllVars<-rep(0,length(allVarNames)) #for use later on
 names(lastAllVars)<-allVarNames
 
 for(i in 1:dim(st)[1]){
@@ -96,10 +78,12 @@ for(i in 1:dim(bt)[1]){
 }
 
 
-#The following code answers the question: do we need to regen table1? Try to see if you have it locally. If you don't, or if you need to update it, do it again & save (wherever you are, either on glimmer, spark, or locally)
+# If the default inputs to the files have not changed, then we don't have to redo the initial calculations.
+# table1 stores the results needed to display performance of each trial.
+#The following code answers the question: do we need to regen table1? If you need to update it, do so & save
 stillNeedTable1<-TRUE
 try({
-load('last_default_inputs.RData') #won't work first time on glimmer, but it's OK
+load('last_default_inputs.RData') #won't work first time, but it's OK
   if(all(bt==lastBt)&all(st==lastSt)){ #lastBt and lastSt are from the last time we generated table1, contained in the RData file we just loaded. If we're a match, then:
       load('last_default_table1_&_xlim.RData')
       stillNeedTable1<-FALSE
