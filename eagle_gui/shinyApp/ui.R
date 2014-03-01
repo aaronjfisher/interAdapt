@@ -1,10 +1,4 @@
-#NOTES
-#!!!!!!!!!!!!
-# Search for !!! and ???
-# Update websites for need2update variable, both the site we check for "newestVerName" and the site we send people to get updates from.
-# Should we move this to a repo under Michael's username?
-# Need to adjust the title of this webpage?
-# Once the paper draft is finalized, we need to update the knitr rmd file accordingly.
+#Preamble
 
 # non-standard plot dimensions
 verName<-'EAGLE.1' #appVersion is already taken for sable v. nonstable
@@ -12,6 +6,7 @@ width <- "90%"          # narrower
 height <- "500px"       # more than 400
 
 #check for new version
+#If need2update = TRUE, a message will come up in the main panel
 need2update<-FALSE
 try({
   library(RCurl)
@@ -32,24 +27,17 @@ my_headerPanel <- function (title, windowTitle = title, h=h3)
 pbreak<-HTML('<P CLASS=breakhere>')
 
 
-#Load csv's with info about the input sliders & boxes
+#Load csv's (sliderTable & boxTable) with info about the input sliders & boxes
 #then build lists of input sliders & boxes
-#slider table & box table
 
 
 #Get the csv file either online or locally
-getItOnline<-TRUE
-try({
-  source("Adaptive_Group_Sequential_Design.R", local=TRUE)
-  st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
-  bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
-  readHelpTabHTML<- paste0(readLines('help_tab.html'),collapse='')
-  cat("found code locally...", file=stderr())
+source("Adaptive_Group_Sequential_Design.R", local=TRUE)
+st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
+bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
+readHelpTabHTML<- paste0(readLines('help_tab.html'),collapse='') #will be converted to a the welcome/help page for interAdapt
+cat("found code locally...", file=stderr())
 
-  getItOnline<-FALSE #if we haven't gotten an error yet!
-
-},silent=TRUE)
-#removed code for finding files online.
 
 
 
@@ -92,7 +80,7 @@ shinyUI(pageWithSidebar(
     # \__ \ | (_| |  __/
     # |___/_|\__,_|\___|
                       
-                      
+  #Side panel for inputs
 
   # "Advanced" forces batch mode
   sidebarPanel(
@@ -184,7 +172,6 @@ shinyUI(pageWithSidebar(
 
   conditionalPanel(condition = "input.OutputSelection == '2'",
     em(strong("Designs")),
-    #br(), br(),
     tabsetPanel(
     	tabPanel("Adaptive",
     		my_plotOutput("adapt_boundary_plot"),

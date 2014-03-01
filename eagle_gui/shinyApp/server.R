@@ -1,7 +1,7 @@
 # Notes
 # Make sure the default xlims are right when we load table1 from file.
 # Avoid unicode
-
+# The central function of this script is the regen() function, which determines, based on the current parameters, whether or not table_constructor() from the "[...]Design.R" file should be called to update the results in the main panel
 
 
   # ______                         _     _      
@@ -56,7 +56,6 @@ print2log("source'ing code...")
 source("Adaptive_Group_Sequential_Design.R", local=TRUE)
 st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
 bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
-getItOnline<-FALSE #if we haven't gotten an error yet!
 print2log("found code locally...")
 
 
@@ -65,7 +64,7 @@ print2log("...supplementary files found and loaded...")
 #process initial inputs
 allVarNames<-c(st[,'inputId'],bt[,'inputId'])
 allVarLabels<-c(st[,'label'],bt[,'label'])
-lastAllVars<-rep(0,length(allVarNames)) #for use later on
+lastAllVars<-rep(0,length(allVarNames)) #for use later on, for shiny to tell when inputs have changed or not.
 names(lastAllVars)<-allVarNames
 
 for(i in 1:dim(st)[1]){
@@ -78,9 +77,9 @@ for(i in 1:dim(bt)[1]){
 }
 
 
-# If the default inputs to the files have not changed, then we don't have to redo the initial calculations.
+# If the default inputs to the files have not changed since last time interAdapt was run, then we don't have to redo the initial calculations.
 # table1 stores the results needed to display performance of each trial.
-#The following code answers the question: do we need to regen table1? If you need to update it, do so & save
+#The following code answers the question: do we need to regenerate table1? If you need to update it, do so & save
 stillNeedTable1<-TRUE
 try({
 load('last_default_inputs.RData') #won't work first time, but it's OK
@@ -132,6 +131,7 @@ shinyServer(function(input, output) {
 
   lastApplyValue <- 0 # need to put -1 here if we don't load table 1 beforehand
   totalCalls<-0 #a place keeper to watch when we cat to stderr
+  #for use in uploading files:
   uploadCsvTicker<-0
   uploadDatasetTicker<-0
   inCsvValues<-NULL
@@ -207,6 +207,7 @@ shinyServer(function(input, output) {
   #below are 2 reactive chunks to feed to the dynamicBoxes & dynamicSliders
 
 
+
   csvUpload<-reactive({
     upFile <- input$uploadCsvInput
     x<-NULL
@@ -218,7 +219,6 @@ shinyServer(function(input, output) {
     }
     inCsvValues<<-x
   })
-
 
 
 
@@ -239,7 +239,6 @@ shinyServer(function(input, output) {
       x['p11_user_defined'] <- mean(Y*(S==1)*(A==1))/mean((S==1)*(A==1))
       x['p20_user_defined'] <- mean(Y*(S==2)*(A==0))/mean((S==2)*(A==0))
       x['p21_user_defined'] <- mean(Y*(S==2)*(A==1))/mean((S==2)*(A==1))
-      # HJ -- perform sanity checks?
       uploadDatasetTicker<<-0
       print2log('new Data calculated from')
       print2log(x)
@@ -260,6 +259,7 @@ shinyServer(function(input, output) {
 # \__ \ | | (_| |  __/ |  \__ \ | (_>  < | |_) | (_) >  <  __/\__ \
 # |___/_|_|\__,_|\___|_|  |___/  \___/\/ |_.__/ \___/_/\_\___||___/
 
+#Code to create dynamic inputs, which are rendered by ui.R
 
   #NOTE - June 26: When sliders update, regen thinks it needs to be called again because sliders have updated values and you're now in interactive mode.
         #solution -- added lastAllVars (nonreactive) variable that cancels this out.
@@ -347,9 +347,7 @@ shinyServer(function(input, output) {
 # | |\ \| |___| |_\ \| |___| |\  |
 # \_| \_\____/ \____/\____/\_| \_/
 
-  # In interactive mode, we re-export the parameters and rebuild table1
-  # every time.  In batch, only on the first call for a given push of the
-  # Apply button.
+  # In interactive mode, we re-export the parameters and rebuild table1 (Design.R file) every time.  In batch, only on the first call for a given push of the Apply button.
   #argument applyValue is usally fed in as params(), the sum of the two apply buttons
 
 
@@ -470,7 +468,7 @@ shinyServer(function(input, output) {
 
 # HJ - x must be a list of length 3, with a digits and caption
 xtable <- function(x) {
-	xtable::xtable(x[[1]], digits=x$digits, caption=x$caption) #NEED TO EXPAND HERE!!
+	xtable::xtable(x[[1]], digits=x$digits, caption=x$caption) 
 }
 
 renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func = NULL, include.colnames=TRUE) 
@@ -495,6 +493,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     }
 }
   
+  #copies of all the tables have to be made to put in different panels of the shiny app.
   output$adaptive_design_sample_sizes_and_boundaries_table.2 <-
   output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable({    
 	regen()
@@ -534,6 +533,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   # \__ \ (_| |\ V /  __/ | (_| | (_| | || (_| |
   # |___/\__,_| \_/ \___|  \__,_|\__,_|\__\__,_|
 
+  #saving current parameters to a csv
   output$downloadInputs <- downloadHandler(
     filename =  paste0('inputs_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
@@ -544,11 +544,11 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     }
   )
 
+  #generate a knitr report
   output$knitr <- downloadHandler(
     filename =  'report.html',
     contentType =  'text/html',
     content = function(filename) {
-      #can't say "if (file.exists(filename)) file.remove(filename)" because this would open the door to hacking?
       if (file.exists('knitr_report.html')) file.remove('knitr_report.html')
       if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
       htmlKnitted<-knit2html('knitr_report.Rmd') #"plain" version, without knitrBootstrap
@@ -585,8 +585,8 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 
   }
 
-
-  #!!! Double check these files below once we have new tables with new descision rules ???
+  # Generate csv tables
+  #In general, it can be good to double check these files below if we change the decision rules, to make sure the tables still come out right.
   
   output$downloadDesignAD.1<-
   output$downloadDesignAD.2 <- downloadHandler(
