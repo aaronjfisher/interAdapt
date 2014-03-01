@@ -1,43 +1,13 @@
 #To Do
 
-## For use to talk about
-* Citaiton style? Manually add things like (Rosenblum et al) or change citation syle?
-
 
 ## For Michael to do
-
-
-#### Things to do now
 * first pull changes from github
-* Aesthetic Changes:
-    - Edit wording of "(Press Apply after loading)" caption that appears above the load data input button. This can be changed in the ui.R file.
-    - Update legend with "futility boundary" language (i.e. Futility boundary for H0C? for ZC?)
-* After Aaron sends back pdf, make changes to the tex file based on the annotations Aaron was confused about
-* Add some comments to the code, above each function maybe? The JSS people say they the code to be commented and readable.
-* Update the decision boundaries in the code to be proportional inverse of n_k/sum(n_k), not to the stage number (because number of patients enrolled varies). Keep sum n_k so that the proportionality constants are on a smaller scale. 
-
- 
-
-#### When Aaron eventually sends a final draft
-* Specified sections with changes
-* Make adjustments where you see "!!!" in the comments.
-
-
-
-
-
+* Read over new JSS paper draft, with special attention to the places where %!!! is in the comments. If you have time to edit the tex file directly that would be awesome!
 
 ## For Aaron to do
-* Ask Michael about !!!! marks in tex file
-* (After Michael reads over final draft) adjust knitr Rmd files.
-    * need to change links to documentation, and to EAGLE named stuff.
-    * point to github in the about/help page.
-    * Change .bib 
-* Change links at the head of the knitr files to point to github and interAdapt.
-* When ready: Adjust final links and set everything up with interAdapt
-    - Update github and spark interAdapt files.
+* Add comments to server.r and ui.r
+* (After Michael reads over final draft) adjust knitr Rmd files. Update interAdapt repo, and spark files. 
 * Add user tracking to spark repo (can do after we submit paper)
-
-#### Done stuff
-* Jeff says use GPL-2 License
+* Email JSS editors, say we want the GPL-2 License
 
