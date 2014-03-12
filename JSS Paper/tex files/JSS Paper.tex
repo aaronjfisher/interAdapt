@@ -127,10 +127,10 @@ In the MISTIE trial example, subpopulation 1 refers to small IVH participants, a
 Let $π_1$ and $π_2$ denote the proportion of the population in subpopulations 1 and 2, respectively. %We assume these subpopulations partition the population, which implies $\pi_1+\pi_2=1$.
 
 Both the adaptive and standard designs discussed here involve enrollment over time, and include predetermined rules for stopping the trial early based on interim analyses. Each trial consists of $K$ stages, indexed by $k$. 
-%We say that the $k^{th}$ stage has ended once a certain number of additional patients (denote $n_k$, defined below for each type of design) have been enrolled. %!!! OK def?
+%We say that the $k^{th}$ stage has ended once a certain number of additional participants (denote $n_k$, defined below for each type of design) have been enrolled. %!!! OK def?
 In stages where both subpopulations are enrolled, we assume that the proportion of newly recruited participants  in each subpopulation $s \in \{1,2\}$ is equal to the corresponding population proportion $\pi_s$. %An interim analysis is done at the end of each stage, which may lead to stoping the trial early.
 
-For a given design, let $n_k$ denote the maximum number of participants to be enrolled during stage $k$. The number enrolled during stage $k$ will be less than $n_k$ if the trial is entirely stopped before stage $k$ (so that no participants are enrolled in stage $k$) or if in the adaptive design enrollment is restricted to only subpopulation 1 before stage $k$ (as described in Section~\ref{sub:decisionRules}). For each subpopulation $s \in \{1,2\}$ and stage $k$, let $N_{s,k}$ denote the cumulative sample size at the end of stage $k$ for subpopulation $s$. Let $N_{C,k}$ denote the cumulative sample size for the combined population at the end of stage $k$, i.e.,  $N_{C,k}=N_{1,k}+N_{2,k}$.
+For a given design, let $n_k$ denote the maximum number of participants to be enrolled during stage $k$. The number enrolled during stage $k$ will be less than $n_k$ if the trial is entirely stopped before stage $k$ (so that no participants are enrolled in stage $k$) or if in the adaptive design enrollment is restricted to only subpopulation 1 before stage $k$ (as described in Section~\ref{sub:decisionRules}). For each subpopulation $s \in \{1,2\}$ and stage $k$, let $N_{s,k}$ denote the cumulative number of subpopulation $s$ participants who have enrolled by the end of stage $k$. Let $N_{C,k}$ denote the cumulative number of enrolled participants from the combined population by the end of stage $k$, i.e.,  $N_{C,k}=N_{1,k}+N_{2,k}$.
 The sample sizes will generally differ for different designs.
 
 Let $Y_{i,k}$ be a binary outcome variable for the $i^{th}$ participant recruited in stage $k$, where $Y_{i,k}=1$ indicates a successful outcome. Let $T_{i,k}$ be an indicator of   the $i^{th}$ participant recruited in stage $k$ being assigned to the treatment. We assume for each participant that there is an equal probability of being assigned to  treatment ($T_{i,k}=1$) or control $(T_{i,k}=0$), independent of the participant's subpopulation. We also assume outcomes are observed very soon after enrollment, so that all outcome data is available from currently enrolled participants at each interim analysis.
@@ -140,7 +140,7 @@ We assume each of $p_{1c},p_{1t},p_{2c},p_{2t}$ is in the interval $(0,1)$.
 We define the true average treatment effect for a given population to be the difference in the probability of a successful outcome comparing treatment versus control.
 
 
-In the remainder of this section we give an overview of the relevant concepts needed to understand and use \pkg{interAdapt}. A more detailed discussion of the theoretical context, and of the parameter calculation procedure, is provided by \cite{Rosenblum2013AdaptMISTIE}.
+In the remainder of this section we give an overview of the relevant concepts needed to understand and use \pkg{interAdapt}. A more detailed discussion of the theoretical context, and of the efficacy boundary calculation procedure, is provided by \cite{Rosenblum2013AdaptMISTIE}.
  
 \subsection{Hypotheses}
 \label{sub:hypotheses}
@@ -152,7 +152,7 @@ We define our two null hypotheses, respectively, as
 \item $H_{0C}$: $π_1(p_{1t}-p_{1c}) + π_2(p_{2t}-p_{2c}) ≤ 0$. %The average treatment effect in the combined population is less than or equal to zero.	
 \end{itemize}
 
-Though it is not of primary interest, we occasionally refer below to the global null hypothesis, defined  to be that $p_{1t}-p_{1c}=p_{2t}-p_{2c}=0$, i.e., zero mean treatment effect in both subpopulations.
+
 
 \pkg{interAdapt} compares different designs for testing these null hypotheses. 
 An adaptive design testing both null hypotheses (denoted $AD$) is compared to two standard designs. The first standard design, denoted $SC$, enrolls the combined population and only tests $H_{0C}$. The second standard design, denoted $SS$, only enrolls subpopulation 1 and tests $H_{01}$.
@@ -162,7 +162,7 @@ All three trial designs consist of $K$ stages; the decision to entirely stop the
 
 The standard designs discussed here are not identical to those discussed in section 6.1 of \citep{Rosenblum2013AdaptMISTIE}, which test both hypotheses simultaneously. Implementing standard designs such as those discussed in \citep{Rosenblum2013AdaptMISTIE} into the \pkg{interAdapt} software is an area of future research.
 
-
+Though it is not of primary interest, we occasionally refer below to the global null hypothesis, defined  to be that $p_{1t}-p_{1c}=p_{2t}-p_{2c}=0$, i.e., zero mean treatment effect in both subpopulations.
 
 %Old Note:Whenever any of the trials $AD$, $SC$ or $SS$ is stopped early, there will be some participants who have been enrolled but who’s outcomes have not yet been measured. These participants are referred to as ''overrunning'' or ''pipeline'' participants. \pkg{interAdapt} currently discards measurements from these overruning participants in the final analysis. Incorporating these measurements is a goal for future work.
 %AF note to self: Michael has mentioned that there are a few ways to do this. Jason does a bayesian prediction of passing a threshold once the participants come in. There are also ways to set "double thresholds," one threshold for when to stop, and one (usually lower) threshold for whether or not to declare significant results once the overrunning participants are measured.
@@ -184,7 +184,7 @@ Z_{C,k}&=\left[
 \right] \\
 & \htx{1}{} \times
 \left\lbrace
-\left(     \frac{2}{  \sum_{k'=1}^{k} n_{k'}  }       \right)
+\left(     \frac{2}{  N_{C,k}  }       \right)
 \left(
 \sum_{s ∈ \{ 1,2\}} π_s[p_{sc}(1-p_{sc}) + p_{st}(1-p_{st})]
 \right)
@@ -252,15 +252,15 @@ In calculations of power, expected sample size, and expected trial duration, \pk
 
 Futility boundaries for the first $K-1$ stages of $SC$ are set equal to $f_{SC}(N_{C,k}/N_{C,K})^{\delta}$, where $f_{SC}$ is a proportionality constant set by the user. By default, the constant $f_{SC}$ is set to be negative (so the trial  is only stopped for futility  if the z-statistic is below the corresponding negative threshold), although this is not required. In the $K ^{th}$ stage of the trial, \pkg{interAdapt} sets the futility boundary to be equal to the efficacy boundary. This ensures that the final z-statistic $Z_{C,K}$ crosses either the efficacy boundary or the futility boundary.
 
-The decision boundaries for the design $SS$  are defined analogously as for the design $SC$, except using z-statistics $Z_{1,k}$. \pkg{interAdapt} makes the simplification that the number of patients $n_k$ enrolled in each stage $k$ of $SS$ is constant, denoted by $n_{SS}$, and set by the user.
+The decision boundaries for the design $SS$  are defined analogously as for the design $SC$, except using z-statistics $Z_{1,k}$. \pkg{interAdapt} makes the simplification that the number of participants $n_k$ enrolled in each stage $k$ of $SS$ is constant, denoted $n_{SS}$, input by the user.
 The efficacy boundary for the $k^{th}$ stage is set equal to $e_{SS}(N_{1,k}/N_{1,K})^{\delta}$, where $e_{SS}$ is the constant computed by  \pkg{interAdapt}  to ensure  the  Type I error rate is at most $\alpha$. The first $K-1$ futility boundaries for $H_{01}$ are set equal to $f_{SS}(N_{1,k}/N_{1,K})^{\delta}$,  where $f_{SS}$ is a constant that can be set by the user. The futility boundary in stage $K$ is set equal to the final efficacy boundary in stage $K$.
 
 Consider the adaptive design $AD$.
-\pkg{interAdapt} allows the user to a priori specify a final stage  at which there will be a test of  in the combined population, denoted by stage $k^*$. Regardless of the results at stage $k^*$, $AD$ always stops enrolling from subpopulation $2$ at the end stage $k^*$. The motivation is that since information may be expected to accrue more quickly for the combined population than for a single subpopulation, it may be desirable to stop enrolling the combined population when sufficient information has accrued; this reduces the maximum sample size of $AD$ compared to allowing enrollment from both subpopulations through the end of the trial.
+\pkg{interAdapt} allows the user to a priori specify a final stage  at which there will be a test of  the null hypothesis for the combined population, denoted by stage $k^*$. Regardless of the results at stage $k^*$, $AD$ always stops enrolling from subpopulation $2$ at the end stage $k^*$. The motivation is that since information may be expected to accrue more quickly for the combined population than for a single subpopulation, it may be desirable to stop enrolling the combined population when sufficient information has accrued; in some cases, this reduces the maximum sample size of $AD$ compared to allowing enrollment from both subpopulations through the end of the trial.
 The futility boundaries $l_{2,k}$ are not defined for $k>k^*$, since subpopulation 2 is not enrolled after stage $k^*$. 
 The user may effectively turn off the option described in this paragraph by setting $k^*=K$, the total number of stages; then the combined population may be enrolled throughout the trial.
 
-For the $AD$ design, the user can specify the following two types of per-stage sample sizes: one for stages where both subpopulations are enrolled $(k \leq k^*)$, and one for stages where only participants in subpopulation 1 are enrolled $(k > k^*)$. We refer to these two sample sizes as $n^{(1)}$ and $n^{(2)}$ respectively.
+For the $AD$ design, the user can specify the following two types of per-stage sample sizes: one for stages where both subpopulations are enrolled $(k \leq k^*)$, and one for stages where only participants in subpopulation 1 are enrolled $(k > k^*)$. We refer to these two sample sizes as $n^{(1)}$ and $n^{(2)}$, respectively.
 
 %Decision boundaries for $AD$ vary from those of the standard designs two ways. First, 
 Because $AD$ simultaneously tests $H_{0C}$ and $H_{01}$ it has two sets of decision boundaries. For the $k^{th}$ stage of $AD$, let $u_{C,k}$ and $u_{1,k}$ denote the efficacy boundaries for $H_{0C}$ and $H_{01}$, respectively. The boundaries $u_{C,k}$ 
@@ -279,14 +279,14 @@ As described in \citep{Rosenblum2013AdaptMISTIE}, the decision rule in $AD$ cons
 %New rules
 \begin{description}
 \item 1. (Assess Efficacy) 
- If $Z_{1,k}>u_{1,k}$, reject $H_{01}$;
-   if $k\leq k^*$ and  $Z_{C,k} > u_{C,k}$, reject $H_{0C}$. 
+ If $Z_{1,k}>u_{1,k}$, reject $H_{01}$.
+   If $k\leq k^*$ and  $Z_{C,k} > u_{C,k}$, reject $H_{0C}$. 
  If $H_{01}$, $H_{0C}$, or both  are rejected, stop all enrollment and end the trial.
 \item 2. (Assess Futility of Entire Trial) Else, if $Z_{1,k} ≤ l_{1,k}$ or if this is the final stage of the trial, stop all enrollment and end the trial for futility, failing to reject  any null hypothesis.
 \item 3. (Assess Futility for $H_{0C}$) Else, if $Z_{2,k} ≤ l_{2,k}$, or if $k\geq k^*$, stop enrollment from subpopulation $2$ in all future stages. In this case, the following steps are iterated at each future stage:
 	\subitem  3a. If $Z_{1,k} > u_{1,k}$, reject $H_{01}$ and stop all enrollment.
 	\subitem  3b. If $Z_{1,k} ≤ l_{1,k}$ or if this is the final stage of the trial, fail to reject any null hypothesis  and stop all enrollment.
-	\subitem  3c. Else, continue enrolling from only subpopulation $1$. If $k < k^*$ then $π_1n^{(1)}$ patients should be enrolled in the next stage. If $k \geq k^*$, then $n^{(2)}$ patients should be enrolled in the next stage. In all future stages, ignore steps (1--2) and use steps (3a--3c).
+	\subitem  3c. Else, continue enrolling from only subpopulation $1$. If $k < k^*$ then $π_1n^{(1)}$ participants from subpopulation 1 should be enrolled in the next stage. If $k \geq k^*$, then $n^{(2)}$ participants from subpopulation 1 should be enrolled in the next stage. In all future stages, ignore steps (1--2) and use steps (3a--3c).
 \item  4. (Continue Enrollment from Combined Population) Else, continue by enrolling $\pi_1 n^{(1)}$ participants from subpopulation 1 and $\pi_2 n^{(1)}$ participants from subpopulation 2 for the next stage.
 \end{description}
 
@@ -393,7 +393,7 @@ All tables generated by \pkg{interAdapt} can be downloaded as csv files by click
 
 \begin{figure}[h]
 \centering{}\includegraphics[width=1\textwidth]{2014-02-29_screenshot_designs.png} 
-\caption{Designs Screenshot: Inputs can be entered in the side panel on the left, with results visible in the main panel on the right. The drop down menus at the top of the side panel can be used to navigate different interfaces to input parameters. Here we show the ``Basic parameter'' inputs, in ``Batch mode,'' where the Apply button must be pressed to update the results in the main panel. The radio buttons at the top of the main panel can be used to navigate between design outputs describing the decision rules for each trial, and performance summaries for each trial. In this figure we show the design for the adaptive trial ($AD$), based on the default input parameters. Boundaries for the z-statistics $Z_{1,k}$, $Z_{2,k}$ and $Z_{C,k}$ are shown both in the plot, and in the table. The table also contains information on how many patients are enrolled in each stage. The scroll bar on the right of the web browser has been cropped out of this figure for the sake of increased screenshot resolution.  \label{fig:designs} }
+\caption{Designs Screenshot: Inputs can be entered in the side panel on the left, with results visible in the main panel on the right. The drop down menus at the top of the side panel can be used to navigate different interfaces to input parameters. Here we show the ``Basic parameter'' inputs, in ``Batch mode,'' where the Apply button must be pressed to update the results in the main panel. The radio buttons at the top of the main panel can be used to navigate between design outputs describing the decision rules for each trial, and performance summaries for each trial. In this figure we show the design for the adaptive trial ($AD$), based on the default input parameters. Boundaries for the z-statistics $Z_{1,k}$, $Z_{2,k}$ and $Z_{C,k}$ are shown both in the plot, and in the table. The table also contains information on how many participants are enrolled in each stage. The scroll bar on the right of the web browser has been cropped out of this figure for the sake of increased screenshot resolution.  \label{fig:designs} }
 \end{figure}%!!! New
 
 \begin{figure}[h]
@@ -425,9 +425,9 @@ A detailed explanation of each input is given below.
 
 \item Probability outcome = 1 under treatment for subpopulation $1$ ($p_{1t}$): The probability of a successful outcome for  subpopulation $1$ under assignment to the treatment arm. Note that the user does not specify $p_{2t}$; instead, \pkg{interAdapt} considers a range of possible values of $p_{2t}$ that can be set through the Advanced Parameters described below.
 
-\item Per stage sample size, combined population, for adaptive design ($n^{(1)}$): Number of patients enrolled per stage in $AD$, whenever both subpopulations are being enrolled.
+\item Per stage sample size, combined population, for adaptive design ($n^{(1)}$): Number of participants enrolled per stage in $AD$, whenever both subpopulations are being enrolled.
 
-\item Per stage sample size for stages where only subpopulation 1 is enrolled, for adaptive design ($n^{(2)}$): The number of patients required for each stage in AD after stage $k^*$ (only used if $k^* > K$). For stages up to and including stage $k^*$, the number of patients enrolled from subpopulation 1 is equal to $\pi_1 n^{(1)}$.
+\item Per stage sample size for stages where only subpopulation 1 is enrolled, for adaptive design ($n^{(2)}$): The number of participants required for each stage in AD after stage $k^*$ (only used if $k^* < K$). For stages up to and including stage $k^*$, the number of participants enrolled from subpopulation 1 is equal to $\pi_1 n^{(1)}$.
 
 
 \item Alpha (FWER) requirement for all designs ($α$): The familywise Type I error rate defined in Section~\ref{sub:typeIerror}. 
@@ -462,7 +462,7 @@ It is our experience that a simulation with 10,000 iterations takes about 7-15 s
 \item Participants enrolled per year from combined population: This is the assumed enrollment rate (per year) for the combined population. It impacts the expected duration of the different trial designs. The enrollment rates for  subpopulations $1$ and $2$ are assumed to equal the combined population enrollment rate multiplied by $π_1$ and $π_2$, respectively. I.e., enrollment rates are proportional to the relative sizes of the subpopulations. This reflects the reality that enrollment will likely be slower for smaller subpopulations.
 Active enrollment from one subpopulation is assumed to have no effect on the enrollment rate in the other subpopulation. This implies that each stage of the $AD$ design up to and including stage $k^*$ takes the same amount of time to complete, regardless of whether enrollment stops for subpopulation 2. Also, each stage after $k^*$ takes the same amount of time to complete. 
 
-%Stages after stage $k^*$ may require a longer or shorter amount time to complete, relative to the earlier stages, depending on whether the number of patients enrolled per stage from subpopulation 1 increases or decreases after stage $k^*$ (i.e., whether $n^{(2)}>\pi_1 n^{(1)}$ or $n^{(2)}<\pi_1 n^{(1)}$).
+%Stages after stage $k^*$ may require a longer or shorter amount time to complete, relative to the earlier stages, depending on whether the number of participants enrolled per stage from subpopulation 1 increases or decreases after stage $k^*$ (i.e., whether $n^{(2)}>\pi_1 n^{(1)}$ or $n^{(2)}<\pi_1 n^{(1)}$).
 %!!! new
 
 \item Per stage sample size for standard group sequential design ($SC$) enrolling combined pop. ($n_{SC}$): The number of participants enrolled in each stage for $SC$.
@@ -522,12 +522,12 @@ However, for the AD design, this does not hold; this is because the total trial 
 The default inputs to \pkg{interAdapt} come from the motivating example of planning the MISTIE Phase III trial. We next summarize the design goals of the investigators, based on \citep{Rosenblum2013AdaptMISTIE}. The MISTIE III trial aims to assess a new surgical treatment for stroke. The primary outcome is based on
  each participant's  disability score on the modified Rankin Scale (mRS). A successful outcome was defined as a mRS score less than or equal to 3. 
 
-At the time of planning the Phase III MISTIE trial, the previous Phase II trial had only enrolled participants with little or no intraventricular hemorrhage (IVH). More specifically, participants had been categorized as ``small IVH'' if their IVH volume was less than 10ml, and did not require a catheter for intracranial pressure monitoring. Otherwise, patients were classified as ``large IVH.'' The Phase II trial only recruited small IVH participants, and yielded a treatment effect estimate of 12.1\% [95\% CI: (-2.7\%, 26.9\%)]. The investigators thought that the treatment could also be effective in large IVH patients, but very little data was available to assess this. We refer to those with small IVH as subpopulation $1$, since there was more prior evidence of treatment efficacy in this subpopulation; those with large IVH  are subpopulation 2.
+At the time of planning the Phase III MISTIE trial, the previous Phase II trial had only enrolled participants with little or no intraventricular hemorrhage (IVH). More specifically, participants had been categorized as ``small IVH'' if their IVH volume was less than 10ml, and did not require a catheter for intracranial pressure monitoring. Otherwise, participants were classified as ``large IVH.'' The Phase II trial only recruited small IVH participants, and yielded a treatment effect estimate of 12.1\% [95\% CI: (-2.7\%, 26.9\%)]. The investigators thought that the treatment could also be effective in large IVH participants, but very little data was available to assess this. We refer to those with small IVH as subpopulation $1$, since there was more prior evidence of treatment efficacy in this subpopulation; those with large IVH  are subpopulation 2.
 
 The study designers focused on the following three scenarios of special interest:
 
 \begin{description}
-\item  (a) The average treatment effect (on the risk difference scale) is $12.5\%$ for both small and large IVH patients;
+\item  (a) The average treatment effect (on the risk difference scale) is $12.5\%$ for both small and large IVH participants;
 \item  (b) The average treatment effect is $12.5\%$ for small IVH participants, and zero large IVH participants;
 \item  (c) The treatment effect is zero both subpopulations. 
 \end{description}
@@ -557,7 +557,7 @@ Now we turn to the output of \pkg{interAdapt} that results from the default para
 
 We described the \pkg{interAdapt} application for designing and simulating trials with adaptive enrollment criteria. We provided an overview of the theoretical problem the application addresses, and gave an explanation of the application's inputs and outputs.
 
-Current limitations of the software include that the outcome is assumed to be binary. We also currently only consider the case where outcomes are measured without delay, immediately after patients are enrolled. Relaxing both of these requirements is a goal of future work.
+Current limitations of the software include that the outcome is assumed to be binary. We also currently only consider the case where outcomes are measured without delay, immediately after participants are enrolled. Relaxing both of these requirements is a goal of future work.
 
 
 \section*{Acknowledgements}
