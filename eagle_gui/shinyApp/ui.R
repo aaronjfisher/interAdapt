@@ -85,8 +85,8 @@ shinyUI(pageWithSidebar(
   # "Advanced" forces batch mode
   sidebarPanel(
         #TOP PANEL
-        selectInput("Which_params", "", c("Show basic parameters" = "1",
-                "Show advanced parameters" = "2", "Show All Parameters and Save/Load Option" = "3") ),
+        selectInput("Which_params", "", c("Show Basic Parameters" = "1",
+                "Show Advanced Parameters" = "2", "Show All Parameters and Save/Load Option" = "3") ),
 
         #SAVE & LOAD
 
