@@ -66,18 +66,23 @@ Randomized trial designs have been proposed that dynamically adapt enrollment cr
 % After making changes to this file:
 
 % *Final error check on the software, once it's all put together. 
-% *Once we have the final draft of the paper, we need to update the Rmd files that generate the knitr reports. Then we can put fixed versions of the \proglang{R} files on the Spark server.
+% *Once we have the final draft of the paper, we need to update the Rmd files that generate the knitr reports. Then we can put fixed versions of the R files on the Spark server.
+	% For how to update spark, see:
+		%/Users/aaronfisher/Documents/JH/Michael - Shiny App /new_gui/EAGLE Repo/eagle_gui/glimmer files/notes_on_updating_RStudio_webserver_files.rtf
+	% Note on updating glimmer/RStudio webserver files - change boxTable.csv so that the time limit for the simulations (CPU time limit) is 90 (sec)
 % *Also update the interAdapt github repo with new code, and put a new version of this pdf on there.
 % *version control files are in the main directory of the interAdapt github repo
 
-% Note on updating glimmer/RStudio webserver files - change boxTable.csv so that the time limit for the simulations (CPU time limit) is 90 (sec)
+
 
 % Notes on converting this file to the shiny Rmd report file.
+% skip \iffalse... \fi comments
 % Generally, you can skip the sections leading up to the formal description of the problem. You'll need to update this thing subsection by subsection though. Take special care in the test statistics section, as this requires you to split up the definition of standard errors.
 % When copy pasting to Rmd, you need to take out  \htx, \item & \subitem, ^* → ^\star. \sections to # (actually don't change these, just paste around them in the Rmd file, also no \label), change ``quoted item'' to ''quoted item''
 % \pkg{interAdapt} -> *interAdapt*; \progLang{R} -> *R*. \pkg and \progLang in general
 % \url{}
 % \Prob
+% change \ref to labels
 % \lr{} and begin equation has been replaced (the 2nd was replaced with \[ \].
 %copy .bib file to interAdapt_noJSScode.bib, and find remove \pkg{...}
 % replace \citep with `r citep(bibFile[["JennisonTurnbullBook"]])`
@@ -124,12 +129,10 @@ We consider the problem of designing a randomized trial to test whether a new tr
 Consider the case where we have two subpopulations, referred to as subpopulation $1$ and subpopulation $2$, which partition the overall population of interest. These must be specified before the trial starts, and be defined in terms of participant attributes measured at baseline (e.g., having a high initial severity of disease or a certain biomarker value). 
 We focus on situations where  there is suggestive, prior evidence that the treatment may be more likely to benefit subpopulation $1$.
 In the MISTIE trial example, subpopulation 1 refers to small IVH participants, and subpopulation 2 refers to large IVH participants. 
-%though it is possible that the treatment will benefit both subpopulations.
-Let $π_1$ and $π_2$ denote the proportion of the population in subpopulations 1 and 2, respectively. %We assume these subpopulations partition the population, which implies $\pi_1+\pi_2=1$.
+Let $π_1$ and $π_2$ denote the proportion of the population in subpopulations 1 and 2, respectively.
 
 Both the adaptive and standard designs discussed here involve enrollment over time, and include predetermined rules for stopping the trial early based on interim analyses. Each trial consists of $K$ stages, indexed by $k$. 
-%We say that the $k^{th}$ stage has ended once a certain number of additional participants (denote $n_k$, defined below for each type of design) have been enrolled. %!!! OK def?
-In stages where both subpopulations are enrolled, we assume that the proportion of newly recruited participants  in each subpopulation $s \in \{1,2\}$ is equal to the corresponding population proportion $\pi_s$. %An interim analysis is done at the end of each stage, which may lead to stoping the trial early.
+In stages where both subpopulations are enrolled, we assume that the proportion of newly recruited participants  in each subpopulation $s \in \{1,2\}$ is equal to the corresponding population proportion $\pi_s$.
 
 For a given design, let $n_k$ denote the maximum number of participants to be enrolled during stage $k$. The number enrolled during stage $k$ will be less than $n_k$ if the trial is entirely stopped before stage $k$ (so that no participants are enrolled in stage $k$) or if in the adaptive design enrollment is restricted to only subpopulation 1 before stage $k$ (as described in Section~\ref{sub:decisionRules}). For each subpopulation $s \in \{1,2\}$ and stage $k$, let $N_{s,k}$ denote the maximum cumulative number of subpopulation $s$ participants who have enrolled by the end of stage $k$. Let $N_{C,k}$ denote the maximum cumulative number of enrolled participants from the combined population by the end of stage $k$, i.e.,  $N_{C,k}=N_{1,k}+N_{2,k}$.
 The sample sizes will generally differ for different designs.
@@ -143,8 +146,11 @@ We define the true average treatment effect for a given population to be the dif
 
 In the remainder of this section we give an overview of the relevant concepts needed to understand and use \pkg{interAdapt}. A more detailed discussion of the theoretical context, and of the efficacy boundary calculation procedure, is provided by \cite{Rosenblum2013AdaptMISTIE}.
  
+
 \subsection{Hypotheses}
 \label{sub:hypotheses}
+
+
 We focus on testing the null hypothesis that, on average, the treatment is no better than control for subpopulation $1$, and the analogous null hypothesis for the combined population. Simultaneous testing of null hypotheses for these two populations was also the goal for the two-stage, adaptive enrichment designs of \cite{wangetal2007}.
 We define our two null hypotheses, respectively, as
 
@@ -218,8 +224,12 @@ The z-statistic $Z_{2,k}$ is similar to the above, with each occurrence of $A_{i
 The decision rules defined below involve stopping boundaries based on the z-statistics observed at the end of each stage. %$$(Z_{C,1},Z_{C,2},...Z_{C,K})$, $(Z_{1,1},Z_{1,2},...Z_{1,K})$, and $(Z_{2,1},Z_{2,2},...Z_{2,K})$. 
 \fi
 
+
+
 \subsection{Type I error control}
 \label{sub:typeIerror}
+
+
 
 The familywise (also called study-wide) Type I error rate is the probability of rejecting one or more true null hypotheses.
 %^In the context of our hypotheses, the Familywise Type I error rate refers to the combined rate of false positives from testing either $H_{0C}$ and $H_{01}$. 
@@ -314,7 +324,6 @@ Z_{1,k}> e_{AD,1}\left\{\frac{\sum_{k'=1}^{K} n_{k'}}{\sum_{k'=1}^{k}n_{k'}}\rig
 \fi
 All of the above computations use the approximation, based on the multivariate central limit theorem, that the joint distribution of the  z-statistics is multivariate normal  with covariance matrix as given, e.g., by \cite{JennisonTurnbullBook,Rosenblum2013AdaptMISTIE}.
 
-%The fact that familywise Type I error rate is controlled under the global null implies that it is also strongly controlled under all hypotheses \citep{Rosenblum2013AdaptMISTIE}. 
 
 %OlD RULES
 % \begin{description}
@@ -461,7 +470,6 @@ A detailed explanation of each input is given below.
 \item \# of Iterations for simulation: This is the number of simulated trials used to 
  approximate the power, expected sample size, and expected trial duration. In each simulated trial,
  z-statistics are simulated from a multivariate normal distribution (determined by the input parameters).
- %Generally, about 10,000 simulations are needed to obtain. 
 The greater the number of iterations, the more accurate the simulation results will be.
 It is our experience that a simulation with 10,000 iterations takes about 7-15 seconds on a commercial laptop.
 
@@ -474,8 +482,6 @@ It is our experience that a simulation with 10,000 iterations takes about 7-15 s
 \item Participants enrolled per year from combined population: This is the assumed enrollment rate (per year) for the combined population. It impacts the expected duration of the different trial designs. The enrollment rates for  subpopulations $1$ and $2$ are assumed to equal the combined population enrollment rate multiplied by $π_1$ and $π_2$, respectively. I.e., enrollment rates are proportional to the relative sizes of the subpopulations. This reflects the reality that enrollment will likely be slower for smaller subpopulations.
 Active enrollment from one subpopulation is assumed to have no effect on the enrollment rate in the other subpopulation. This implies that each stage of the $AD$ design up to and including stage $k^*$ takes the same amount of time to complete, regardless of whether enrollment stops for subpopulation 2. Also, each stage after $k^*$ takes the same amount of time to complete. 
 
-%Stages after stage $k^*$ may require a longer or shorter amount time to complete, relative to the earlier stages, depending on whether the number of participants enrolled per stage from subpopulation 1 increases or decreases after stage $k^*$ (i.e., whether $n^{(2)}>\pi_1 n^{(1)}$ or $n^{(2)}<\pi_1 n^{(1)}$).
-%!!! new
 
 \item Per stage sample size for standard group sequential design ($SC$) enrolling combined pop. ($n_{SC}$): The number of participants enrolled in each stage for $SC$.
 
@@ -484,12 +490,11 @@ Active enrollment from one subpopulation is assumed to have no effect on the enr
 \item Stopping boundary proportionality constant for subpopulation 2 enrollment for adaptive design ($f_{AD,2}$): This is used to calculate the futility boundaries ($l_{2,k})$ for the z-statistics calculated in subpopulation 2 ($Z_{2,k}$) as defined in Section~\ref{sub:decisionRules}.
 
 \item $H_{01}$ futility boundary proportionality constant for the adaptive design ($f_{AD,1}$):  This is used to calculate the futility boundaries ($l_{1,k}$) for the z-statistics calculated in subpopulation 1 ($Z_{1,k}$) as defined in Section~\ref{sub:decisionRules}.
-%. The boundary for stage $k$ is set to  $l_{1,k}=f_{AD,1}\{(\sum_{k'=1}^{K} n_{k'})/(\sum_{k'=1}^{k}n_{k'})\}^{-δ}$.  If $Z_{1,k}\leq l_{1,k}$, we stop all enrollment (see section \ref{sub:decisionRules}).
 
-\item $H_{0C}$ futility boundary proportionality constant for the standard design ($f_{SC}$): This is used to calculate the futility boundaries for $H_{0C}$ in $SC$ as defined in Section~\ref{sub:decisionRules}. %, which is set to $\\ f_{SC}\{(\sum_{k'=1}^{K} n_{k'})/(\sum_{k'=1}^{k}n_{k'})\}^{-δ}$ in stage $k$.
 
-\item $H_{01}$ futility boundary proportionality constant for the standard design ($f_{SS}$):  This is used to calculate the futility boundaries for $H_{01}$ in $SS$ as defined in Section~\ref{sub:decisionRules}. %, which is set to $\\ f_{SS}\{(\sum_{k'=1}^{K} n_{k'})/(\sum_{k'=1}^{k}n_{k'})\}^{-δ}$ in stage $k$.
+\item $H_{0C}$ futility boundary proportionality constant for the standard design ($f_{SC}$): This is used to calculate the futility boundaries for $H_{0C}$ in $SC$ as defined in Section~\ref{sub:decisionRules}. 
 
+\item $H_{01}$ futility boundary proportionality constant for the standard design ($f_{SS}$):  This is used to calculate the futility boundaries for $H_{01}$ in $SS$ as defined in Section~\ref{sub:decisionRules}. 
 
 \item Lowest value to plot for treatment effect in subpopulation 2: \pkg{interAdapt} does simulations under a range of treatment effect sizes $p_{2t}-p_{2c}$ for subpopulation $2$. This sets the lower bound for this range. This effectively sets the lower bound for $p_{2t}$, since $p_{2c}$ is set by the user as a Basic parameter.
 
