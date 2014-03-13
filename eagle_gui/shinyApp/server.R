@@ -158,7 +158,7 @@ shinyServer(function(input, output) {
         x[allVarNames[nameInd]]<-bt[i,'min']
         minMaxErrs_ind<-TRUE
       }
-      if(minMaxErrs_ind) minMaxErrs[i]<- paste0('Warning: the variable "',bt[i,'label'], '" exceeds the allowed range, and has been set to ',x[allVarNames[nameInd]],'. ')
+      if(minMaxErrs_ind) minMaxErrs[i]<- paste0('Warning: the variable "',bt[i,'label'], '" is outside the allowed range, and has been set to ',x[allVarNames[nameInd]],'. ')
     }
     output$warn3<-renderText({paste(minMaxErrs,collapse='')})
 
