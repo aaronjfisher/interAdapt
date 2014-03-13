@@ -597,18 +597,18 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
       designTable2csv(t1,filename)
     }
   )
-  output$downloadDesignFC.1<-
-  output$downloadDesignFC.2<- downloadHandler(
-    filename =  paste0('DesignFC_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+  output$downloadDesignSC.1<-
+  output$downloadDesignSC.2<- downloadHandler(
+    filename =  paste0('DesignSC_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
     content = function(filename) {
       t1<-standard_H0C_design_sample_sizes_and_boundaries_table()
       designTable2csv(t1,filename)
     }
   )
-  output$downloadDesignFS.1<-
-  output$downloadDesignFS.2 <- downloadHandler(
-    filename =  paste0('DesignFS_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+  output$downloadDesignSS.1<-
+  output$downloadDesignSS.2 <- downloadHandler(
+    filename =  paste0('DesignSS_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
     content = function(filename) {
       t1<-standard_H01_design_sample_sizes_and_boundaries_table()

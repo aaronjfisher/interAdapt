@@ -570,7 +570,7 @@ output_df_formatted <- cbind(output_df[,1],output_df[,2],output_df[,3],100*outpu
 #100*output_df[,10],
 output_df[,11],output_df[,12],100*output_df[,13])
 colnames(output_df_formatted) <- c("Subpop.2 Tx. Effect","AD:Sample Size","AD:DUR","AD:Power H0C","AD:Power H01","AD:Power H0C or H01","SC:Sample Size","SC:DUR","SC:Power H0C","SS:Sample Size","SS:DUR","SS:Power H01")
-return(list(output_df_formatted,digits=c(0,2,0,1,0,0,0,0,1,0,0,1,0),caption="Comparison of avg sample size, avg duration (DUR), and power (as a percent), for the following designs: the Adaptive Design (AD), the Standard Design Enrolling Combined Population (SC), and the Standard Design Enrolling Subpop. 1 Only (SS). All designs strongly control the familywise Type I error rate at level FWER set using slider onleft."))
+return(list(output_df_formatted,digits=c(0,2,0,1,0,0,0,0,1,0,0,1,0),caption=paste0("Comparison of avg sample size, avg duration (DUR), and power (as a percent), for the following designs: the Adaptive Design (AD), the Standard Design Enrolling Combined Population (SC), and the Standard Design Enrolling Subpop. 1 Only (SS). All designs strongly control the familywise Type I error rate at ",alpha_FWER_user_defined,".")))
 }
 
 ## Format the performance table
