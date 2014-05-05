@@ -10,7 +10,7 @@ height <- "500px"       # more than 400
 need2update<-FALSE
 try({
   library(RCurl)
-  newestVerName<-strsplit(getURL('https://raw.github.com/aaronjfisher/interAdapt/master/version.txt'),split='\n')[[1]][1]
+  newestVerName<-strsplit(getURL('https://raw.githubusercontent.com/aaronjfisher/interAdapt/master/version.txt'),split='\n')[[1]][1]
   if(newestVerName!=verName) need2update<-TRUE
 })
 
