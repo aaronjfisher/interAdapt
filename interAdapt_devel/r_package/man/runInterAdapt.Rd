@@ -2,9 +2,9 @@
 \alias{runInterAdapt}
 \title{Run the interAdapt application}
 \usage{
-  runInterAdapt()
+runInterAdapt()
 }
 \description{
-  \code{runInterAdapt} Runs the main application
+\code{runInterAdapt} Runs the main application
 }
 

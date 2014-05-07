@@ -1,21 +1,7 @@
-  # ______ _   _ _____  _____ _ 
-  # | ___ \ | | |  __ \/  ___| |
-  # | |_/ / | | | |  \/\ `--.| |
-  # | ___ \ | | | | __  `--. \ |
-  # | |_/ / |_| | |_\ \/\__/ /_|
-  # \____/ \___/ \____/\____/(_)
-                              
-
-# Need to make sure the initialized image is set correctly. 
-    # For beta testing it's just commented out to maintain consistency.
-# If you upload the same dataset twice, it won't notice the change. you have to clear first.
-# search !!! and ???
-# Once we have stable code, make sure the default xlims are right when we load table1 from file.
-# (AF) I believe HJ wrote the renderTable function?
-# Adding π to the sliders means you can't edit them in excel anymore, or excel will mess it up when it saves
-# Right now we don't have any more subscripts than in the null hypothesis tests. 
-  # we could add for instance p_{1,2} but this would require more work with our custom "sanitize text" functions
-  #it's find for now, don't bother.
+# Notes
+# Make sure the default xlims are right when we load table1 from file.
+# Avoid unicode
+# The central function of this script is the regen() function, which determines, based on the current parameters, whether or not table_constructor() from the "[...]Design.R" file should be called to update the results in the main panel
 
 
   # ______                         _     _      
@@ -40,11 +26,12 @@ subH0 <- function(x){ #make a function that does the same thing as "strong()" bu
   x <- gsub("</strong>", "", x)
   x <- gsub("H0C", "H<sub>0C</sub>", x)
   x <- gsub("H01", "H<sub>01</sub>", x)
+  x <- gsub("H02", "H<sub>02</sub>", x)
   return(x)
 }
 
 #To be used in our xtable function!
-subH01anitize<-function(x){
+subH01sanitize<-function(x){
   x <- gsub("H0C", "H<sub>0C</sub>", x)
   x <- gsub("H01", "H<sub>01</sub>", x)
   return(x)
@@ -53,9 +40,9 @@ subH01anitize<-function(x){
 
 #To print2log errors that we can read in a log later, useful for checking sessions on RStudio/glimmer/spark
 #first override last session/start new log
-#!!!??? In final release, set "print2R" to FALSE
+#In final release, set "print2R" to FALSE
 cat(file='session_log.txt',paste(Sys.time(),'\n \n')) 
-print2log<-function(x,logFileName='session_log.txt',print2R=TRUE){ #takes a string as input
+print2log<-function(x,logFileName='session_log.txt',print2R=FALSE){ #takes a string as input
   if(print2R) print(x)
   cat(file=logFileName,paste(x,'\n'),append=TRUE)
 }
@@ -65,44 +52,19 @@ print2log<-function(x,logFileName='session_log.txt',print2R=TRUE){ #takes a stri
 
 print2log("source'ing code...")
 
-#Get the csv file either online or locally
-getItOnline<-TRUE
-try({
-  #loading & saving table 1 is done elsewhere, all through local file management
-  source("Adaptive_Group_Sequential_Design.R", local=TRUE)
-  st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
-  bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
-  getItOnline<-FALSE #if we haven't gotten an error yet!
-  print2log("found code locally...")
-},silent=TRUE)
-try({
-  if(getItOnline){
-    library(knitcitations)
-    library(devtools)
-    library(RCurl)
-    library(digest) #some reason this is a dependency not auto-loaded by devtools?
-    gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp/"
-    #The glimmer/spark files contains a line that specifies if the server should host the stable version, or the beta version.
-    if(exists('appVersion')) {
-      if(appVersion=='stable'){
-        gitDir<-"https://raw.github.com/aaronjfisher/Adaptive_Shiny/master/eagle_gui/shinyApp_stable/"
-    }}
-    st<-read.csv(text=getURL(paste0(gitDir,"sliderTable.csv")),header=TRUE,as.is=TRUE)
-    bt<-read.csv(text=getURL(paste0(gitDir,"boxTable.csv")),header=TRUE,as.is=TRUE)
-    source_url(paste0(gitDir,"Adaptive_Group_Sequential_Design.R"))
-    knitrRmd<-readLines(textConnection(getURL(paste0(gitDir,"knitr_report.Rmd"))))#download.file won't work, so hack some other stuff for now
-    writeLines(knitrRmd,"knitr_report.Rmd")
-    EAGLEcite<-readLines(textConnection(getURL(paste0(gitDir,"EAGLEcite.bib"))))#download.file won't work, so hack some other stuff for now
-    writeLines(EAGLEcite,"EAGLEcite.bib")
-    print2log("found code online...")
-  }
-},silent=TRUE)
+#Load initial inputs and source code
+source("Adaptive_Group_Sequential_Design.R", local=TRUE)
+st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
+bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
+print2log("found code locally...")
+
 
 print2log("...supplementary files found and loaded...")
 
+#process initial inputs
 allVarNames<-c(st[,'inputId'],bt[,'inputId'])
 allVarLabels<-c(st[,'label'],bt[,'label'])
-lastAllVars<-rep(0,length(allVarNames))
+lastAllVars<-rep(0,length(allVarNames)) #for use later on, for shiny to tell when inputs have changed or not.
 names(lastAllVars)<-allVarNames
 
 for(i in 1:dim(st)[1]){
@@ -115,10 +77,12 @@ for(i in 1:dim(bt)[1]){
 }
 
 
-#The following code answers the question: do we need to regen table1? Try to see if you have it locally. If you don't, or if you need to update it, do it again & save (wherever you are, either on glimmer, spark, or locally)
+# If the default inputs to the files have not changed since last time interAdapt was run, then we don't have to redo the initial calculations.
+# table1 stores the results needed to display performance of each trial.
+#The following code answers the question: do we need to regenerate table1? If you need to update it, do so & save
 stillNeedTable1<-TRUE
 try({
-load('last_default_inputs.RData') #won't work first time on glimmer, but it's OK
+load('last_default_inputs.RData') #won't work first time, but it's OK
   if(all(bt==lastBt)&all(st==lastSt)){ #lastBt and lastSt are from the last time we generated table1, contained in the RData file we just loaded. If we're a match, then:
       load('last_default_table1_&_xlim.RData')
       stillNeedTable1<-FALSE
@@ -167,6 +131,7 @@ shinyServer(function(input, output) {
 
   lastApplyValue <- 0 # need to put -1 here if we don't load table 1 beforehand
   totalCalls<-0 #a place keeper to watch when we cat to stderr
+  #for use in uploading files:
   uploadCsvTicker<-0
   uploadDatasetTicker<-0
   inCsvValues<-NULL
@@ -193,7 +158,7 @@ shinyServer(function(input, output) {
         x[allVarNames[nameInd]]<-bt[i,'min']
         minMaxErrs_ind<-TRUE
       }
-      if(minMaxErrs_ind) minMaxErrs[i]<- paste0('Warning: the variable "',bt[i,'label'], '" exceeds the allowed range, and has been set to ',x[allVarNames[nameInd]],'. ')
+      if(minMaxErrs_ind) minMaxErrs[i]<- paste0('Warning: the variable "',bt[i,'label'], '" is outside the allowed range, and has been set to ',x[allVarNames[nameInd]],'. ')
     }
     output$warn3<-renderText({paste(minMaxErrs,collapse='')})
 
@@ -242,6 +207,7 @@ shinyServer(function(input, output) {
   #below are 2 reactive chunks to feed to the dynamicBoxes & dynamicSliders
 
 
+
   csvUpload<-reactive({
     upFile <- input$uploadCsvInput
     x<-NULL
@@ -253,7 +219,6 @@ shinyServer(function(input, output) {
     }
     inCsvValues<<-x
   })
-
 
 
 
@@ -274,7 +239,6 @@ shinyServer(function(input, output) {
       x['p11_user_defined'] <- mean(Y*(S==1)*(A==1))/mean((S==1)*(A==1))
       x['p20_user_defined'] <- mean(Y*(S==2)*(A==0))/mean((S==2)*(A==0))
       x['p21_user_defined'] <- mean(Y*(S==2)*(A==1))/mean((S==2)*(A==1))
-      # HJ -- perform sanity checks?
       uploadDatasetTicker<<-0
       print2log('new Data calculated from')
       print2log(x)
@@ -295,13 +259,14 @@ shinyServer(function(input, output) {
 # \__ \ | | (_| |  __/ |  \__ \ | (_>  < | |_) | (_) >  <  __/\__ \
 # |___/_|_|\__,_|\___|_|  |___/  \___/\/ |_.__/ \___/_/\_\___||___/
 
+#Code to create dynamic inputs, which are rendered by ui.R
 
   #NOTE - June 26: When sliders update, regen thinks it needs to be called again because sliders have updated values and you're now in interactive mode.
         #solution -- added lastAllVars (nonreactive) variable that cancels this out.
   #explanation of uploadCsvTicker: Only if it's the first time since uploading do we change the sliders to the uploaded values from the full csv list. If it's not the first time, we use the current value of the variable, taken from allVars.
   #for uploadDatasetTicker, it's the same basic idea, but we only check it for variables in the vector 'datasetVarNames'.
   sliders <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
-    print2log('sliders')
+    print2log('Slider inputs')
     print2log(uploadCsvTicker)
     print2log(uploadDatasetTicker)
     csvUpload() #reactive input to uploaded file; sets ticker to zero when it's activated & does stuff
@@ -331,14 +296,14 @@ shinyServer(function(input, output) {
     }
     uploadCsvTicker<<-uploadCsvTicker+1
     uploadDatasetTicker<<-uploadDatasetTicker+1
-    print2log('           sliders updating!!!!!!')
+    print2log('............ sliders updating')
     labelSliderList
   })
   output$fullSliders<-renderUI({sliders()})
 
 
   boxes <- reactive({ #NOTE: if you upload the same file again it won't update b/c nothing's techincally new!!!
-    print2log('                    boxes')
+    print2log('Box inputs')
     csvUpload()
     labelBoxList<-list()
     for(i in 1:dim(bt)[1]){
@@ -347,6 +312,19 @@ shinyServer(function(input, output) {
       boxLabeli<-subH0(bt[i,'label'])
       boxListi<-numericInput(inputId=bt[i,'inputId'], label='', min=bt[i,'min'], max=bt[i,'max'], value=value_i, step=bt[i,'step'])
       ind<-length(labelBoxList)           
+      #add extra text:
+      #Ex 1 - follows 'Lower bound for...'
+      if(grepl('Lowest value to plot',bt[i,'label'])){
+        labelBoxList[[ind+1]]<-strong("For use in Plots of Power vs. Average Treatment Effect for Subpopulation 2:")
+        labelBoxList[[ind+2]]<-br()
+        ind<-length(labelBoxList)
+      }
+      #Ex2 - follows "Delta"
+      if(grepl('Delta',bt[i,'label'])){
+        labelBoxList[[ind+1]]<-strong("Applies to all Parameters:")
+        labelBoxList[[ind+2]]<-br()
+        ind<-length(labelBoxList)
+      }
       labelBoxList[[ind+1]]<-boxLabeli
       labelBoxList[[ind+2]]<-boxListi
       labelBoxList[[ind+3]]<-br()      
@@ -369,9 +347,7 @@ shinyServer(function(input, output) {
 # | |\ \| |___| |_\ \| |___| |\  |
 # \_| \_\____/ \____/\____/\_| \_/
 
-  # In interactive mode, we re-export the parameters and rebuild table1
-  # every time.  In batch, only on the first call for a given push of the
-  # Apply button.
+  # In interactive mode, we re-export the parameters and rebuild table1 (Design.R file) every time.  In batch, only on the first call for a given push of the Apply button.
   #argument applyValue is usally fed in as params(), the sum of the two apply buttons
 
 
@@ -379,7 +355,7 @@ shinyServer(function(input, output) {
   regen <- reactive({
     applyValue<-params()
     totalCalls<<-totalCalls+1
-    print2log(paste('total calls =',totalCalls))
+    print2log(paste('total regen calls =',totalCalls))
     #ESCAPE SCENARIOS
     #escape if it's called when dynamic sliders/buttons are still loading (just when app starts up)
     if(is.null(input$Batch) || is.null(applyValue))
@@ -455,26 +431,19 @@ shinyServer(function(input, output) {
 	expected_duration_plot()
   })
 
-  #overruns <- function() plot(1:2, main="Overruns")
-  output$overruns <- renderPlot({
-	regen()
-  print2log('overruns plot')
-	overrun_plot()
-  })
-
 
   #############
   #Boundary Plots
-  output$fixed_H0C_boundary_plot <-renderPlot({
+  output$standard_H0C_boundary_plot <-renderPlot({
     regen()
     print2log('H0C Boundary Plot')
-    boundary_fixed_H0C_plot()
+    boundary_standard_H0C_plot()
   })
 
-  output$fixed_H01_boundary_plot <-renderPlot({
+  output$standard_H01_boundary_plot <-renderPlot({
     regen()
     print2log('H01 Boundary Plot')
-    boundary_fixed_H01_plot()
+    boundary_standard_H01_plot()
   })
 
   output$adapt_boundary_plot <-renderPlot({
@@ -499,7 +468,7 @@ shinyServer(function(input, output) {
 
 # HJ - x must be a list of length 3, with a digits and caption
 xtable <- function(x) {
-	xtable::xtable(x[[1]], digits=x$digits, caption=x$caption) #NEED TO EXPAND HERE!!
+	xtable::xtable(x[[1]], digits=x$digits, caption=x$caption) 
 }
 
 renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func = NULL, include.colnames=TRUE) 
@@ -516,7 +485,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
         if (is.null(data) || identical(data, data.frame())) 
             return("")
         return(paste(capture.output(print(xtable(data, ...), include.colnames=include.colnames, 
-            type = "html",sanitize.text.function=subH01anitize,
+            type = "html",sanitize.text.function=subH01sanitize,
             html.table.attributes = paste("class=\"", 
                 #htmlEscape(classNames, TRUE), "\"", sep = ""), 
                 shiny:::htmlEscape(classNames, TRUE), "\"", sep = ""), 
@@ -524,30 +493,31 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     }
 }
   
+  #copies of all the tables have to be made to put in different panels of the shiny app.
   output$adaptive_design_sample_sizes_and_boundaries_table.2 <-
   output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable({    
 	regen()
-  print2log('adapt table')
+  print2log('adaptive design table')
 	adaptive_design_sample_sizes_and_boundaries_table()
   })
 
-  output$fixed_H0C_design_sample_sizes_and_boundaries_table.2 <-
-  output$fixed_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
+  output$standard_H0C_design_sample_sizes_and_boundaries_table.2 <-
+  output$standard_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
 	regen()
-  print2log('H0C table')
-	fixed_H0C_design_sample_sizes_and_boundaries_table()
+  print2log('H0C standard trial table')
+	standard_H0C_design_sample_sizes_and_boundaries_table()
   })
 
-  output$fixed_H01_design_sample_sizes_and_boundaries_table.2 <-
-  output$fixed_H01_design_sample_sizes_and_boundaries_table <-renderTable({
+  output$standard_H01_design_sample_sizes_and_boundaries_table.2 <-
+  output$standard_H01_design_sample_sizes_and_boundaries_table <-renderTable({
 	regen()
-  print2log('H01 table')
-	fixed_H01_design_sample_sizes_and_boundaries_table()
+  print2log('H01 standard trial table')
+	standard_H01_design_sample_sizes_and_boundaries_table()
   })
 
   output$performance_table <- renderTable(expr={
 	regen()
-  print2log('perf table')
+  print2log('performance table')
 	transpose_performance_table(performance_table())
     },include.colnames=FALSE)
 
@@ -563,6 +533,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   # \__ \ (_| |\ V /  __/ | (_| | (_| | || (_| |
   # |___/\__,_| \_/ \___|  \__,_|\__,_|\__\__,_|
 
+  #saving current parameters to a csv
   output$downloadInputs <- downloadHandler(
     filename =  paste0('inputs_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
@@ -573,11 +544,11 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     }
   )
 
+  #generate a knitr report
   output$knitr <- downloadHandler(
     filename =  'report.html',
     contentType =  'text/html',
     content = function(filename) {
-      #can't say "if (file.exists(filename)) file.remove(filename)" because this would open the door to hacking?
       if (file.exists('knitr_report.html')) file.remove('knitr_report.html')
       if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
       htmlKnitted<-knit2html('knitr_report.Rmd') #"plain" version, without knitrBootstrap
@@ -614,8 +585,8 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
 
   }
 
-
-  #!!! Double check these files below once we have new tables with new descision rules ???
+  # Generate csv tables
+  #In general, it can be good to double check these files below if we change the decision rules, to make sure the tables still come out right.
   
   output$downloadDesignAD.1<-
   output$downloadDesignAD.2 <- downloadHandler(
@@ -626,21 +597,21 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
       designTable2csv(t1,filename)
     }
   )
-  output$downloadDesignFC.1<-
-  output$downloadDesignFC.2<- downloadHandler(
-    filename =  paste0('DesignFC_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+  output$downloadDesignSC.1<-
+  output$downloadDesignSC.2<- downloadHandler(
+    filename =  paste0('DesignSC_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
     content = function(filename) {
-      t1<-fixed_H0C_design_sample_sizes_and_boundaries_table()
+      t1<-standard_H0C_design_sample_sizes_and_boundaries_table()
       designTable2csv(t1,filename)
     }
   )
-  output$downloadDesignFS.1<-
-  output$downloadDesignFS.2 <- downloadHandler(
-    filename =  paste0('DesignFS_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
+  output$downloadDesignSS.1<-
+  output$downloadDesignSS.2 <- downloadHandler(
+    filename =  paste0('DesignSS_',gsub('/','-',format(Sys.time(), "%D")),'.csv'),
     contentType =  'text/csv',
     content = function(filename) {
-      t1<-fixed_H01_design_sample_sizes_and_boundaries_table()
+      t1<-standard_H01_design_sample_sizes_and_boundaries_table()
       designTable2csv(t1,filename)
     }
   )
