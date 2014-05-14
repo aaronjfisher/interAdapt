@@ -1,10 +1,10 @@
 \name{runInterAdapt}
 \alias{runInterAdapt}
-\title{Run the interAdapt application}
+\title{Run the interAdapt shiny application}
 \usage{
 runInterAdapt()
 }
 \description{
-\code{runInterAdapt} Runs the main application
+\code{runInterAdapt} Runs the interactive shiny application
 }
 
