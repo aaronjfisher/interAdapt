@@ -1,1 +1,6 @@
+export(compute_design_performance)
 export(runInterAdapt)
+import(RCurl)
+import(knitr)
+import(mvtnorm)
+import(shiny)

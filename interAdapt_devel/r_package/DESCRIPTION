@@ -3,10 +3,11 @@ Title: interAdapt
 Description: A shiny application for designing adaptive clinical trials
 Version: 0.1
 Author: Aaron Fisher <afisher@jhsph.edu>, Michael Rosenblum
-    <mrosenbl@jhsph.edu>, Harris Jaffee
+    <mrosenbl@jhsph.edu>, Harris Jaffee<hj@jhu.edu>
 Maintainer: Michael Rosenblum <mrosenbl@jhsph.edu>
 Depends:
-    R (>= 3.0.1),
+    R (>= 3.0.1)
+Imports:
     shiny,
     RCurl,
     mvtnorm,
