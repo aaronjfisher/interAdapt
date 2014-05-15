@@ -15,6 +15,9 @@
 
 library(knitr)
 
+#Are we on the shiny server?
+onRStudioServer <- 'onRStudio.txt' %in% dir()
+
 
 ###########
 #Functions
@@ -93,6 +96,13 @@ shinyServer(function(input, output) {
                                      
   # Initialize some static & reactive variables
   ##########
+
+  if(onRStudioServer){
+    #make sure file size hasn't blown up absurdly.
+    #if not, write the current user time.
+    if(file.info("user_log.txt")$size < 1000000)
+      cat(paste(date(),'\n'),file='user_log.txt',append=TRUE)
+  }
 
   #Functions must be defined in local env. as they call user specific objects
   source("Adaptive_Group_Sequential_Design.R", local=TRUE)
