@@ -42,7 +42,7 @@ subH01sanitize<-function(x){
 #first override last session/start new log
 #In final release, set "print2R" to FALSE
 cat(file='session_log.txt',paste(Sys.time(),'\n \n')) 
-print2log<-function(x,logFileName='session_log.txt',print2R=FALSE){ #takes a string as input
+print2log<-function(x,logFileName='session_log.txt',print2R=TRUE){ #takes a string as input
   if(print2R) print(x)
   cat(file=logFileName,paste(x,'\n'),append=TRUE)
 }
@@ -52,51 +52,17 @@ print2log<-function(x,logFileName='session_log.txt',print2R=FALSE){ #takes a str
 
 print2log("source'ing code...")
 
-#Load initial inputs and source code
-source("Adaptive_Group_Sequential_Design.R", local=TRUE)
+#Load initial inputs and
+#Source code must be sourced inside server input function for the
+#functions to look in the local user's environment (the function passed to shiny)
+#for the relevant variables. If defined here, the functions
+#look in the global env.
 st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
 bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
 print2log("found code locally...")
 
 
 print2log("...supplementary files found and loaded...")
-
-#process initial inputs
-allVarNames<-c(st[,'inputId'],bt[,'inputId'])
-allVarLabels<-c(st[,'label'],bt[,'label'])
-lastAllVars<-rep(0,length(allVarNames)) #for use later on, for shiny to tell when inputs have changed or not.
-names(lastAllVars)<-allVarNames
-
-for(i in 1:dim(st)[1]){
-  assign(st[i,'inputId'], st[i,'value'])
-  lastAllVars[st[i,'inputId']] <- st[i,'value']
-}
-for(i in 1:dim(bt)[1]){
-  assign(bt[i,'inputId'], bt[i,'value']) 
-  lastAllVars[bt[i,'inputId']] <- bt[i,'value']
-}
-
-
-# If the default inputs to the files have not changed since last time interAdapt was run, then we don't have to redo the initial calculations.
-# table1 stores the results needed to display performance of each trial.
-#The following code answers the question: do we need to regenerate table1? If you need to update it, do so & save
-stillNeedTable1<-TRUE
-try({
-load('last_default_inputs.RData') #won't work first time, but it's OK
-  if(all(bt==lastBt)&all(st==lastSt)){ #lastBt and lastSt are from the last time we generated table1, contained in the RData file we just loaded. If we're a match, then:
-      load('last_default_table1_&_xlim.RData')
-      stillNeedTable1<-FALSE
-      print2log("loaded table1...")
-  }
-})
-if(stillNeedTable1){ 
-  table1<- table_constructor()
-  lastBt<-bt
-  lastSt<-st
-  save(list=c('table1','risk_difference_list'),file='last_default_table1_&_xlim.RData')
-  save(list=c('lastBt','lastSt'),file='last_default_inputs.RData')
-  print2log("built table1...")
-}
 
 
 
@@ -128,7 +94,52 @@ shinyServer(function(input, output) {
   # Initialize some static & reactive variables
   ##########
 
+  #Functions must be defined in local env. as they call user specific objects
+  source("Adaptive_Group_Sequential_Design.R", local=TRUE)
 
+  #####
+  #process initial inputs from CSVs
+  allVarNames<-c(st[,'inputId'],bt[,'inputId'])
+  allVarLabels<-c(st[,'label'],bt[,'label'])
+  lastAllVars<-rep(0,length(allVarNames)) #for use later on, for shiny to tell when inputs have changed or not.
+  names(lastAllVars)<-allVarNames
+
+  for(i in 1:dim(st)[1]){
+    assign(st[i,'inputId'], st[i,'value'])
+    lastAllVars[st[i,'inputId']] <- st[i,'value']
+  }
+  for(i in 1:dim(bt)[1]){
+    assign(bt[i,'inputId'], bt[i,'value']) 
+    lastAllVars[bt[i,'inputId']] <- bt[i,'value']
+  }
+
+    
+  # If the default inputs to the files have not changed since last time interAdapt was run, then we don't have to redo the initial calculations.
+  # table1 stores the results needed to display performance of each trial.
+  #The following code answers the question: do we need to regenerate table1? If you need to update it, do so & save
+  stillNeedTable1<-TRUE
+  try({
+  load('last_default_inputs.RData') #won't work first time, but it's OK
+    if(all(bt==lastBt)&all(st==lastSt)){ #lastBt and lastSt are from the last time we generated table1, contained in the RData file we just loaded. If we're a match, then:
+        load('last_default_table1_&_xlim.RData')
+        stillNeedTable1<-FALSE
+        print2log("loaded table1...")
+    }
+  })
+  if(stillNeedTable1){ 
+    table1<- table_constructor()
+    lastBt<-bt
+    lastSt<-st
+    save(list=c('table1','risk_difference_list'),file='last_default_table1_&_xlim.RData')
+    save(list=c('lastBt','lastSt'),file='last_default_inputs.RData')
+    print2log("built table1...")
+    stillNeedTable1<-FALSE
+  }
+  ######
+
+  
+  ########
+  #For tracking how much we need to update things
   lastApplyValue <- 0 # need to put -1 here if we don't load table 1 beforehand
   totalCalls<-0 #a place keeper to watch when we cat to stderr
   #for use in uploading files:
