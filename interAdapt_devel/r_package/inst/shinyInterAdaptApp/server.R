@@ -45,7 +45,7 @@ subH01sanitize<-function(x){
 #first override last session/start new log
 #In final release, set "print2R" to FALSE
 cat(file='session_log.txt',paste(Sys.time(),'\n \n')) 
-print2log<-function(x,logFileName='session_log.txt',print2R=TRUE){ #takes a string as input
+print2log<-function(x,logFileName='session_log.txt',print2R=FALSE){ #takes a string as input
   if(print2R) print(x)
   cat(file=logFileName,paste(x,'\n'),append=TRUE)
 }
@@ -64,6 +64,15 @@ st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
 bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
 print2log("found code locally...")
 
+#If online, make sure the max time limit is not infinite!
+# (on the local version, it's OK for the time limit input max to be inf
+# but on the RStudio server this would crash things. The 
+# onRStudio variable lets us copy paste from the local version to the RStudio
+# version without having to adjust files by hand.
+if(onRStudioServer){
+  time_limit_ind<-which(bt[,1]=='time_limit')
+  bt[time_limit_ind,'max']<- min(90,bt[time_limit_ind,'max'])
+}
 
 print2log("...supplementary files found and loaded...")
 
@@ -105,7 +114,7 @@ shinyServer(function(input, output) {
   }
 
   #Functions must be defined in local env. as they call user specific objects
-  source("Adaptive_Group_Sequential_Design.R", local=TRUE)
+  source("Adaptive_Group_Sequential_Design.R", local=TRUE) #need local=TRUE for the functions to be loaded to the user-specific env.
 
   #####
   #process initial inputs from CSVs
