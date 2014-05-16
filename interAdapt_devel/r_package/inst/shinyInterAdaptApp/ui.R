@@ -31,18 +31,13 @@ pbreak<-HTML('<P CLASS=breakhere>')
 #then build lists of input sliders & boxes
 
 
-#Get the csv file either online or locally
-source("Adaptive_Group_Sequential_Design.R", local=TRUE)
-st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
-bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
+# Get the csv file either online or locally
+# bt and st are called in server.R, and so 
+# we don't need to call them again here
+# Currently, adjustments for whether we're on 
+# RStudio or not (with the onRStudioServer variable)
+# are also done in server.R
 readHelpTabHTML<- paste0(readLines('help_tab.html'),collapse='') #will be converted to a the welcome/help page for interAdapt
-cat("found code locally...", file=stderr())
-
-
-
-
-
-
 
 
 
