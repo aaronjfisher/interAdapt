@@ -256,6 +256,34 @@ upper_bound_treatment_effect_subpop_2 = 0.2,  # range (-1,1)
 
 CSV){
 
+
+
+#### check for invalid inputs
+
+
+#First check if all are in the range required by params.csv
+all_default_inputs <- read.csv(paste0(path.package("interAdapt"),"/csv/params.csv"), header=TRUE, as.is=TRUE)
+for(i in 1:dim(all_default_inputs)[1]){
+
+	var_value_i<-eval(parse(text=all_default_inputs[i,'inputId']))
+	#two warnings:
+	if( var_value_i>all_default_inputs[i,'max'])  {
+		assign(all_default_inputs[i,"inputId"],value=all_default_inputs[i,"max"])
+		warning(paste0(all_default_inputs[i,"inputId"], ' is outside the allowed range, and has been set to ',all_default_inputs[i,"max"]))
+	}
+	if( var_value_i<all_default_inputs[i,'min'])  {
+		assign(all_default_inputs[i,"inputId"],value=all_default_inputs[i,"min"])
+		warning(paste0(all_default_inputs[i,"inputId"], ' is outside the allowed range, and has been set to ',all_default_inputs[i,"min"]))
+	}
+}
+#Next check some variable specific requirements
+if(total_number_stages<last_stage_subpop_2_enrolled_AD){
+    last_stage_subpop_2_enrolled_AD<-total_number_stages
+    warning(paste0("The last stage subpopulation 2 is enrolled must be less than the total number of stages. Here the last stage in which subpopulation 2 is enrolled has been set to ",total_number_stages,", the total number of stages"))
+}
+
+
+
 #### Import user's csv files
 if (!missing(CSV)) {
     error <- 0
@@ -950,9 +978,7 @@ standard_H01_design_sample_sizes_and_boundaries_table()
 
 SS_Design_Per_Stage_Sample_Sizes_and_Boundaries$digits <- NULL
 
-setwd(path.package("interAdapt"))
-setwd("csv")
-inputIds <- read.csv("params.csv", header=TRUE, as.is=TRUE)[,"inputId"]
+inputIds <- read.csv(paste0(path.package("interAdapt"),"/csv/params.csv"), header=TRUE, as.is=TRUE)[,"inputId"]
 Input_Parameters <- mget(inputIds)
 names(Input_Parameters) <- inputIds
 
