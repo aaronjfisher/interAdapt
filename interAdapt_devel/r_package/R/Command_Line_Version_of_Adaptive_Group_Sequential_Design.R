@@ -83,7 +83,7 @@ NULL
 #' The number of participants enrolled in each stage of the standard group sequential design enrolling
 #' combined population (\code{SC}).
 #' 
-#' @param per_stage_sample_size_combined_SS
+#' @param per_stage_sample_size_SS
 #' The number of participants enrolled in each stage for standard group sequential design enrolling only
 #' subpopulation 1 (\code{SS}).
 #' 
@@ -97,10 +97,10 @@ NULL
 #' (\eqn{Z_{1,k}}) as defined in Section 1.4 (Fisher et al. 2014).
 #' 
 #' @param H0C_futility_boundary_constant_SC
-#' \code{H_0C} futility boundary proportionality constant for the standard design.
+#' \code{H_0C} futility boundary proportionality constant for the standard design always enrolling from the combined population.
 #' 
 #' @param H01_futility_boundary_constant_SS
-#' \code{H_01} futility boundary proportionality constant for the standard design.
+#' \code{H_01} futility boundary proportionality constant for the standard design only enrolling from subpopulation 1.
 #' 
 #' @param lower_bound_treatment_effect_subpop_2
 #' Lowest value to plot for treatment effect in subpopulation 2: Simulations
@@ -238,7 +238,7 @@ enrollment_rate_combined_population = 420,
 per_stage_sample_size_combined_SC = 90, #(Range: 0 to 1000)
 
 # Per stage sample size for standard design enrolling on subpopulation 1 
-per_stage_sample_size_combined_SS = 106, #(Range: 0 to 1000)
+per_stage_sample_size_SS = 106, #(Range: 0 to 1000)
 
 subpop_2_stop_boundary_constant_AD = 0, #(Range: -10 to 10)
 
@@ -680,7 +680,7 @@ standard_combined_population_df[counter_combined_population,] <- c(power_vec[1],
 overrun_df[counter_combined_population,2] <- 0
 counter_combined_population <- counter_combined_population +1
 
-power_vec <- get_power(design_type="standard",p1=1,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_standard_design_H01,subpop_1_futility_boundaries=subpop_1_futility_boundaries_standard_design_H01,subpop_2_futility_boundaries=subpop_2_futility_boundaries_standard_design_H01,n1=per_stage_sample_size_combined_SS,n2=0,e_AD_C=H01_efficacy_boundary_proportionality_constant_standard_design,e_AD_1=Inf,SNR_subpop_1=SNR_subpop_1,SNR_subpop_2=SNR_subpop_2,outcome_variance_subpop_1,outcome_variance_subpop_2)
+power_vec <- get_power(design_type="standard",p1=1,total_number_stages=total_number_stages,k=total_number_stages,futility_boundaries_standard_design_H01,subpop_1_futility_boundaries=subpop_1_futility_boundaries_standard_design_H01,subpop_2_futility_boundaries=subpop_2_futility_boundaries_standard_design_H01,n1=per_stage_sample_size_SS,n2=0,e_AD_C=H01_efficacy_boundary_proportionality_constant_standard_design,e_AD_1=Inf,SNR_subpop_1=SNR_subpop_1,SNR_subpop_2=SNR_subpop_2,outcome_variance_subpop_1,outcome_variance_subpop_2)
 standard_subpop_1_only_df[counter_subpop_1,] <- c(power_vec[1],power_vec[1]/(p1*enrollment_rate_combined_population),power_vec[2])
 overrun_df[counter_subpop_1,3] <- 0
 
@@ -907,7 +907,7 @@ H01_efficacy_boundaries <- H01_efficacy_boundary_proportionality_constant_standa
 H01_futility <- futility_boundaries_standard_design_H01 <-c(H01_futility_boundary_constant_SS*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),H01_efficacy_boundaries[total_number_stages])
 
 
-row1 <- c(per_stage_sample_size_combined_SS*(1:k))
+row1 <- c(per_stage_sample_size_SS*(1:k))
 
 H01_efficacy <-  H01_efficacy_boundaries
 
