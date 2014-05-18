@@ -9,8 +9,7 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
   time_limit = 45, total_number_stages = 5,
   last_stage_subpop_2_enrolled_AD = 3,
   enrollment_rate_combined_population = 420,
-  per_stage_sample_size_combined_SC = 90,
-  per_stage_sample_size_combined_SS = 106,
+  per_stage_sample_size_combined_SC = 90, per_stage_sample_size_SS = 106,
   subpop_2_stop_boundary_constant_AD = 0,
   H01_futility_boundary_constant_AD = 0,
   H0C_futility_boundary_constant_SC = -0.1,
@@ -106,7 +105,7 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
   sequential design enrolling combined population
   (\code{SC}).}
 
-  \item{per_stage_sample_size_combined_SS}{The number of
+  \item{per_stage_sample_size_SS}{The number of
   participants enrolled in each stage for standard group
   sequential design enrolling only subpopulation 1
   (\code{SS}).}
@@ -124,11 +123,12 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
 
   \item{H0C_futility_boundary_constant_SC}{\code{H_0C}
   futility boundary proportionality constant for the
-  standard design.}
+  standard design always enrolling from the combined
+  population.}
 
   \item{H01_futility_boundary_constant_SS}{\code{H_01}
   futility boundary proportionality constant for the
-  standard design.}
+  standard design only enrolling from subpopulation 1.}
 
   \item{lower_bound_treatment_effect_subpop_2}{Lowest value
   to plot for treatment effect in subpopulation 2:
@@ -197,18 +197,38 @@ print(o$SC[[1]])
 print(o$AD[[1]])
 
 #Plot decision rules
-par(mfrow=c(3,1))
+par(mfrow=c(1,3))
 matplot(t(o$SS[[1]][2:3,]),type='o',pch=1,main='Standard trial - subpop 1',xlab='stage',ylab='Z-statistic')
 matplot(t(o$SC[[1]][4:5,]),type='o',pch=1,main='Standard trial - combined pop',xlab='stage',ylab='Z-statistic')
+#Last plot is looking weird????!!!!
 matplot(t(o$AD[[1]][4:7,]),type='o',pch=1,main='Adaptive Enrollment',xlab='stage',ylab='Z-statistic')
 
 #Check performance
 o$performance[[1]]
 
-#Compare expected sample sizes over a range of treatment effects for subpop2
-par(mfrow=c(1,1))
-matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][c(2,7,10),]),type='l',lty=1,col=1:3,xlab='Subpop.2 Tx. Effect',ylab='Expected Sample Size')
-legend('topright',rownames(o$performance[[1]])[c(2,7,10)],col=1:3,lty=1)
+
+#Plot performance over a range of treatment effects for subpop2
+library(RColorBrewer)
+colb<-brewer.pal(5,'Dark2')
+par(mfrow=c(1,3))
+
+perform_names<-rownames(o$performance[[1]])
+
+p_ind<- grep('Power',perform_names)#index for parts of the table corresponding to power
+s_ind<- grep('Sample Size',perform_names)#index for parts of the table corresponding to sample size
+d_ind<- grep('DUR',perform_names)#index for parts of the table corresponding to trial duration
+
+
+matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][p_ind,]),type='l',lty=1,col=colb[1:length(p_ind)],xlab='Subpop.2 Tx. Effect',ylab='Power',main='Power')
+legend('topright',perform_names[p_ind],col=colb[1:length(p_ind)],lty=1)
+
+
+matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][s_ind,]),type='l',lty=1,col=colb[1:length(s_ind)],xlab='Subpop.2 Tx. Effect',ylab='Expected Sample Size',main='Expected Sample Size')
+legend('topright',perform_names[s_ind],col=colb[1:length(s_ind)],lty=1)
+
+
+matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][d_ind,]),type='l',lty=1,col=colb[1:length(d_ind)],xlab='Subpop.2 Tx. Effect',ylab="Expected Duration",main='Expected Duration')
+legend('topright',perform_names[d_ind],col=colb[1:length(d_ind)],lty=1)
 }
 \references{
 interAdapt -- An Interactive Tool for Designing and
