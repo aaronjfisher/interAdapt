@@ -15,13 +15,13 @@ NULL
 #' Generates decision rules for group
 #' sequential trial designs with adaptive enrollment criteria. Tables are
 #' also generated which compare the performance of these designs to the
-#' performance of standard group sequential designs.
+#' performance of standard group sequential designs. We use the notation \code{AD} to refer to the design with adaptive enrollment, \code{SC} to refer to a standard group sequential design enrolling from the combined population, and \code{SS} to refer to a standard group sequential design enrolling from only the subpopulation where there is greater prior evidence of a positive treatment effect. Further details are provided in (Fisher et al. 2014).
 #' 
 #' 
 #' 
 #' 
 #' @param p_1 The proportion of the population in subpopulation 1,
-#' which is the subpopulation having prior evidence of a stronger treatment effect.
+#' which is the subpopulation having stronger prior evidence of a positive treatment effect.
 #' 
 #' @param p_10 The probability of a successful outcome for subpopulation 1 under assignment
 #' to the control arm. This is used in estimating power and expected sample size.
@@ -31,7 +31,7 @@ NULL
 #' 
 #' @param p_11 The probability of a successful outcome for subpopulation 1 under assignment
 #' to the treatment arm. Note that the user does not specify the probability of success under treatment for subpopulation 2 (\eqn{p_2t}).
-#' Instead, \code{compute_design_performance} considers a range of possible values of \eqn{p_2t} (see the\code{lower_bound_treatment_effect_subpop_2} and \code{upper_bound_treatment_effect_subpop_2} arguments).
+#' Instead, \code{compute_design_performance} considers a range of possible values of \eqn{p_2t} (see the \code{lower_bound_treatment_effect_subpop_2} and \code{upper_bound_treatment_effect_subpop_2} arguments).
 #' 
 #' @param per_stage_sample_size_combined_AD The
 #' number of participants enrolled per stage in adaptive design while
@@ -44,43 +44,40 @@ NULL
 #' @param FWER The familywise Type I error rate (\eqn{\alpha}) for all designs (see Fisher et al. 2014).
 #' 
 #' @param FWER_H0C_proportion
-#' Proportion of \eqn{\alpha} allocated to \eqn{H_{0C}} for adaptive design. This is used to
+#' Proportion of \eqn{\alpha} allocated to \eqn{H_{0C}} for the adaptive design. This is used to
 #' construct efficacy boundaries for the adaptive design.
 #' 
-#' @param Delta this parameter is used as the exponent in defining the efficacy and
-#' futility boundaries as described (Fisher et al. 2014).
+#' @param Delta Used as the exponent in defining the efficacy and
+#' futility boundaries, as described (Fisher et al. 2014).
 #' 
 #' @param iter The number of simulated trials used to
 #' estimate the power, expected sample size, and expected trial duration.
 #' In each simulated trial, z-statistics are simulated from a multivariate normal
 #' distribution constructed from the input parameters.
-#' The more iterations, the more accurate the simulation results will be.
 #' 
 #' @param time_limit
 #' Time limit for simulation in seconds. If the simulation
 #' exceeds the time limit, calculations will stop and the user will get an
 #' error message ("reached CPU time limit"). See \code{\link[base]{setTimeLimit}}.
 #' To avoid this, the number of iterations (\code{iter}) can be reduced or
-#' the time limit increased.
+#' the time limit can be increased.
 #' 
 #' @param total_number_stages
 #' Total number of stages (\eqn{K}): The total number of stages, which is
 #' used in each design.  The maximum allowable number of stages is 20.
 #' 
 #' @param last_stage_subpop_2_enrolled_AD
-#' The last stage subpopulation 2 is enrolled, under the adaptive design (\eqn{k*}).
+#' The last stage subpopulation 2 is enrolled, under the adaptive design. We refer to this stage number as \eqn{k*}.
 #' 
 #' @param enrollment_rate_combined_population The assumed
 #' enrollment rate per year for the combined population.  This impacts the
-#' expected duration of the respective trial designs. Active enrollments from
+#' expected duration of each trial designs. Active enrollments from
 #' the two subpopulations are assumed to be independent.  The enrollment rates
-#' for subpopulations 1 and 2 are assumed proportional to their initial (and,
-#' hypothetically, subsequent) relative sizes, reflecting the reality that
-#' enrollment is likely to be slower for smaller subpopulations.
-#' This implies that each stage of the adaptive design up to and including stage \code{k*} takes the same amount of time to complete, regardless of whether or not enrollment stops for subpopulation 2.  Also, each stage after \code{k*} takes the same amount of time to complete. 
+#' for subpopulations 1 and 2 are assumed proportional, based on \code{p_1}.
+#' This implies that each stage of the adaptive design up to and including stage \code{k*} takes the same amount of time to complete, regardless of whether or not enrollment stops for subpopulation 2.  Each stage after \code{k*} will also take the same amount of time to complete. 
 #' 
 #' @param per_stage_sample_size_combined_SC
-#' The number of participants enrolled in each stage of the standard group sequential design enrolling
+#' The number of participants enrolled in each stage of the standard group sequential design enrolling the
 #' combined population (\code{SC}).
 #' 
 #' @param per_stage_sample_size_SS
@@ -89,33 +86,32 @@ NULL
 #' 
 #' @param subpop_2_stop_boundary_constant_AD
 #' Stopping boundary proportionality constant for subpopulation 2 enrollment
-#' for adaptive design.
+#' in the adaptive design.
 #' 
 #' @param H01_futility_boundary_constant_AD
-#' \eqn{H_{01}} futility boundary proportionality constant for the adaptive design. This is used to calculate the futility boundaries
+#' Futility boundary proportionality constant for \eqn{H_{01}} in the adaptive design. This is used to calculate the futility boundaries
 #' (\eqn{l_{1,k}}) for the z-statistics calculated in subpopulation 1
-#' (\eqn{Z_{1,k}}) as defined in Section 1.4 (Fisher et al. 2014).
+#' (\eqn{Z_{1,k}}) as defined in (Fisher et al. 2014).
 #' 
 #' @param H0C_futility_boundary_constant_SC
-#' \code{H_0C} futility boundary proportionality constant for the standard design always enrolling from the combined population.
+#' Futility boundary proportionality constant for eqn{H_{0C}} in the standard design always enrolling from the combined population.
 #' 
 #' @param H01_futility_boundary_constant_SS
-#' \code{H_01} futility boundary proportionality constant for the standard design only enrolling from subpopulation 1.
+#' Futility boundary proportionality constant for eqn{H_{01}} in the standard design only enrolling from subpopulation 1.
 #' 
 #' @param lower_bound_treatment_effect_subpop_2
-#' Lowest value to plot for treatment effect in subpopulation 2: Simulations
+#' Simulations
 #' are performed under a range of treatment effect sizes for
-#' subpopulation 2.  This parameter sets the lower bound for this range.
+#' subpopulation 2 (i.e. \code{p_{2t}-p_{2c}}).  This parameter sets the lower bound for this range.
 #' This effectively sets the lower bound for the probability of success under treatment for subpopulation 2 (\code{p_21}), since \code{p_20} is set
 #' by the user.
 #' 
 #' @param upper_bound_treatment_effect_subpop_2 Simulations
 #' are performed under a range of treatment effect sizes for
-#' subpopulation 2 (\code{p_{2t}-p_{2c}}). This parameter sets the upper bound for this range.
+#' subpopulation 2 (i.e. \code{p_{2t}-p_{2c}}). This parameter sets the upper bound for this range.
 #' 
 #' @param CSV
-#' A tabular csv-based alternative to the numerical parameters above.  The
-#' value can be a character vector or list of csv filenames with header.  The
+#' Rather than manually entering the arguments above, this argument allows for the arguments to be entered via a tabular csv file. The argument should contain a character vector or list of csv filenames. The
 #' table must minimally include the columns "inputId" and "value" (as in the
 #' \code{\link[interAdapt]{default_parameter_table}}).
 #' 
@@ -139,15 +135,15 @@ NULL
 #' @return
 #' A list with 5 components:
 #' 
-#' 		\item{performance_comparison}{Performance table}
-#' 		\item{AD_design}{efficacy and futility boundaries for the adaptive design}
-#' 		\item{SC_design}{efficacy and futility boundaries for the standard design}
-#' 		\item{SS_design}{efficacy and futility boundaries for the standard design, enrolling subpopulation 1 only}
+#' 		\item{performance_comparison}{A table comparing the performance of the three trials, in terms of power, expected sample size, and expected duration. See examples.}
+#' 		\item{AD_design}{efficacy and futility boundaries for a group sequential design with adaptive enrollment}
+#' 		\item{SC_design}{efficacy and futility boundaries for the standard groupt sequential design enrolling from the combined population}
+#' 		\item{SS_design}{efficacy and futility boundaries for the standard groupt sequential design enrolling subpopulation 1 only}
 #' 		\item{input_parameters}{list of parameters values}
 #' 
 #' 
 #' @references
-#' interAdapt -- An
+#' Aaron Fisher, Harris Jaffee, and Michael Rosenblum. interAdapt -- An
 #' Interactive Tool for Designing and Evaluating Randomized Trials with
 #' Adaptive Enrollment Criteria. Working Paper, 2014.
 #' http://arxiv.org/abs/1404.0734
@@ -224,8 +220,8 @@ p_11 = p_10 + 0.125,
 ## The user does not input the corresponding value for Subpopulation 2, since this quantity is varied (it is the quantity on the horizontal axis in the plots in the Performance section of the user interface)
 
 ## Adaptive Design Per-stage Sample Sizes
-per_stage_sample_size_combined_AD = 150, #(Range: 0 to 1000)
-per_stage_sample_size_subpop_1_AD = 311, #(Range: 0 to 1000)
+per_stage_sample_size_combined_AD = 280, #(Range: 0 to 1000)
+per_stage_sample_size_subpop_1_AD = 148, #(Range: 0 to 1000)
 
 ## Alpha allocation
 # Desired familywise type I error rate (one-sided) (Range: 0 to 1)
@@ -241,7 +237,7 @@ FWER_H0C_proportion = 0.09,
 # Group Sequential Boundary Parameter (exponent) (Range: -0.5 to 0.5)
 Delta = -0.5,
 # Number simulated trials used to compute power, expected sample size, and expected trial duration for plots and tables
-iter = 7000, # Range: 1 to 500,000
+iter = 10000, # Range: 1 to 500,000
 # Time limit for primary function 
 time_limit = 45, #(seconds, range from 5 to 60)
 # Number stages in trial design
@@ -255,10 +251,10 @@ last_stage_subpop_2_enrolled_AD = 3,  #(Range: 1 to total_number_stages)
 enrollment_rate_combined_population = 420,
 
 # Per stage sample size for standard design enrolling combined population
-per_stage_sample_size_combined_SC = 90, #(Range: 0 to 1000)
+per_stage_sample_size_combined_SC = 106, #(Range: 0 to 1000)
 
 # Per stage sample size for standard design enrolling on subpopulation 1 
-per_stage_sample_size_SS = 106, #(Range: 0 to 1000)
+per_stage_sample_size_SS = 100, #(Range: 0 to 1000)
 
 subpop_2_stop_boundary_constant_AD = 0, #(Range: -10 to 10)
 

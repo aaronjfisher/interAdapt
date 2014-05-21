@@ -3,13 +3,13 @@
 \title{Compute Design Performance}
 \usage{
 compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
-  p_11 = p_10 + 0.125, per_stage_sample_size_combined_AD = 150,
-  per_stage_sample_size_subpop_1_AD = 311, FWER = 0.025,
-  FWER_H0C_proportion = 0.09, Delta = -0.5, iter = 7000,
+  p_11 = p_10 + 0.125, per_stage_sample_size_combined_AD = 280,
+  per_stage_sample_size_subpop_1_AD = 148, FWER = 0.025,
+  FWER_H0C_proportion = 0.09, Delta = -0.5, iter = 10000,
   time_limit = 45, total_number_stages = 5,
   last_stage_subpop_2_enrolled_AD = 3,
   enrollment_rate_combined_population = 420,
-  per_stage_sample_size_combined_SC = 90, per_stage_sample_size_SS = 106,
+  per_stage_sample_size_combined_SC = 106, per_stage_sample_size_SS = 100,
   subpop_2_stop_boundary_constant_AD = 0,
   H01_futility_boundary_constant_AD = 0,
   H0C_futility_boundary_constant_SC = -0.1,
@@ -19,8 +19,8 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
 }
 \arguments{
   \item{p_1}{The proportion of the population in
-  subpopulation 1, which is the subpopulation having prior
-  evidence of a stronger treatment effect.}
+  subpopulation 1, which is the subpopulation having
+  stronger prior evidence of a positive treatment effect.}
 
   \item{p_10}{The probability of a successful outcome for
   subpopulation 1 under assignment to the control arm. This
@@ -35,8 +35,8 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
   Note that the user does not specify the probability of
   success under treatment for subpopulation 2 (\eqn{p_2t}).
   Instead, \code{compute_design_performance} considers a
-  range of possible values of \eqn{p_2t} (see
-  the\code{lower_bound_treatment_effect_subpop_2} and
+  range of possible values of \eqn{p_2t} (see the
+  \code{lower_bound_treatment_effect_subpop_2} and
   \code{upper_bound_treatment_effect_subpop_2} arguments).}
 
   \item{per_stage_sample_size_combined_AD}{The number of
@@ -51,21 +51,19 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
   (\eqn{\alpha}) for all designs (see Fisher et al. 2014).}
 
   \item{FWER_H0C_proportion}{Proportion of \eqn{\alpha}
-  allocated to \eqn{H_{0C}} for adaptive design. This is
-  used to construct efficacy boundaries for the adaptive
+  allocated to \eqn{H_{0C}} for the adaptive design. This
+  is used to construct efficacy boundaries for the adaptive
   design.}
 
-  \item{Delta}{this parameter is used as the exponent in
-  defining the efficacy and futility boundaries as
-  described (Fisher et al. 2014).}
+  \item{Delta}{Used as the exponent in defining the
+  efficacy and futility boundaries, as described (Fisher et
+  al. 2014).}
 
   \item{iter}{The number of simulated trials used to
   estimate the power, expected sample size, and expected
   trial duration. In each simulated trial, z-statistics are
   simulated from a multivariate normal distribution
-  constructed from the input parameters. The more
-  iterations, the more accurate the simulation results will
-  be.}
+  constructed from the input parameters.}
 
   \item{time_limit}{Time limit for simulation in seconds.
   If the simulation exceeds the time limit, calculations
@@ -73,7 +71,7 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
   ("reached CPU time limit"). See
   \code{\link[base]{setTimeLimit}}. To avoid this, the
   number of iterations (\code{iter}) can be reduced or the
-  time limit increased.}
+  time limit can be increased.}
 
   \item{total_number_stages}{Total number of stages
   (\eqn{K}): The total number of stages, which is used in
@@ -81,28 +79,25 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
   20.}
 
   \item{last_stage_subpop_2_enrolled_AD}{The last stage
-  subpopulation 2 is enrolled, under the adaptive design
-  (\eqn{k*}).}
+  subpopulation 2 is enrolled, under the adaptive design.
+  We refer to this stage number as \eqn{k*}.}
 
   \item{enrollment_rate_combined_population}{The assumed
   enrollment rate per year for the combined population.
-  This impacts the expected duration of the respective
-  trial designs. Active enrollments from the two
-  subpopulations are assumed to be independent.  The
-  enrollment rates for subpopulations 1 and 2 are assumed
-  proportional to their initial (and, hypothetically,
-  subsequent) relative sizes, reflecting the reality that
-  enrollment is likely to be slower for smaller
-  subpopulations. This implies that each stage of the
-  adaptive design up to and including stage \code{k*} takes
-  the same amount of time to complete, regardless of
-  whether or not enrollment stops for subpopulation 2.
-  Also, each stage after \code{k*} takes the same amount of
-  time to complete.}
+  This impacts the expected duration of each trial designs.
+  Active enrollments from the two subpopulations are
+  assumed to be independent.  The enrollment rates for
+  subpopulations 1 and 2 are assumed proportional, based on
+  \code{p_1}. This implies that each stage of the adaptive
+  design up to and including stage \code{k*} takes the same
+  amount of time to complete, regardless of whether or not
+  enrollment stops for subpopulation 2.  Each stage after
+  \code{k*} will also take the same amount of time to
+  complete.}
 
   \item{per_stage_sample_size_combined_SC}{The number of
   participants enrolled in each stage of the standard group
-  sequential design enrolling combined population
+  sequential design enrolling the combined population
   (\code{SC}).}
 
   \item{per_stage_sample_size_SS}{The number of
@@ -112,61 +107,72 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
 
   \item{subpop_2_stop_boundary_constant_AD}{Stopping
   boundary proportionality constant for subpopulation 2
-  enrollment for adaptive design.}
+  enrollment in the adaptive design.}
 
-  \item{H01_futility_boundary_constant_AD}{\eqn{H_{01}}
-  futility boundary proportionality constant for the
+  \item{H01_futility_boundary_constant_AD}{Futility
+  boundary proportionality constant for \eqn{H_{01}} in the
   adaptive design. This is used to calculate the futility
   boundaries (\eqn{l_{1,k}}) for the z-statistics
   calculated in subpopulation 1 (\eqn{Z_{1,k}}) as defined
-  in Section 1.4 (Fisher et al. 2014).}
+  in (Fisher et al. 2014).}
 
-  \item{H0C_futility_boundary_constant_SC}{\code{H_0C}
-  futility boundary proportionality constant for the
+  \item{H0C_futility_boundary_constant_SC}{Futility
+  boundary proportionality constant for eqn{H_{0C}} in the
   standard design always enrolling from the combined
   population.}
 
-  \item{H01_futility_boundary_constant_SS}{\code{H_01}
-  futility boundary proportionality constant for the
+  \item{H01_futility_boundary_constant_SS}{Futility
+  boundary proportionality constant for eqn{H_{01}} in the
   standard design only enrolling from subpopulation 1.}
 
-  \item{lower_bound_treatment_effect_subpop_2}{Lowest value
-  to plot for treatment effect in subpopulation 2:
-  Simulations are performed under a range of treatment
-  effect sizes for subpopulation 2.  This parameter sets
-  the lower bound for this range. This effectively sets the
-  lower bound for the probability of success under
-  treatment for subpopulation 2 (\code{p_21}), since
-  \code{p_20} is set by the user.}
+  \item{lower_bound_treatment_effect_subpop_2}{Simulations
+  are performed under a range of treatment effect sizes for
+  subpopulation 2 (i.e. \code{p_{2t}-p_{2c}}).  This
+  parameter sets the lower bound for this range. This
+  effectively sets the lower bound for the probability of
+  success under treatment for subpopulation 2
+  (\code{p_21}), since \code{p_20} is set by the user.}
 
   \item{upper_bound_treatment_effect_subpop_2}{Simulations
   are performed under a range of treatment effect sizes for
-  subpopulation 2 (\code{p_{2t}-p_{2c}}). This parameter
-  sets the upper bound for this range.}
+  subpopulation 2 (i.e. \code{p_{2t}-p_{2c}}). This
+  parameter sets the upper bound for this range.}
 
-  \item{CSV}{A tabular csv-based alternative to the
-  numerical parameters above.  The value can be a character
-  vector or list of csv filenames with header.  The table
-  must minimally include the columns "inputId" and "value"
-  (as in the
+  \item{CSV}{Rather than manually entering the arguments
+  above, this argument allows for the arguments to be
+  entered via a tabular csv file. The argument should
+  contain a character vector or list of csv filenames. The
+  table must minimally include the columns "inputId" and
+  "value" (as in the
   \code{\link[interAdapt]{default_parameter_table}}).}
 }
 \value{
 A list with 5 components:
 
-\item{performance_comparison}{Performance table}
-\item{AD_design}{efficacy and futility boundaries for the
-adaptive design} \item{SC_design}{efficacy and futility
-boundaries for the standard design}
-\item{SS_design}{efficacy and futility boundaries for the
-standard design, enrolling subpopulation 1 only}
+\item{performance_comparison}{A table comparing the
+performance of the three trials, in terms of power,
+expected sample size, and expected duration. See examples.}
+\item{AD_design}{efficacy and futility boundaries for a
+group sequential design with adaptive enrollment}
+\item{SC_design}{efficacy and futility boundaries for the
+standard groupt sequential design enrolling from the
+combined population} \item{SS_design}{efficacy and futility
+boundaries for the standard groupt sequential design
+enrolling subpopulation 1 only}
 \item{input_parameters}{list of parameters values}
 }
 \description{
 Generates decision rules for group sequential trial designs
 with adaptive enrollment criteria. Tables are also
 generated which compare the performance of these designs to
-the performance of standard group sequential designs.
+the performance of standard group sequential designs. We
+use the notation \code{AD} to refer to the design with
+adaptive enrollment, \code{SC} to refer to a standard group
+sequential design enrolling from the combined population,
+and \code{SS} to refer to a standard group sequential
+design enrolling from only the subpopulation where there is
+greater prior evidence of a positive treatment effect.
+Further details are provided in (Fisher et al. 2014).
 }
 \details{
 This function is meant to be applied when there is prior
@@ -231,6 +237,7 @@ matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][d_ind,]),type='l',lty=1
 legend('topright',perform_names[d_ind],col=colb[1:length(d_ind)],lty=1)
 }
 \references{
+Aaron Fisher, Harris Jaffee, and Michael Rosenblum.
 interAdapt -- An Interactive Tool for Designing and
 Evaluating Randomized Trials with Adaptive Enrollment
 Criteria. Working Paper, 2014.
