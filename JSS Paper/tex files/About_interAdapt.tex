@@ -5,6 +5,7 @@
 \usepackage{upquote} %allows the ' symbol to be copy pasted from verbatim into code windows
 \usepackage{setspace}
 \usepackage{moreverb}
+\usepackage{natbib}
 \usepackage[mathletters]{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage[a4paper]{geometry}
@@ -14,18 +15,18 @@
 
 \newcommand{\mat}[1]{\begin{bmatrix} #1 \end{bmatrix}}
 \newcommand{\htx}[2]{\hspace{ #1 cm} \text{ #2 } }
-\newcommand{\es}[1]{\begin{equation*}\begin{split} #1 \end{split} \end{equation*}} % or use es+tab with latex in sublime text 2 with your other snippet
+\newcommand{\es}[1]{\begin{equation*}\begin{split} #1 \end{split} \end{equation*}} 
 \newcommand{\vt}[1]{\begin{verbatimtab} #1 \end{verbatimtab}}
-\newcommand{\xbt}{$\bar{X}_n$} %\xb in text. %note, in the snippet file we need to add extra \ to escape the dollar sign, else it gets confused with dollar-sign-zero below!
-\newcommand{\xb}{\bar{X}_n} %\xb in math
-\newcommand{\s}{\sigma} %\in math
-\newcommand{\ra}{\rightarrow} %\in math
-\newcommand{\inv}{^{-1}} %\in math
-\newcommand{\sitn}{\sum_{i=1}^n } %in math
+\newcommand{\xbt}{$\bar{X}_n$} 
+\newcommand{\xb}{\bar{X}_n}
+\newcommand{\s}{\sigma}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\inv}{^{-1}}
+\newcommand{\sitn}{\sum_{i=1}^n }
 \newcommand{\snti}{\sum_{n=1}^\infty}
-\newcommand{\sjtn}[1]{\sum_{#1=1}^{n} } %in 
-\newcommand{\sntk}[1]{\sum_{n=1}^{#1} } %in math
-\newcommand{\siid}{\sim_{iid} } %in math
+\newcommand{\sjtn}[1]{\sum_{#1=1}^{n} }
+\newcommand{\sntk}[1]{\sum_{n=1}^{#1} }
+\newcommand{\siid}{\sim_{iid} }
 
 
 
@@ -51,8 +52,8 @@
 We consider the problem of designing a randomized trial when there is prior evidence that the experimental treatment may be more effective for certain groups of participants, such as those with a certain biomarker or risk score at baseline. 
 Randomized trial designs have been proposed that dynamically adapt enrollment criteria based on accrued data, with the goal of learning if the treatment benefits the overall population, only a certain subpopulation, or neither. We introduce the \pkg{interAdapt} software tool, a  \pkg{shiny} application which provides a user friendly interface for constructing and evaluating certain adaptive trial designs. %!!! new
  These designs are automatically compared to standard (non-adaptive) designs in terms of the following performance criteria:  power, sample size, and trial duration.
- \pkg{interAdapt} is open-source and cross-platform, and is the first to implement the group sequential, adaptive enrichment designs of \citep{Rosenblum2013AdaptMISTIE}. 
 
+ \pkg{interAdapt} is open-source and cross-platform, and is the first to implement the group sequential, adaptive enrichment designs of \citep{Rosenblum2013AdaptMISTIE}.
 }
 
 \Keywords{adaptive design, adaptive enrollment, group sequential design, shiny application}
@@ -60,39 +61,9 @@ Randomized trial designs have been proposed that dynamically adapt enrollment cr
 \begin{document}
 \maketitle
 
-%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%
-% After making changes to this file:
-
-% *Final error check on the software, once it's all put together. 
-% *Once we have the final draft of the paper, we need to update the Rmd files that generate the knitr reports. Then we can put fixed versions of the R files on the Spark server.
-	% For how to update spark, see:
-		%/Users/aaronfisher/Documents/JH/Michael - Shiny App /new_gui/EAGLE Repo/eagle_gui/glimmer files/notes_on_updating_RStudio_webserver_files.rtf
-	% Note on updating glimmer/RStudio webserver files - change boxTable.csv so that the time limit for the simulations (CPU time limit) is 90 (sec)
-% *Also update the interAdapt github repo with new code, and put a new version of this pdf on there.
-% *version control files are in the main directory of the interAdapt github repo
 
 
 
-% Notes on converting this file to the shiny Rmd report file.
-% skip \iffalse... \fi comments
-% Generally, you can skip the sections leading up to the formal description of the problem. You'll need to update this thing subsection by subsection though. Take special care in the test statistics section, as this requires you to split up the definition of standard errors.
-% When copy pasting to Rmd, you need to take out  \htx, \item & \subitem, ^* → ^\star. \sections to # (actually don't change these, just paste around them in the Rmd file, also no \label), change ``quoted item'' to ''quoted item''
-% \pkg{interAdapt} -> *interAdapt*; \progLang{R} -> *R*. \pkg and \progLang in general
-% \url{}
-% \Prob
-% change \ref to labels
-% \lr{} and begin equation has been replaced (the 2nd was replaced with \[ \].
-%copy .bib file to interAdapt_noJSScode.bib, and find remove \pkg{...}
-% replace \citep with `r citep(bibFile[["JennisonTurnbullBook"]])`
-%in multi line eq's, can't start a line with "-" (minus sign)
-% Also, I don't think we can do multi-line equations... Now I have them stuck on one line.
-%Comments will no longer be commented out!
-%Double check citations to make sure they work and that bib files are the same.
-
-%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%
 
 
 
@@ -109,16 +80,15 @@ The software can either be run locally as an \proglang{R} package, or accessed o
 
 
 To demonstrate our software, we consider the problem of 
-%The motivating example for our work comes from the
  planning a Phase III trial for a new surgical treatment of stroke, which is considered by \cite{Rosenblum2013AdaptMISTIE}.
 The new treatment is  called Minimally-Invasive Surgery Plus rt-PA for Intracerebral Hemorrhage (MISTIE), and is described in detail by \cite{MISTIE_prelim2008}. 
 Previous trials had almost exclusively enrolled participants with little or no intraventricular hemorrhage (IVH) at baseline (referred to as small IVH participants).
 However, it was conjectured that the treatment may also benefit  participants with large IVH volume at baseline.  
 The goal of the Phase III trial being planned was to determine whether MISTIE is effective for the combined population of those with small or large IVH, and, if not, to determine whether MISTIE is effective for the small IVH population (for whom there was greater prior evidence). A  standard trial design  may be inefficient at simultaneously answering these questions.
-An alternative is to use an adaptive trial design that  first recruits from the combined population, and then decides whether to restrict enrollment based on results from interim  analyses. %Comparable standard designs would either enroll all , or would restrict to enrolling only participants with small IVH.
+An alternative is to use an adaptive trial design that  first recruits from the combined population, and then decides whether to restrict enrollment based on results from interim  analyses. 
 Though we focus on this stroke trial application throughout, our software tool can be applied in many disease areas.
 
-%Need to use \textsf{interAdapt} so that the period isn't an extra space away.
+
 In Section \ref{sec:problemDescription}, we  formally define the hypothesis testing problem to be addressed by different trial designs. In Section \ref{ADDPLAN}, we compare our software to the most similar, currently available software, AptivSolutions ADDPLAN PE (Participant Enrichment), and the \pkg{asd} \proglang{R} package. 
 In Section \ref{sec:running-interAdapt}, we describe how to install \pkg{interAdapt} on a personal computer, and how to access it online through a web browser. Section \ref{sec:UI} describes the inputs available when using \textsf{interAdapt}, and discusses the interpretation of the application's output. In Section \ref{sec:example}, we present an example demonstrating how an adaptive design is created and analyzed with \textsf{interAdapt}. 
 
@@ -163,8 +133,6 @@ We define our two null hypotheses, respectively, as
 
 \pkg{interAdapt} compares different designs for testing these null hypotheses. 
 An adaptive design testing both null hypotheses (denoted $AD$) is compared to two standard designs. The first standard design, denoted $SC$, enrolls the combined population and only tests $H_{0C}$. The second standard design, denoted $SS$, only enrolls subpopulation 1 and tests $H_{01}$.
-%and to a standard design testing only $H_{01}$. 
-%We refer to the adaptive design as $AD$, and refer to these two standard designs as $SC$ and $SS$, respectively. 
 All three trial designs consist of $K$ stages; the decision to entirely stop the trial early can be made at the end of any stage, based on a preplanned rule. The trials differ in that $SC$ and $SS$ never change their enrollment criteria, while $AD$ may switch from enrolling the combined population  to enrolling only participants from subpopulation $1$.
 
 The standard designs discussed here are not identical to those discussed in section 6.1 of \citep{Rosenblum2013AdaptMISTIE}, which test both hypotheses simultaneously. Implementing standard designs such as those discussed in \citep{Rosenblum2013AdaptMISTIE} into the \pkg{interAdapt} software is an area of future research.
@@ -202,7 +170,8 @@ The term in square brackets is the difference in sample means between the treatm
 Let $Z_{1,k}$ and $Z_{2,k}$ denote analogous z-statistics restricted to participants in subpopulation $1$ and subpopulation $2$, respectively. These are formally defined in
 \citep{Rosenblum2013AdaptMISTIE}.
 
-\iffalse
+%Previous version of decision rules.
+\iffalse 
 The z-statistic for subpopulation 1 can be written as follows, where $A_{i,k}$ is the indicator that the $i ^{th}$ subject recruited in stage $k$ is in subpopulation $1$:
 \[\begin{split}
 Z_{1,k}&=\left[
@@ -221,7 +190,7 @@ Z_{1,k}&=\left[
 \right\rbrace ^{-1/2}
 \end{split}\]
 The z-statistic $Z_{2,k}$ is similar to the above, with each occurrence of $A_{i,k'}$ replaced by $(1-A_{i,k'})$, $p_{1c}$ replaced by $p_{2c}$, and $p_{1t}$ replaced by $p_{2t}$.
-The decision rules defined below involve stopping boundaries based on the z-statistics observed at the end of each stage. %$$(Z_{C,1},Z_{C,2},...Z_{C,K})$, $(Z_{1,1},Z_{1,2},...Z_{1,K})$, and $(Z_{2,1},Z_{2,2},...Z_{2,K})$. 
+The decision rules defined below involve stopping boundaries based on the z-statistics observed at the end of each stage. 
 \fi
 
 
@@ -584,7 +553,7 @@ Current limitations of the software include that the outcome is assumed to be bi
 This research was supported by U.S. National Institute of Neurological Disorders and Stroke (grant numbers 5R01 NS046309-07 and 5U01 NS062851-04), the U.S. Food and Drug Administration through the ``Partnership in Applied Comparative Effectiveness Science,'' (contract HHSF2232010000072C), and the National Institute of Environmental Health Sciences (grant number T32ES012871). This publication's contents are solely the responsibility of the authors and do not necessarily represent the official views of the above agencies.
 
 
-
+%\bibliographystyle{plainnat}
 \bibliography{interAdapt} 
 
 
