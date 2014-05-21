@@ -56,13 +56,10 @@
    URL: \url{http://people.csail.mit.edu/mrosenblum/}
 }
 
-
 \Abstract{
-
 We consider the problem of designing a randomized trial when there is prior evidence that the experimental treatment may be more effective for certain groups of participants, such as those with a certain biomarker or risk score at baseline. 
-Randomized trial designs have been proposed that dynamically adapt enrollment criteria based on accrued data, with the goal of learning if the treatment benefits the overall population, only a certain subpopulation, or neither. We introduce the \pkg{interAdapt} software tool, a  \pkg{shiny} application which provides a user friendly interface for constructing and evaluating certain adaptive trial designs. %!!! new
- These designs are automatically compared to standard (non-adaptive) designs in terms of the following performance criteria:  power, sample size, and trial duration.
-
+Randomized trial designs have been proposed that dynamically adapt enrollment criteria based on accrued data, with the goal of learning if the treatment benefits the overall population, only a certain subpopulation, or neither. We introduce the \pkg{interAdapt} software tool, an \proglang{R} package and \pkg{shiny} application which provides a user friendly interface for constructing and evaluating certain adaptive trial designs. 
+ These designs are automatically compared to standard (non-adaptive) designs in terms of the following performance criteria:  power, sample size, and trial duration. 
  \pkg{interAdapt} is open-source and cross-platform, and is the first to implement the group sequential, adaptive enrichment designs of \citep{Rosenblum2013AdaptMISTIE}.
 }
 
@@ -84,8 +81,9 @@ We focus on the  class of designs introduced by \cite{Rosenblum2013AdaptMISTIE},
 These are contrasted with ``standard designs,'' 
 defined to  be group sequential designs where the enrollment criteria cannot be changed during the trial (except that the entire trial may be stopped early for efficacy or futility). 
 
-We introduce the \pkg{interAdapt} software tool, a densely featured \pkg{shiny} application which provides a user-friendly interface for exploring certain types of adaptive enrichment designs, and for comparing these to standard designs. %!!!new
-The software can either be run locally as an \proglang{R} package, or accessed online through a web browser. 
+We introduce the \pkg{interAdapt} software tool, a densely featured \pkg{shiny} application which provides a user-friendly interface for exploring certain types of adaptive enrichment designs, and for comparing these to standard designs.
+The \pkg{shiny} application can be either accessed online through a web browser, or run locally as an \proglang{R} package. Users can also access the core functionality of \pkg{interAdapt} via the \proglang{R} command line.
+
 \pkg{interAdapt} is designed to be used by statisticians and clinical investigators to plan randomized trials. The software provides information that can help users determine if certain adaptive designs offer tangible benefits compared to standard designs, in the context of their specific trial goals and constraints. Calculations typically require less than 30 seconds on a standard commercial laptop. Several user inputs are available to allow the user to describe the context of his/her trial. Alternatively, users can upload data from previous studies, and \pkg{interAdapt} will automatically compute the relevant parameters for the trial being planned. Once entered, the full set of input parameters can be saved to the user's computer for use in future sessions. Results of the design comparisons can be immediately downloaded in the form of either csv-tables, or printable, html-based reports.
 
 
@@ -361,7 +359,7 @@ install_github(username='aaronjfisher',repo='interAdapt',subdir='r_package')
 \end{Code}
 \vspace{5 mm}
 
-Once \pkg{interAdapt} has been installed, the application can be run without an internet connection by the opening the \proglang{R} Console and typing
+Once \pkg{interAdapt} has been installed, the \pkg{shiny} application can be run without an internet connection by the opening the \proglang{R} Console and typing
 
 \vspace{5 mm}
 \begin{Code}
@@ -371,6 +369,8 @@ runInterAdapt()
 \vspace{5 mm}
 
 
+The same calculations can be done directly in the \proglang{R} console, using the \code{compute_design_performance} function. Further details are provided in the package documentation (i.e.\\
+\code{help(package=interAdapt)}).
 
 
 \section{User interface}
