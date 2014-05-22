@@ -27,17 +27,13 @@ my_headerPanel <- function (title, windowTitle = title, h=h3)
 pbreak<-HTML('<P CLASS=breakhere>')
 
 
-#Load csv's (sliderTable & boxTable) with info about the input sliders & boxes
-#then build lists of input sliders & boxes
 
-
-# Get the csv file either online or locally
 # bt and st are called in server.R, and so 
 # we don't need to call them again here
-# Currently, adjustments for whether we're on 
+# Adjustments for whether we're on 
 # RStudio or not (with the onRStudioServer variable)
 # are also done in server.R
-readHelpTabHTML<- paste0(readLines('help_tab.html'),collapse='') #will be converted to a the welcome/help page for interAdapt
+readHelpTabHTML<- paste0(readLines('help_tab.html'),collapse='') #will be converted to a the welcome (help) page for interAdapt
 
 
 
@@ -101,17 +97,16 @@ shinyUI(pageWithSidebar(
           ),
 
         #INTERACTIVE MODE ONLY IF JUST SLIDERS
-          #Note interactive mode is auto-disabled if you're not in the "just sliders" view
+          #Note interactive mode is auto-disabled if you're not in the basic parameters view
         conditionalPanel(condition= "input.Which_params== '1'",
           selectInput("Batch", "", c("Batch mode" = "1",
                 "Interactive mode" = "2"))
         ),
         #BASIC SLIDERS
         conditionalPanel(condition = "input.Which_params == '1' || input.Which_params == '3'",
-          #show apply button if you're in batch mode, or showing all inputs and batch mode is enforced
+          #show apply button if you're in batch mode, or if we're showing all inputs and batch mode is enforced
           conditionalPanel(condition='input.Batch== "1" || input.Which_params== "3" ',
             actionButton("Parameters1", "Apply")),
-          #uiOutput('actionButton'),
           br(), br(),
           uiOutput('fullSliders')
         ),
@@ -119,7 +114,6 @@ shinyUI(pageWithSidebar(
         conditionalPanel(condition = "input.Which_params == '2' || input.Which_params == '3'",
           #always show apply button
           actionButton("Parameters2", "Apply"),
-          #uiOutput('actionButton'),
           br(), br(),
           uiOutput('fullBoxes'))
   ),
