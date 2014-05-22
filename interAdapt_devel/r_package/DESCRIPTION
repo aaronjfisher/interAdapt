@@ -13,6 +13,6 @@ Imports:
     mvtnorm,
     knitr
 Suggests:
-	RColorBrewer
+    RColorBrewer
 License: GPL-2
 LazyData: true

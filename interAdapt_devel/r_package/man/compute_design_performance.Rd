@@ -40,20 +40,21 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
   \code{upper_bound_treatment_effect_subpop_2} arguments).}
 
   \item{per_stage_sample_size_combined_AD}{The number of
-  participants enrolled per stage in adaptive design while
-  both subpopulations are being enrolled.}
+  participants enrolled per stage in the adaptive design
+  while both subpopulations are being enrolled.}
 
   \item{per_stage_sample_size_subpop_1_AD}{The number of
-  participants required for each stage in adaptive design
-  after enrollment for subpopulation 2 has been stopped.}
+  participants required for each stage in the adaptive
+  design after enrollment for subpopulation 2 has been
+  stopped.}
 
   \item{FWER}{The familywise Type I error rate
   (\eqn{\alpha}) for all designs (see Fisher et al. 2014).}
 
   \item{FWER_H0C_proportion}{Proportion of \eqn{\alpha}
-  allocated to \eqn{H_{0C}} for the adaptive design. This
-  is used to construct efficacy boundaries for the adaptive
-  design.}
+  allocated to \eqn{H_{0C}} for the adaptive design. Here,
+  \eqn{H_{0C}} refers to the null hypothesis of no
+  treatment effect in the combined population.}
 
   \item{Delta}{Used as the exponent in defining the
   efficacy and futility boundaries, as described (Fisher et
@@ -61,9 +62,7 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
 
   \item{iter}{The number of simulated trials used to
   estimate the power, expected sample size, and expected
-  trial duration. In each simulated trial, z-statistics are
-  simulated from a multivariate normal distribution
-  constructed from the input parameters.}
+  trial duration.}
 
   \item{time_limit}{Time limit for simulation in seconds.
   If the simulation exceeds the time limit, calculations
@@ -73,10 +72,9 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
   number of iterations (\code{iter}) can be reduced or the
   time limit can be increased.}
 
-  \item{total_number_stages}{Total number of stages
-  (\eqn{K}): The total number of stages, which is used in
-  each design.  The maximum allowable number of stages is
-  20.}
+  \item{total_number_stages}{Total number of stages used in
+  each design (\eqn{K}).  The maximum allowable number of
+  stages is 20.}
 
   \item{last_stage_subpop_2_enrolled_AD}{The last stage
   subpopulation 2 is enrolled, under the adaptive design.
@@ -117,12 +115,12 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
   in (Fisher et al. 2014).}
 
   \item{H0C_futility_boundary_constant_SC}{Futility
-  boundary proportionality constant for eqn{H_{0C}} in the
+  boundary proportionality constant for \eqn{H_{0C}} in the
   standard design always enrolling from the combined
   population.}
 
   \item{H01_futility_boundary_constant_SS}{Futility
-  boundary proportionality constant for eqn{H_{01}} in the
+  boundary proportionality constant for \eqn{H_{01}} in the
   standard design only enrolling from subpopulation 1.}
 
   \item{lower_bound_treatment_effect_subpop_2}{Simulations
@@ -139,11 +137,11 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
   parameter sets the upper bound for this range.}
 
   \item{CSV}{Rather than manually entering the arguments
-  above, this argument allows for the arguments to be
-  entered via a tabular csv file. The argument should
-  contain a character vector or list of csv filenames. The
-  table must minimally include the columns "inputId" and
-  "value" (as in the
+  above, this allows for the arguments to be entered via a
+  tabular csv file. The \code{CSV} argument should contain
+  a character vector or list of csv filenames. The table
+  must minimally include the columns "inputId" and "value"
+  (as in the
   \code{\link[interAdapt]{default_parameter_table}}).}
 }
 \value{
@@ -152,14 +150,14 @@ A list with 5 components:
 \item{performance_comparison}{A table comparing the
 performance of the three trials, in terms of power,
 expected sample size, and expected duration. See examples.}
-\item{AD_design}{efficacy and futility boundaries for a
+\item{AD_design}{Efficacy and futility boundaries for the
 group sequential design with adaptive enrollment}
-\item{SC_design}{efficacy and futility boundaries for the
-standard groupt sequential design enrolling from the
-combined population} \item{SS_design}{efficacy and futility
-boundaries for the standard groupt sequential design
+\item{SC_design}{Efficacy and futility boundaries for the
+standard group sequential design enrolling from the
+combined population} \item{SS_design}{Efficacy and futility
+boundaries for the standard group sequential design
 enrolling subpopulation 1 only}
-\item{input_parameters}{list of parameters values}
+\item{input_parameters}{List of input argument values}
 }
 \description{
 Generates decision rules for group sequential trial designs
@@ -184,12 +182,12 @@ subpopulation based on interim analyses of whether each
 subpopulation is benefiting. In order for the type I error
 and the power of the trial to be calculable, the decision
 rules for changing enrollment must be set before the trial
-starts. The function generates decision rules for group
+starts. This function generates decision rules for group
 sequential trial designs with adaptive enrollment criteria,
 and compares the performance of these designs against
-standard group sequential designs. Performance is compared
-in terms of power, expected sample size, and expected trial
-duration.
+standard group sequential designs with fixed enrollment
+criteria. Performance is compared in terms of power,
+expected sample size, and expected trial duration.
 }
 \examples{
 #Store function output
@@ -206,7 +204,6 @@ print(o$AD[[1]])
 par(mfrow=c(1,3))
 matplot(t(o$SS[[1]][2:3,]),type='o',pch=1,main='Standard trial - subpop 1',xlab='stage',ylab='Z-statistic')
 matplot(t(o$SC[[1]][4:5,]),type='o',pch=1,main='Standard trial - combined pop',xlab='stage',ylab='Z-statistic')
-#Last plot is looking weird????!!!!
 matplot(t(o$AD[[1]][4:7,]),type='o',pch=1,main='Adaptive Enrollment',xlab='stage',ylab='Z-statistic')
 
 #Check performance
