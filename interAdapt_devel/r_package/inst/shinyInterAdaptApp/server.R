@@ -142,16 +142,44 @@ shinyServer(function(input, output) {
   try({
   load('last_default_inputs.RData') #This may fail the first time the app is run.
     if(all(bt==lastBt)&all(st==lastSt)){ #lastBt and lastSt are from the last time we generated table1, and are contained in last_default_inputsR.Data. If we're a match, then:
-        load('last_default_table1_&_xlim.RData')
+        load('last_default_table1_&_assigned_vars.RData')
         stillNeedTable1<-FALSE
         print2log("loaded table1...")
     }
   })
   if(stillNeedTable1){ 
+    
+    #these variables are all assigned via <<- in table_constructor(). 
+    #we define them here so that their value is stored in the local env. when
+    #we call table_constructor, next.
+
+    futility_boundaries_standard_design_H0C<-
+    futility_boundaries_standard_design_H01<-
+    H0C_efficacy_boundary_proportionality_constant_adaptive_design<-
+    H01_efficacy_boundary_proportionality_constant_adaptive_design<-
+    H0C_efficacy_boundary_proportionality_constant_standard_design<-
+    H01_efficacy_boundary_proportionality_constant_standard_design<-
+    subpop_1_efficacy_boundaries_adaptive_design<-
+    subpopulation_2_stopping_boundaries_adaptive_design<-
+    subpop_1_futility_boundaries_adaptive_design<-
+    risk_difference_list<-NULL
+
     table1<- table_constructor()
     lastBt<-bt
     lastSt<-st
-    save(list=c('table1','risk_difference_list'),file='last_default_table1_&_xlim.RData')
+    save(list=c('table1',
+        'futility_boundaries_standard_design_H0C',
+        'futility_boundaries_standard_design_H01',
+        'H0C_efficacy_boundary_proportionality_constant_adaptive_design',
+        'H01_efficacy_boundary_proportionality_constant_adaptive_design',
+        'H0C_efficacy_boundary_proportionality_constant_standard_design',
+        'H01_efficacy_boundary_proportionality_constant_standard_design',
+        'subpop_1_efficacy_boundaries_adaptive_design',
+        'subpopulation_2_stopping_boundaries_adaptive_design',
+        'subpop_1_futility_boundaries_adaptive_design',
+        'risk_difference_list'),
+        file='last_default_table1_&_assigned_vars.RData')
+
     save(list=c('lastBt','lastSt'),file='last_default_inputs.RData')
     print2log("built table1...")
     stillNeedTable1<-FALSE
