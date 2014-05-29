@@ -68,7 +68,7 @@ NULL
 #' 
 #' @param enrollment_rate_combined_population The assumed
 #' enrollment rate per year for the combined population.  This impacts the
-#' expected duration of each trial designs. Active enrollments from
+#' expected duration of each trial design. Active enrollments from
 #' the two subpopulations are assumed to be independent.  The enrollment rates
 #' for subpopulations 1 and 2 are assumed proportional, based on \code{p_1}.
 #' This implies that each stage of the adaptive design up to and including stage \code{k*} takes the same amount of time to complete, regardless of whether or not enrollment stops for subpopulation 2.  Each stage after \code{k*} will also take the same amount of time to complete. 

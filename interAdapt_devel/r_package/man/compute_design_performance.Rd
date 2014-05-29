@@ -82,7 +82,7 @@ compute_design_performance(p_1 = 0.33, p_10 = 0.25, p_20 = 0.2,
 
   \item{enrollment_rate_combined_population}{The assumed
   enrollment rate per year for the combined population.
-  This impacts the expected duration of each trial designs.
+  This impacts the expected duration of each trial design.
   Active enrollments from the two subpopulations are
   assumed to be independent.  The enrollment rates for
   subpopulations 1 and 2 are assumed proportional, based on
