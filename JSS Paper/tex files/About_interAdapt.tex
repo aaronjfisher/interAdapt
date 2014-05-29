@@ -81,10 +81,9 @@ We focus on the  class of designs introduced by \cite{Rosenblum2013AdaptMISTIE},
 These are contrasted with ``standard designs,'' 
 defined to  be group sequential designs where the enrollment criteria cannot be changed during the trial (except that the entire trial may be stopped early for efficacy or futility). 
 
-We introduce the \pkg{interAdapt} software tool, which includes a densely featured \pkg{shiny} application providing a user-friendly interface for exploring certain types of adaptive enrichment designs, and for comparing these to standard designs.
-The \pkg{shiny} application can be either accessed online through a web browser, or run locally as an \proglang{R} package. Users can also access the core functionality of \pkg{interAdapt} via the \proglang{R} command line.
+We introduce the \pkg{interAdapt} \proglang{R} package, a user friendly set of tools for exploring certain types of adaptive enrichment designs. The package contains a densely featured \pkg{shiny} application, ideal for users with little to no \proglang{R} programming experience, as well as a function allowing access to the core functionality of the \pkg{shiny} application directly in the \proglang{R} console. The \pkg{shiny} application is also hosted on the RStudio webserver, and can be accessed online without installing the \proglang{R} programming language.
 
-\pkg{interAdapt} is designed to be used by statisticians and clinical investigators to plan randomized trials. The software provides information that can help users determine if certain adaptive designs offer tangible benefits compared to standard designs, in the context of their specific trial goals and constraints. Calculations typically require less than 30 seconds on a standard commercial laptop. Several user inputs are available to allow the user to describe the context of his/her trial. Alternatively, users can upload data from previous studies, and \pkg{interAdapt} will automatically compute the relevant parameters for the trial being planned. Once entered, the full set of input parameters can be saved to the user's computer for use in future sessions. Results of the design comparisons can be immediately downloaded in the form of either csv-tables, or printable, html-based reports.
+The \pkg{interAdapt} \pkg{shiny} application is designed to be used by statisticians and clinical investigators to plan randomized trials. The application provides information that can help users determine if certain adaptive designs offer tangible benefits compared to standard designs, in the context of their specific trial goals and constraints. Calculations typically require less than 30 seconds on a standard commercial laptop. Several user inputs are available to allow the user to describe the context of his/her trial. Alternatively, users can upload data from previous studies, and the application will automatically compute the relevant parameters for the trial being planned. Once entered, the full set of input parameters can be saved to the user's computer for use in future sessions. Results of the design comparisons can be immediately downloaded in the form of either csv-tables, or printable, html-based reports.
 
 
 To demonstrate our software, we consider the problem of 
@@ -98,7 +97,7 @@ Though we focus on this stroke trial application throughout, our software tool c
 
 
 In Section \ref{sec:problemDescription}, we  formally define the hypothesis testing problem to be addressed by different trial designs. In Section \ref{ADDPLAN}, we compare our software to the most similar, currently available software, AptivSolutions ADDPLAN PE (Participant Enrichment), and the \pkg{asd} \proglang{R} package. 
-In Section \ref{sec:running-interAdapt}, we describe how to install \pkg{interAdapt} on a personal computer, and how to access it online through a web browser. Section \ref{sec:UI} describes the inputs available when using \textsf{interAdapt}, and discusses the interpretation of the application's output. In Section \ref{sec:example}, we present an example demonstrating how an adaptive design is created and analyzed with \textsf{interAdapt}. 
+In Section \ref{sec:running-interAdapt}, we describe how to install \pkg{interAdapt} on a personal computer, run the \pkg{shiny} application locally, use the package functionality in the command line, and how to access the application online through a web browser. Section \ref{sec:UI} describes the inputs available when using \pkg{interAdapt}, and discusses the interpretation of the application's output. In Section \ref{sec:example}, we present an example demonstrating how an adaptive design is created and analyzed with \pkg{interAdapt}. 
 
 \section{Problem description}
 \label{sec:problemDescription}
@@ -143,12 +142,12 @@ We define our two null hypotheses, respectively, as
 An adaptive design testing both null hypotheses (denoted $AD$) is compared to two standard designs. The first standard design, denoted $SC$, enrolls the combined population and only tests $H_{0C}$. The second standard design, denoted $SS$, only enrolls subpopulation 1 and tests $H_{01}$.
 All three trial designs consist of $K$ stages; the decision to entirely stop the trial early can be made at the end of any stage, based on a preplanned rule. The trials differ in that $SC$ and $SS$ never change their enrollment criteria, while $AD$ may switch from enrolling the combined population  to enrolling only participants from subpopulation $1$.
 
-The standard designs discussed here are not identical to those discussed in section 6.1 of \citep{Rosenblum2013AdaptMISTIE}, which test both hypotheses simultaneously. Implementing standard designs such as those discussed in \citep{Rosenblum2013AdaptMISTIE} into the \pkg{interAdapt} software is an area of future research.
+The standard designs discussed here are not identical to those discussed in Section 6.1 of \citep{Rosenblum2013AdaptMISTIE}, which test both hypotheses simultaneously. Implementing standard designs such as those discussed in \citep{Rosenblum2013AdaptMISTIE} into the \pkg{interAdapt} software is an area of future research.
 
 Though it is not of primary interest, we occasionally refer below to the global null hypothesis, defined  to be that $p_{1t}-p_{1c}=p_{2t}-p_{2c}=0$, i.e., zero mean treatment effect in both subpopulations.
 
-%Old Note:Whenever any of the trials $AD$, $SC$ or $SS$ is stopped early, there will be some participants who have been enrolled but who’s outcomes have not yet been measured. These participants are referred to as ''overrunning'' or ''pipeline'' participants. \pkg{interAdapt} currently discards measurements from these overruning participants in the final analysis. Incorporating these measurements is a goal for future work.
-%AF note to self: Michael has mentioned that there are a few ways to do this. Jason does a bayesian prediction of passing a threshold once the participants come in. There are also ways to set "double thresholds," one threshold for when to stop, and one (usually lower) threshold for whether or not to declare significant results once the overrunning participants are measured.
+%Old Note: Whenever any of the trials $AD$, $SC$ or $SS$ is stopped early, there will be some participants who have been enrolled but who’s outcomes have not yet been measured. These participants are referred to as ''overrunning'' or ''pipeline'' participants. \pkg{interAdapt} currently discards measurements from these overruning participants in the final analysis. Incorporating these measurements is a goal for future work.
+%AF note to self: There are a few ways to do this, such as bayesian probability of passing a threshold once the participants come in. There are also ways to set "double thresholds," one threshold for when to stop, and one (usually lower) threshold for whether or not to declare significant results once the overrunning participants are measured.
 
 
 
@@ -209,17 +208,13 @@ The decision rules defined below involve stopping boundaries based on the z-stat
 
 
 The familywise (also called study-wide) Type I error rate is the probability of rejecting one or more true null hypotheses.
-%^In the context of our hypotheses, the Familywise Type I error rate refers to the combined rate of false positives from testing either $H_{0C}$ and $H_{01}$. 
 For a given design, we say that the familywise Type I error rate is strongly controlled at level $α$ if 
 for any values of  $p_{1c},p_{1t},p_{2c},p_{2t}$ (assuming each is in the interval $(0,1)$), 
 the probability of rejecting at least one true null hypothesis (among $H_{0C}, H_{01}$) is at most $α$. To be precise, we mean such strong control holds asymptotically, as sample sizes in all stages go to infinity, as formally defined by \cite{Rosenblum2013AdaptMISTIE}. %The reason for this caveat is that we use the asymptotic approximation, common in the design and analysis of randomized trials with binary outcomes, that z-statistics converge in distribution to a normal by the central limit theorem.
 For all three designs, $AD$, $SC$, and $SS$, we require the familywise Type I error rate to be strongly controlled at level $α$. 
 Since the two standard designs $SS$ and $SC$ each only test a single null hypothesis, the familywise Type I error rate for each design is equal to the  Type I error rate for the corresponding, single hypothesis test.
-%We discuss 
-% control of the familywise Type I error rate for the $AD$ design in the next section.
 
-%% A more detailed verion of this paragraph from a previous draft, probably better as it is now:
-%%Note that since $SC$ and $SS$ do not test the same hypotheses as $AD$, they are not directly comparable. It is possible to combine $SC$ and $SS$ in order to test both $H_{0C}$ and $H_{01}$, but the trials cannot be done simultaneously without doubling the recruitment rate. Instead, the trials could be combined in sequence by first conducting $SC$, and then conducting $SS$ only if $SC$ does not find a significant effect. This sequence however allow for twice the maximum number of stages (2K). A multiple hypothesis testing correction would also have to be employed in any combination of $SC$ and $SS$. A more detailed discussion of how $SC$ and $SS$ can be combined, and how these combinations compare against $AD$, is given in (MISTIE PAPER). 
+
 
 
 
@@ -229,7 +224,7 @@ Since the two standard designs $SS$ and $SC$ each only test a single null hypoth
 
 The decision rules for the standard design $SC$ consist of efficacy and futility boundaries for $H_{0C}$, based on the statistics $Z_{C,k}$. At the end of each stage $k$,  the test statistic $Z_{C,k}$ is calculated. If $Z_{C,k}$ is above the efficacy boundary for stage $k$, the design $SC$ rejects $H_{0C}$ and stops the trial. If $Z_{C,k}$ is between the efficacy and futility boundaries for stage $k$, the trial is continued through the next stage (unless the last stage $k=K$ has been completed). If $Z_{C,k}$ is below the futility boundary for stage $k$, the design $SC$ stops the trial and fails to reject $H_{0C}$. \pkg{interAdapt} makes the simplification that the number of participants $n_k$ enrolled in each stage of $SC$ is a constant, denoted  $n_{SC}$, that the user can set.
 
-The efficacy boundaries for $SC$ are set to be proportional to those described by Wang and Tsiatis (1987). Specifically, the efficacy boundary for the $k^{th}$ stage is set to $e_{SC}(N_{C,k}/N_{C,K})^{\delta}$, where $K$ is the total number of stages, $δ$ is a constant in the range $[-.5,.5]$, and $e_{SC}$ is the constant computed by  \pkg{interAdapt}  to ensure the familywise Type I error rate is at most $\alpha$. Since $n_{k}$ is set equal to $n_{SC}$ for all values of $k$, the maximum cumulative sample size $N_{C,k}$ reduces to $\sum_{k'=1}^k n_{SC}=k n_{SC}$, and the boundary at stage $k$ reduces to the simpler form $e_{SC}(k/K)^\delta$. By default, \pkg{interAdapt} sets $\delta$ to be $-0.5$, which corresponds to the efficacy boundaries of \cite{obrienfleming}. %!!!! First part of this paragraph up to here is new. Still use sum n_k def elsewhere
+The efficacy boundaries for $SC$ are set to be proportional to those described by Wang and Tsiatis (1987). Specifically, the efficacy boundary for the $k^{th}$ stage is set to $e_{SC}(N_{C,k}/N_{C,K})^{\delta}$, where $K$ is the total number of stages, $δ$ is a constant in the range $[-.5,.5]$, and $e_{SC}$ is the constant computed by  \pkg{interAdapt}  to ensure the familywise Type I error rate is at most $\alpha$. Since $n_{k}$ is set equal to $n_{SC}$ for all values of $k$, the maximum cumulative sample size $N_{C,k}$ reduces to $\sum_{k'=1}^k n_{SC}=k n_{SC}$, and the boundary at stage $k$ reduces to the simpler form $e_{SC}(k/K)^\delta$. By default, \pkg{interAdapt} sets $\delta$ to be $-0.5$, which corresponds to the efficacy boundaries of \cite{obrienfleming}. 
 
 In order to calculate $e_{SC}$, \pkg{interAdapt} makes use of the fact that the random vector of test statistics ($Z_{C,1},Z_{C,2},…Z_{C,K}$) converges asymptotically to a multivariate normal distribution with a known covariance structure \citep{JennisonTurnbullBook}. %(Jennison and Turnbull, 1999, Chapter 3)
 Using the \pkg{mvtnorm} package \citep{mvtnorm} in \proglang{R} to evaluate the multivariate normal distribution function, \pkg{interAdapt} computes the proportionality constant $e_{SC}$ to ensure the probability of $Z_{C,k}$ exceeding $e_{SC}(N_{C,k}/N_{C,K})^{\delta}$ at one or more stages $k$ is less than or equal to $α$ at the global null hypothesis defined in Section~\ref{sub:hypotheses}.
@@ -258,13 +253,11 @@ The constants $e_{AD,C}$  and $e_{AD,1}$ are set such that the probability of re
 
 %Note to AF: There are several pairs of $e_{AD,C}$  and $e_{AD,1}$ that satisfy this condition for the Type I error rate. For each possible $ e_{AD,C}$ there is a one to one correspondence with a $e_{AD,1}$, which ensures that the probability of rejecting either hypothesis under the global null is zero. 
 
-The boundaries for futility stopping of enrollment from certain population in the $AD$ design, at the end of stage $k$, are denoted by $l_{1,k}$ and $l_{2,k}$. These stopping boundaries are defined relative to the test statistics $Z_{1,k}$ and $Z_{2,k}$, respectively. The boundaries $l_{1,k}$ and $l_{2,k}$ are set equal to $f_{AD,1}(N_{1,k}/N_{1,K})^{\delta}$ (for $k\leq K$) and $f_{AD,2}(N_{2,k}/N_{2,K})^{\delta}$ (for $k < k^*$), respectively, where $f_{AD,1}$ and $f_{AD,2}$ can be set by the user.  In stage $k^*$, the futility boundary $l_{2,k^*}$ is set to ``Inf'' (indicating $\infty$), to reflect that we stop enrollment in subpopulation 2. At the end of each stage, $AD$ may decide to continue enrolling from the combined population, enroll only from subpopulation 1 for the remainder of the trial, or stop the trial entirely.  Specific decision rules based on these boundaries for the z-statistics are described below. %!!! Probably around here is where you'd want input the clearer discussion of n_k... or not sometime that isn't n_k, as we talked about on friday.
-
-%The second way that the decision boundaries for $AD$ differ from those of the standard designs is that \pkg{interAdapt} allows more flexibility in the futility boundaries.  
+The boundaries for futility stopping of enrollment from certain population in the $AD$ design, at the end of stage $k$, are denoted by $l_{1,k}$ and $l_{2,k}$. These stopping boundaries are defined relative to the test statistics $Z_{1,k}$ and $Z_{2,k}$, respectively. The boundaries $l_{1,k}$ and $l_{2,k}$ are set equal to $f_{AD,1}(N_{1,k}/N_{1,K})^{\delta}$ (for $k\leq K$) and $f_{AD,2}(N_{2,k}/N_{2,K})^{\delta}$ (for $k < k^*$), respectively, where $f_{AD,1}$ and $f_{AD,2}$ can be set by the user.  In stage $k^*$, the futility boundary $l_{2,k^*}$ is set to ``Inf'' (indicating $\infty$), to reflect that we stop enrollment in subpopulation 2. At the end of each stage, $AD$ may decide to continue enrolling from the combined population, enroll only from subpopulation 1 for the remainder of the trial, or stop the trial entirely.  Specific decision rules based on these boundaries for the z-statistics are described below. 
 
 As described in \citep{Rosenblum2013AdaptMISTIE}, the decision rule in $AD$ consists of the following steps carried out at the end of each stage $k$:
 
-%New rules
+
 \begin{description}
 \item 1. (Assess Efficacy) 
  If $Z_{1,k}>u_{1,k}$, reject $H_{01}$.
@@ -289,8 +282,8 @@ Roughly speaking, $a_c$ represents the fraction of the study-wide Type I error $
 
 The algorithm temporarily sets $e_{AD,1}= \infty$ (effectively ruling out rejection of $H_{01}$)
 and computes (via binary search) the smallest value $e_{AD,C}$ such the probability of rejecting $H_{0C}$ is $a_c α$ under the global null hypothesis defined in Section~\ref{sub:hypotheses}. This defines $e_{AD,C}$. 
-Next,  \pkg{interAdapt} computes the smallest constant $e_{AD,1}$ such that the probability of rejecting at least one null hypothesis under the global null hypothesis  is at most $\alpha$. %This probability is given in the following display:
-%, under the global null of no treatment effect in either subpopulation, we have %the probability of rejecting either $H_{01}$ or $H_{0C}$ at any stage is less than or equal to $α$. %via a binary search.
+Next,  \pkg{interAdapt} computes the smallest constant $e_{AD,1}$ such that the probability of rejecting at least one null hypothesis under the global null hypothesis  is at most $\alpha$. 
+
 \iffalse
 \begin{equation}
 \Prob \left(
@@ -317,7 +310,7 @@ All of the above computations use the approximation, based on the multivariate c
 
 \section{Related software}
 \label{ADDPLAN}
-%Say that our design is an example of enrichment. 
+
 
 The most comparable available software tools are AptivSolutions ADDPLAN PE (Participant Enrichment), and the \pkg{asd} \proglang{R} package \citep{parsons2012r}. Both have features that our software does not have. Conversely, there are features of our software that ADDPLAN PE and \pkg{asd} do not have.
 
@@ -326,15 +319,15 @@ ADDPLAN PE is a versatile, commercial software tool that implements many types o
 Finally, \pkg{interAdapt}  is cross-platform and open-source, while ADDPLAN PE is commercial software that is only compatible with the Windows OS.
 
 The \pkg{asd} package allows \proglang{R} users to generate  two-stage adaptive designs, which can be used to combine phase II and phase III clinical trials into a seamless design \citep{parsons2012r}. Unlike \pkg{interAdapt}, the \pkg{asd} package can generate  not only adaptive enrichment designs, but also adaptive designs that test multiple different treatments. Also in \pkg{asd}, decision rules at interim analyses can be based on short-term outcomes for each subject enrolled, if the long-term outcome is not yet available. However, \pkg{asd} does not allow more than two stages, unlike  \pkg{interAdapt} which allows up to 20 stages (though in practice fewer stages will probably be used, e.g., 5 stages). \pkg{asd} is an \proglang{R}  package, so is cross-platform and open-source. Using \pkg{asd}
- requires a working knowledge of \proglang{R}, while the GUI for \pkg{interAdapt} can be run in a web browser, with little to no interaction with the \proglang{R} console (see section \ref{sec:running-interAdapt}), and so does not require knowledge of the \proglang{R} language.
+ requires a working knowledge of \proglang{R}, while the GUI for \pkg{interAdapt} can be run in a web browser, with little to no interaction with the \proglang{R} console (see Section \ref{sec:running-interAdapt}), and so does not require knowledge of the \proglang{R} language.
 
-\section{Running interAdapt }%it looks like the \pkg{} stuff is redundant with the section header stuff
+\section{Running interAdapt }
 \label{sec:running-interAdapt}
-%Note to mention: Harris edited out a lot of the extra detail about how Shiny works, and some of the redundancy between subsections on that topic.
 
-\pkg{interAdapt} is an interactive application built on the \pkg{shiny} package \citep{shiny2013manual} for the \proglang{R} programming language (\url{http://www.r-project.org/}). The user interface is shown in the user’s web browser, while the back-end calculations are done in \proglang{R}. 
 
-\pkg{interAdapt} requires the user's default web browser to be set to either Firefox (\url{http://www.mozilla.org}) or Chrome (\url{http://www.google.com/chrome/}). Users can then run \pkg{interAdapt} either by installing \proglang{R} and the \pkg{interAdapt} \proglang{R} package locally on their computer, or by simply using Firefox or Google Chrome to view \pkg{interAdapt} online. Both options are free and quick to set up. However, because the online application will slow down noticeably if accessed by multiple users simultaneously, we encourage heavy users to install \pkg{interAdapt} locally.
+The \pkg{interAdapt} \proglang{R} package contains an interactive web application, as well as and a command line function, both of which execute the same computations. The web application is built using the \pkg{shiny} package \citep{shiny2013manual}, with the user interface for shown in the user’s web browser, and the back-end calculations done in an \proglang{R} session.
+
+To access the \pkg{shiny} application, \pkg{interAdapt} requires the user's default web browser to be set to either Firefox (\url{http://www.mozilla.org}) or Chrome (\url{http://www.google.com/chrome/}). Users can then run the application either by installing \proglang{R} and the \pkg{interAdapt} \proglang{R} package locally on their computer, or by simply using Firefox or Google Chrome to view \pkg{interAdapt} online. Both options are free and quick to set up. However, because the online application will slow down noticeably if accessed by multiple users simultaneously, we encourage heavy users to install \pkg{interAdapt} locally.
 
 
 \subsection{Running interAdapt over the web}
@@ -349,7 +342,7 @@ The \pkg{asd} package allows \proglang{R} users to generate  two-stage adaptive 
 
 
 
-To run \pkg{interAdapt} locally, one must first install the \proglang{R} programming language, which is free. \proglang{R} runs on both Windows \& MacOS, is available for download at (\url{http://www.r-project.org/}). After downloading and installing R, activating the \proglang{R} application will open an ``R Console'' window where typed commands are executed by \proglang{R}. \pkg{interAdapt} is available as a package for R, and can be installed by typing the lines below into the \proglang{R} Console, while connected to the internet. The return key must be pressed after each line of code. The first and third lines will cause \proglang{R} to give feedback on the installation's progress, which we do not show here.
+To run \pkg{interAdapt} locally, one must first install the \proglang{R} programming language, which is free. \proglang{R} runs on both Windows \& MacOS, is available for download at (\url{http://www.r-project.org/}). After downloading and installing R, activating the \proglang{R} application will open an ``R console'' window where typed commands are executed by \proglang{R}. The \pkg{interAdapt} \proglang{R} package can be installed by typing the lines below into the \proglang{R} console, while connected to the internet. The return key must be pressed after each line of code. The first and third lines will cause \proglang{R} to give feedback on the installation's progress, which we do not show here.
 
 \vspace{5 mm}
 \begin{Code}
@@ -359,7 +352,7 @@ install_github(username='aaronjfisher',repo='interAdapt',subdir='r_package')
 \end{Code}
 \vspace{5 mm}
 
-Once \pkg{interAdapt} has been installed, the \pkg{shiny} application can be run without an internet connection by the opening the \proglang{R} Console and typing
+Once \pkg{interAdapt} has been installed, the \pkg{shiny} application can be run without an internet connection by the opening the \proglang{R} console and typing
 
 \vspace{5 mm}
 \begin{Code}
@@ -369,12 +362,15 @@ runInterAdapt()
 \vspace{5 mm}
 
 
-The same calculations can be done directly in the \proglang{R} console, using the \code{compute_design_performance} function. Further details are provided in the package documentation (i.e.\\
-\code{help(package=interAdapt)}).
+The same calculations can be done directly in the \proglang{R} console, using the \code{compute_design_performance} function. Further details are provided in the \pkg{interAdapt} package documentation (i.e.\\
+\code{help(package=interAdapt)}). 
+The input arguments available when using this function are the same as the inputs available in the \pkg{shiny} application (see Section \ref{sub:inputs}). The function output contains the tables shown by the \pkg{shiny} application, which can be used to generate the plots shown by the application (see Section \ref{sub:outputs}).
 
 
-\section{User interface}
+\section{User interface for the shiny application}
 \label{sec:UI}
+
+In this section, and in Section \ref{sec:example}, we will generally use the term \pkg{interAdapt} to refer to the \pkg{interAdapt} \pkg{shiny} application, although the inputs and outputs of the command line interface (see Section \ref{sub:running-locally}) are equivalent.
 
 Inputs to \pkg{interAdapt} can be entered in the side panel on the left, with outputs shown in the main panel on the right (Figures \ref{fig:designs} and \ref{fig:performance}). The parameters in the input panel let the user describe characteristics of their study populations, such as the proportion of participants in each subpopulation. 
 The user can also input design requirements such as  the  familywise Type I error rate. Also, the user can input conjectured rates of success under treatment and control, to determine how well different designs perform at a given set of such values. Specifically, the user can input values for $p_{1t},p_{1c}$, and $p_{2c}$, and \pkg{interAdapt}  will compare the performance of different designs  over a range of values of $p_{2t}$, as further described below.
@@ -386,12 +382,12 @@ All tables generated by \pkg{interAdapt} can be downloaded as csv files by click
 \begin{figure}[h]
 \centering{}\includegraphics[width=1\textwidth]{2014-02-29_screenshot_designs.png} 
 \caption{Designs Screenshot: Inputs can be entered in the side panel on the left, with results visible in the main panel on the right. The drop down menus at the top of the side panel can be used to navigate different interfaces to input parameters. Here we show the ``Basic parameter'' inputs, in ``Batch mode,'' where the Apply button must be pressed to update the results in the main panel. The radio buttons at the top of the main panel can be used to navigate between design outputs describing the decision rules for each trial, and performance summaries for each trial. In this figure we show the design for the adaptive trial ($AD$), based on the default input parameters. Boundaries for the z-statistics $Z_{1,k}$, $Z_{2,k}$ and $Z_{C,k}$ are shown both in the plot, and in the table. The table also contains information on how many participants are enrolled in each stage. The scroll bar on the right of the web browser has been cropped out of this figure for the sake of increased screenshot resolution.  \label{fig:designs} }
-\end{figure}%!!! New
+\end{figure}
 
 \begin{figure}[h]
 \centering{}\includegraphics[width=1\textwidth]{2014-02-29_screenshot_performance.png} 
 \caption{Performance Screenshot: Here the main panel shows performance output based on the default parameter inputs. The tabs at the top of the Performance section can be used to navigate between displays of power, expected sample size, and expected trial duration for all three designs. In the side panel, we show the interface for saving and loading sets of parameters (section \ref{sub:inputs}). Users can save the current set of inputs, load a previously used set of inputs, or upload a datafile containing results from a previous trial. If results from a previous trial are uploaded, \pkg{interAdapt} will automatically compute relevant input parameters based on this file. Additional input parameters in the side panel are available by scrolling down. As in Figure \ref{fig:designs}, the scroll bar on the right of the web browser has been cropped out of this figure for the sake of increased screenshot resolution.  \label{fig:performance} }
-\end{figure}%!!! New
+\end{figure}
 
 
 \subsection{Inputs}
@@ -540,10 +536,10 @@ Furthermore, the familywise Type I error rate was to be strongly controlled at l
 Based on prior research by \cite{Hanley2012}, the proportion of participants with small IVH ($π_1$) was projected to be 0.33, the probability of a positive outcome under control was projected to be 0.25 for small IVH participants ($p_{1c}$), and the probability of a positive outcome under control was projected to be  0.2 for large IVH participants ($p_{2c}$).  If the true average treatment effect in subpopulation $1$ is 12.5\%, then the probability of a positive outcome under treatment for participants in subpopulation $1$ ($p_{1t}$) is projected to be 12.5\%+25\%=37.5\%.
 
 Parameters for the adaptive design $AD$ were computed to achieve all three goals (i)-(iii), as fully described by \citep{Rosenblum2013AdaptMISTIE}. The corresponding standard designs, used for comparison, only had to satisfy subsets of these goals. This is to show the cost of achieving all three goals (since the adaptive design generally requires greater expected sample size, in return for achieving all three goals instead of a subset of the goals). 
-The standard design $SC$ was set to achieve goals (i) and (iii), and the standard design $SS$ was set to achieve (ii) and (iii). Recall that \pkg{interAdapt} allows the user to specify a range of treatment values for subpopulation $2$, and will display the power of the trial designs across this range. By default, \pkg{interAdapt} sets the range of values for the mean treatment effect in subpopulation $2$ to be [-0.2, 0.2]. This includes scenarios (a) and (b) since in scenario (a) the mean treatment effect in subpopulation 2 is 0.125, and in scenario (b) the mean treatment effect is $0$. %If one moves the slider corresponding to $p_{1t}$ (found in Basic Parameters) to have value $0.25$, this 
- 
+The standard design $SC$ was set to achieve goals (i) and (iii), and the standard design $SS$ was set to achieve (ii) and (iii). Recall that \pkg{interAdapt} allows the user to specify a range of treatment values for subpopulation $2$, and will display the power of the trial designs across this range. By default, \pkg{interAdapt} sets the range of values for the mean treatment effect in subpopulation $2$ to be [-0.2, 0.2]. This includes scenarios (a) and (b) since in scenario (a) the mean treatment effect in subpopulation 2 is 0.125, and in scenario (b) the mean treatment effect is $0$. 
+
 The remaining default input parameters for the $AD$ design are based on the adaptive enrichment design in Section~5.2 of \citep{Rosenblum2013AdaptMISTIE}. 
-They constructed this design by first setting  $K=5$ and $δ=-.5$, and then searching over a large class of parameter values with the goal of minimizing the average expected sample size over scenarios (a)-(c), while still achieving goals (i)-(iii). They found a minimum average expected sample size at $k^*=3$, $n^{(1)}=280$, $n^{(2)}=148$, $a_C = .09$, and $f_{AD,2}=f_{AD,1}=0$. %!!! slightly different from before.
+They constructed this design by first setting  $K=5$ and $δ=-.5$, and then searching over a large class of parameter values with the goal of minimizing the average expected sample size over scenarios (a)-(c), while still achieving goals (i)-(iii). They found a minimum average expected sample size at $k^*=3$, $n^{(1)}=280$, $n^{(2)}=148$, $a_C = .09$, and $f_{AD,2}=f_{AD,1}=0$. 
 
 
 Now we turn to the output of \pkg{interAdapt} that results from the default parameters, and show that each of the three designs achieves its corresponding goals. In the power plot, we see that $AD$ has 80\% power to reject $H_{0C}$ in scenario (a), and 80\% power to reject $H_{01}$ in scenario (b). $SC$ has 80\% power to reject $H_{0C}$ in scenario (a), and $SS$ has 80\% power to reject $H_{01}$ in scenario (b) (Figure \ref{fig:performance}). Although it is not shown,  the familywise Type I error rate is at most  .025, as this was the specified value of $\alpha$ input to \pkg{interAdapt}, and the designs are guaranteed to strongly control the familywise Type I error rate at level $\alpha$ by
@@ -553,7 +549,7 @@ Now we turn to the output of \pkg{interAdapt} that results from the default para
 \section*{Summary}
 \label{sec:Summary}
 
-We described the \pkg{interAdapt} application for designing and simulating trials with adaptive enrollment criteria. We provided an overview of the theoretical problem the application addresses, and gave an explanation of the application's inputs and outputs.
+We described the \pkg{interAdapt} \proglang{R} package and \pkg{shiny} application for designing and simulating trials with adaptive enrollment criteria. We provided an overview of the theoretical problem the application addresses, and gave an explanation of the application's inputs and outputs.
 
 Current limitations of the software include that the outcome is assumed to be binary. We also currently only consider the case where outcomes are measured without delay, immediately after participants are enrolled. Relaxing both of these requirements is a goal of future work.
 
