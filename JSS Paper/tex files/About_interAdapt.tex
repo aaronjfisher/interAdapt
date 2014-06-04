@@ -57,10 +57,20 @@
 }
 
 \Abstract{
-We consider the problem of designing a randomized trial when there is prior evidence that the experimental treatment may be more effective for certain groups of participants, such as those with a certain biomarker or risk score at baseline. 
-Randomized trial designs have been proposed that dynamically adapt enrollment criteria based on accrued data, with the goal of learning if the treatment benefits the overall population, only a certain subpopulation, or neither. We introduce the \pkg{interAdapt} software tool, an \proglang{R} package and \pkg{shiny} application which provides a user friendly interface for constructing and evaluating certain adaptive trial designs. 
- These designs are automatically compared to standard (non-adaptive) designs in terms of the following performance criteria:  power, sample size, and trial duration. 
- \pkg{interAdapt} is open-source and cross-platform, and is the first to implement the group sequential, adaptive enrichment designs of \citep{Rosenblum2013AdaptMISTIE}.
+The \pkg{interAdapt} \proglang{R} package is designed to be used by
+statisticians and clinical investigators to plan randomized trials. It
+can be used to determine if certain adaptive designs offer tangible
+benefits compared to standard designs, in the context of investigators'
+specific trial goals and constraints. Specifically, \pkg{interAdapt}
+compares the performance of trial designs with adaptive enrollment
+criteria versus standard (non-adaptive) group sequential trial
+designs. Performance is compared in terms of power, expected trial
+duration, and expected sample size. Users can either work directly in
+the \proglang{R} console, or with a user-friendly \pkg{shiny} application that requires
+no programming experience. Several added features are available when
+using the \pkg{shiny} application. For example, the application allows
+users to immediately download the results of the performance
+comparison as a csv-table, or as a printable, html-based report.
 }
 
 \Keywords{adaptive design, adaptive enrollment, group sequential design, shiny application}
@@ -81,9 +91,9 @@ We focus on the  class of designs introduced by \cite{Rosenblum2013AdaptMISTIE},
 These are contrasted with ``standard designs,'' 
 defined to  be group sequential designs where the enrollment criteria cannot be changed during the trial (except that the entire trial may be stopped early for efficacy or futility). 
 
-We introduce the \pkg{interAdapt} \proglang{R} package, a user friendly set of tools for exploring certain types of adaptive enrichment designs. The package contains a densely featured \pkg{shiny} application, ideal for users with little to no \proglang{R} programming experience, as well as a function allowing access to the core functionality of the \pkg{shiny} application directly in the \proglang{R} console. The \pkg{shiny} application is also hosted on the RStudio webserver, and can be accessed online without installing the \proglang{R} programming language.
+We introduce the \pkg{interAdapt} \proglang{R} package, a user friendly set of tools for exploring certain types of adaptive enrichment designs. The package contains a densely featured \pkg{shiny} application, ideal for users with little to no \proglang{R} programming experience, as well as a function allowing access to the core functionality of the \pkg{shiny} application directly in the \proglang{R} console. Several user inputs are available to allow the user to describe the context of his/her trial, and computations for generating output typically require less than 15 seconds on a standard commercial laptop. 
 
-The \pkg{interAdapt} \pkg{shiny} application is designed to be used by statisticians and clinical investigators to plan randomized trials. The application provides information that can help users determine if certain adaptive designs offer tangible benefits compared to standard designs, in the context of their specific trial goals and constraints. Calculations typically require less than 30 seconds on a standard commercial laptop. Several user inputs are available to allow the user to describe the context of his/her trial. Alternatively, users can upload data from previous studies, and the application will automatically compute the relevant parameters for the trial being planned. Once entered, the full set of input parameters can be saved to the user's computer for use in future sessions. Results of the design comparisons can be immediately downloaded in the form of either csv-tables, or printable, html-based reports.
+Several added features are available when using the \pkg{shiny} application, as opposed to the command line function. For example, users can upload data from previous studies, and the application will automatically compute the relevant parameters for the trial being planned. Once entered, the full set of input parameters can be saved to the user's computer for use in future sessions. Results of the design comparisons can be immediately downloaded in the form of either csv-tables, or printable, html-based reports. The \pkg{shiny} application is also hosted on the RStudio webserver, and can be accessed online without installing the \proglang{R} programming language.
 
 
 To demonstrate our software, we consider the problem of 
@@ -96,8 +106,8 @@ An alternative is to use an adaptive trial design that  first recruits from the 
 Though we focus on this stroke trial application throughout, our software tool can be applied in many disease areas.
 
 
-In Section \ref{sec:problemDescription}, we  formally define the hypothesis testing problem to be addressed by different trial designs. In Section \ref{ADDPLAN}, we compare our software to the most similar, currently available software, AptivSolutions ADDPLAN PE (Participant Enrichment), and the \pkg{asd} \proglang{R} package. 
-In Section \ref{sec:running-interAdapt}, we describe how to install \pkg{interAdapt} on a personal computer, run the \pkg{shiny} application locally, use the package functionality in the command line, and how to access the application online through a web browser. Section \ref{sec:UI} describes the inputs available when using \pkg{interAdapt}, and discusses the interpretation of the application's output. In Section \ref{sec:example}, we present an example demonstrating how an adaptive design is created and analyzed with \pkg{interAdapt}. 
+In Section \ref{sec:problemDescription}, we  formally define the hypothesis testing problem to be addressed by the different trial designs. In Section \ref{ADDPLAN}, we compare our software to the most similar, currently available software, AptivSolutions ADDPLAN PE (Participant Enrichment), and the \pkg{asd} \proglang{R} package. 
+In Section \ref{sec:running-interAdapt}, we describe how to install \pkg{interAdapt} on a personal computer, run the \pkg{shiny} application locally, use the package functionality in the command line, and access the application online through a web browser. Section \ref{sec:UI} describes the inputs available when using \pkg{interAdapt}, and discusses the interpretation of the package's output. In Section \ref{sec:example}, we present an example demonstrating how an adaptive design is created and analyzed with \pkg{interAdapt}. 
 
 \section{Problem description}
 \label{sec:problemDescription}
@@ -325,9 +335,9 @@ The \pkg{asd} package allows \proglang{R} users to generate  two-stage adaptive 
 \label{sec:running-interAdapt}
 
 
-The \pkg{interAdapt} \proglang{R} package contains an interactive web application, as well as and a command line function, both of which execute the same computations. The web application is built using the \pkg{shiny} package \citep{shiny2013manual}, with the user interface for shown in the user’s web browser, and the back-end calculations done in an \proglang{R} session.
+The \pkg{interAdapt} \proglang{R} package contains an interactive web application, as well as a command line function, both of which execute the same computations. The web application is built using the \pkg{shiny} package \citep{shiny2013manual}, with the user interface shown in a web browser, and the back-end calculations done in an \proglang{R} session.
 
-To access the \pkg{shiny} application, \pkg{interAdapt} requires the user's default web browser to be set to either Firefox (\url{http://www.mozilla.org}) or Chrome (\url{http://www.google.com/chrome/}). Users can then run the application either by installing \proglang{R} and the \pkg{interAdapt} \proglang{R} package locally on their computer, or by simply using Firefox or Google Chrome to view \pkg{interAdapt} online. Both options are free and quick to set up. However, because the online application will slow down noticeably if accessed by multiple users simultaneously, we encourage heavy users to install \pkg{interAdapt} locally.
+To access the \pkg{shiny} application, \pkg{interAdapt} requires the user's default web browser to be set to either Firefox (\url{http://www.mozilla.org}) or Chrome (\url{http://www.google.com/chrome/}). Users can then run the application either by installing \proglang{R} and the \pkg{interAdapt} package locally on their computer, or by simply using Firefox or Google Chrome to view \pkg{interAdapt} online. Both options are free and quick to set up. However, because the online application will slow down noticeably if accessed by multiple users simultaneously, we encourage heavy users to install \pkg{interAdapt} locally.
 
 
 \subsection{Running interAdapt over the web}
@@ -342,7 +352,7 @@ To access the \pkg{shiny} application, \pkg{interAdapt} requires the user's defa
 
 
 
-To run \pkg{interAdapt} locally, one must first install the \proglang{R} programming language, which is free. \proglang{R} runs on both Windows \& MacOS, is available for download at (\url{http://www.r-project.org/}). After downloading and installing R, activating the \proglang{R} application will open an ``R console'' window where typed commands are executed by \proglang{R}. The \pkg{interAdapt} \proglang{R} package can be installed by typing the lines below into the \proglang{R} console, while connected to the internet. The return key must be pressed after each line of code. The first and third lines will cause \proglang{R} to give feedback on the installation's progress, which we do not show here.
+To run \pkg{interAdapt} locally, one must first install the \proglang{R} programming language. \proglang{R} runs on both Windows \& MacOS, is available for download at (\url{http://www.r-project.org/}). After downloading and installing \proglang{R}, activating the \proglang{R} application will open an ``\proglang{R} console'' window where typed commands are executed by \proglang{R}. The \pkg{interAdapt} \proglang{R} package can be installed by typing the lines below into the \proglang{R} console, while connected to the internet. The return key must be pressed after each line of code. The first and third lines will cause \proglang{R} to give feedback on the installation's progress, which we do not show here.
 
 \vspace{5 mm}
 \begin{Code}
@@ -352,7 +362,7 @@ install_github(username='aaronjfisher',repo='interAdapt',subdir='r_package')
 \end{Code}
 \vspace{5 mm}
 
-Once \pkg{interAdapt} has been installed, the \pkg{shiny} application can be run without an internet connection by the opening the \proglang{R} console and typing
+Once \pkg{interAdapt} has been installed, the \pkg{shiny} application can be run without an internet connection by opening the \proglang{R} console and typing
 
 \vspace{5 mm}
 \begin{Code}
@@ -362,15 +372,14 @@ runInterAdapt()
 \vspace{5 mm}
 
 
-The same calculations can be done directly in the \proglang{R} console, using the \code{compute_design_performance} function. Further details are provided in the \pkg{interAdapt} package documentation (i.e.\\
-\code{help(package=interAdapt)}). 
-The input arguments available when using this function are the same as the inputs available in the \pkg{shiny} application (see Section \ref{sub:inputs}). The function output contains the tables shown by the \pkg{shiny} application, which can be used to generate the plots shown by the application (see Section \ref{sub:outputs}).
+The same calculations can be done directly in the \proglang{R} console, using the \code{compute_design_performance} function. Further details are provided in the \pkg{interAdapt} package documentation, and can be accessed by typing \code{help(package=interAdapt)} into the \proglang{R} console. 
+The input arguments available when using this function have the same interpretation as the inputs available in the \pkg{shiny} application (see Section \ref{sub:inputs}). The function output contains the tables shown by the \pkg{shiny} application, which can be used to generate the plots shown by the application (see Section \ref{sub:outputs}).
 
 
 \section{User interface for the shiny application}
 \label{sec:UI}
 
-In this section, and in Section \ref{sec:example}, we will generally use the term \pkg{interAdapt} to refer to the \pkg{interAdapt} \pkg{shiny} application, although the inputs and outputs of the command line interface (see Section \ref{sub:running-locally}) are equivalent.
+In this section, and in Section \ref{sec:example}, we will generally use the term \pkg{interAdapt} to refer to the \pkg{interAdapt} \pkg{shiny} application, although the inputs and outputs of the command line interface (see Section \ref{sub:running-locally}) have the same interpretation.
 
 Inputs to \pkg{interAdapt} can be entered in the side panel on the left, with outputs shown in the main panel on the right (Figures \ref{fig:designs} and \ref{fig:performance}). The parameters in the input panel let the user describe characteristics of their study populations, such as the proportion of participants in each subpopulation. 
 The user can also input design requirements such as  the  familywise Type I error rate. Also, the user can input conjectured rates of success under treatment and control, to determine how well different designs perform at a given set of such values. Specifically, the user can input values for $p_{1t},p_{1c}$, and $p_{2c}$, and \pkg{interAdapt}  will compare the performance of different designs  over a range of values of $p_{2t}$, as further described below.
