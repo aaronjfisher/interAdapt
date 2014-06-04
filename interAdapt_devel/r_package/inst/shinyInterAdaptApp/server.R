@@ -1,5 +1,4 @@
-# Notes
-# Make sure the default xlims are right when we load table1 from file.
+# Notes:
 # Avoid unicode
 # The central function of this script is the regen() function, which determines, based on the current parameters, whether or not table_constructor() from the "[...]Design.R" file should be called to update the results in the main panel
 
@@ -646,7 +645,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
   }
 
   # Generate csv tables
-  # It can be good to double check these output files below if we change the decision rules at some point, to make sure the tables still come out right.
+  # It could be good to double check these output files below if we change the decision rules at some point, to make sure the tables still come out right.
   
   output$downloadDesignAD.1<-
   output$downloadDesignAD.2 <- downloadHandler(
