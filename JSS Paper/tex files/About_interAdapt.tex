@@ -91,7 +91,7 @@ We focus on the  class of designs introduced by \cite{Rosenblum2013AdaptMISTIE},
 These are contrasted with ``standard designs,'' 
 defined to  be group sequential designs where the enrollment criteria cannot be changed during the trial (except that the entire trial may be stopped early for efficacy or futility). 
 
-We introduce the \pkg{interAdapt} \proglang{R} package, a user friendly set of tools for exploring certain types of adaptive enrichment designs. The package contains a densely featured \pkg{shiny} application, ideal for users with little to no \proglang{R} programming experience, as well as a function allowing access to the core functionality of the \pkg{shiny} application directly in the \proglang{R} console. Several user inputs are available to allow the user to describe the context of his/her trial, and computations for generating output typically require less than 15 seconds on a standard commercial laptop. 
+We introduce the \pkg{interAdapt} \proglang{R} package, a user friendly set of tools for exploring certain types of adaptive enrichment designs. The package contains a densely featured \pkg{shiny} application, ideal for users with little to no \proglang{R} programming experience, as well as an \proglang{R} function (\code{compute_design_performance}) which provides the same core computational functionality that underlies the \pkg{shiny} application. Several input parameters are available to allow the user to describe the context of his/her trial. Computations for generating output typically require less than 15 seconds on a standard commercial laptop. 
 
 Several added features are available when using the \pkg{shiny} application, as opposed to the command line function. For example, users can upload data from previous studies, and the application will automatically compute the relevant parameters for the trial being planned. Once entered, the full set of input parameters can be saved to the user's computer for use in future sessions. Results of the design comparisons can be immediately downloaded in the form of either csv-tables, or printable, html-based reports. The \pkg{shiny} application is also hosted on the RStudio webserver, and can be accessed online without installing the \proglang{R} programming language.
 
@@ -335,7 +335,7 @@ The \pkg{asd} package allows \proglang{R} users to generate  two-stage adaptive 
 \label{sec:running-interAdapt}
 
 
-The \pkg{interAdapt} \proglang{R} package contains an interactive web application, as well as a command line function, both of which execute the same computations. The web application is built using the \pkg{shiny} package \citep{shiny2013manual}, with the user interface shown in a web browser, and the back-end calculations done in an \proglang{R} session.
+The \pkg{interAdapt} \proglang{R} package contains an interactive web browser application, as well as a command line function which performs the same computations. The browser application is built on the \pkg{shiny} package \citep{shiny2013manual}, with the back-end calculations done in \proglang{R}.
 
 To access the \pkg{shiny} application, \pkg{interAdapt} requires the user's default web browser to be set to either Firefox (\url{http://www.mozilla.org}) or Chrome (\url{http://www.google.com/chrome/}). Users can then run the application either by installing \proglang{R} and the \pkg{interAdapt} package locally on their computer, or by simply using Firefox or Google Chrome to view \pkg{interAdapt} online. Both options are free and quick to set up. However, because the online application will slow down noticeably if accessed by multiple users simultaneously, we encourage heavy users to install \pkg{interAdapt} locally.
 
@@ -372,8 +372,12 @@ runInterAdapt()
 \vspace{5 mm}
 
 
-The same calculations can be done directly in the \proglang{R} console, using the \code{compute_design_performance} function. Further details are provided in the \pkg{interAdapt} package documentation, and can be accessed by typing \code{help(package=interAdapt)} into the \proglang{R} console. 
-The input arguments available when using this function have the same interpretation as the inputs available in the \pkg{shiny} application (see Section \ref{sub:inputs}). The function output contains the tables shown by the \pkg{shiny} application, which can be used to generate the plots shown by the application (see Section \ref{sub:outputs}).
+The same calculations can be done directly in the \proglang{R} console, using the \code{compute_design_performance} function. Further details are provided in the \pkg{interAdapt} package documentation, which can be accessed by typing \code{help(package=interAdapt)} into the \proglang{R} console. 
+The function's arguments are the same as the parameters available in the
+\pkg{shiny} application (see Section \ref{sub:inputs}).
+The function's value contains the output tables of the \pkg{shiny} application.
+These tables can be used to generate the plots made by the application
+(see Section \ref{sub:outputs}).
 
 
 \section{User interface for the shiny application}
