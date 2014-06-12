@@ -610,7 +610,7 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
     content = function(filename) {
       if (file.exists('knitr_report.html')) file.remove('knitr_report.html')
       if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
-      htmlKnitted<-knit2html('knitr_report.Rmd') #"plain" version, without knitrBootstrap
+      htmlKnitted<-knit2html('knitr_report.Rmd',quiet=TRUE) #"plain" version, without knitrBootstrap
       x<-readLines(con=htmlKnitted) #"plain" version, without knitrBootstrap
       #library(knitrBootstrap)
       #knit_bootstrap('knitr_report.Rmd') #fancy knitrBootstrap version
