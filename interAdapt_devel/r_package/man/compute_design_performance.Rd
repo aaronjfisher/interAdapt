@@ -202,9 +202,12 @@ print(o$AD[[1]])
 
 #Plot decision rules
 par(mfrow=c(1,3))
-matplot(t(o$SS[[1]][2:3,]),type='o',pch=1,main='Standard trial - subpop 1',xlab='stage',ylab='Z-statistic')
-matplot(t(o$SC[[1]][4:5,]),type='o',pch=1,main='Standard trial - combined pop',xlab='stage',ylab='Z-statistic')
-matplot(t(o$AD[[1]][4:7,]),type='o',pch=1,main='Adaptive Enrollment',xlab='stage',ylab='Z-statistic')
+matplot(t(o$SS[[1]][2:3,]),type='o',pch=1,
+		main='Standard trial - subpop 1',xlab='stage',ylab='Z-statistic')
+matplot(t(o$SC[[1]][4:5,]),type='o',pch=1,
+		main='Standard trial - combined pop',xlab='stage',ylab='Z-statistic')
+matplot(t(o$AD[[1]][4:7,]),type='o',pch=1,
+		main='Adaptive Enrollment',xlab='stage',ylab='Z-statistic')
 
 #Check performance
 o$performance[[1]]
@@ -217,20 +220,29 @@ par(mfrow=c(1,3))
 
 perform_names<-rownames(o$performance[[1]])
 
-p_ind<- grep('Power',perform_names)#index for parts of the table corresponding to power
-s_ind<- grep('Sample Size',perform_names)#index for parts of the table corresponding to sample size
-d_ind<- grep('DUR',perform_names)#index for parts of the table corresponding to trial duration
+#index for parts of the table corresponding to power
+p_ind<- grep('Power',perform_names)
+#index for parts of the table corresponding to sample size
+s_ind<- grep('Sample Size',perform_names)
+#index for parts of the table corresponding to trial duration
+d_ind<- grep('DUR',perform_names)
 
 
-matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][p_ind,]),type='l',lty=1,col=colb[1:length(p_ind)],xlab='Subpop.2 Tx. Effect',ylab='Power',main='Power')
+matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][p_ind,]),
+		type='l',lty=1,col=colb[1:length(p_ind)],
+		xlab='Subpop.2 Tx. Effect',ylab='Power',main='Power')
 legend('topright',perform_names[p_ind],col=colb[1:length(p_ind)],lty=1)
 
 
-matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][s_ind,]),type='l',lty=1,col=colb[1:length(s_ind)],xlab='Subpop.2 Tx. Effect',ylab='Expected Sample Size',main='Expected Sample Size')
+matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][s_ind,]),
+		type='l',lty=1,col=colb[1:length(s_ind)],xlab='Subpop.2 Tx. Effect',
+		ylab='Expected Sample Size',main='Expected Sample Size')
 legend('topright',perform_names[s_ind],col=colb[1:length(s_ind)],lty=1)
 
 
-matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][d_ind,]),type='l',lty=1,col=colb[1:length(d_ind)],xlab='Subpop.2 Tx. Effect',ylab="Expected Duration",main='Expected Duration')
+matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][d_ind,]),
+		type='l',lty=1,col=colb[1:length(d_ind)],xlab='Subpop.2 Tx. Effect',
+		ylab="Expected Duration",main='Expected Duration')
 legend('topright',perform_names[d_ind],col=colb[1:length(d_ind)],lty=1)
 }
 \references{
