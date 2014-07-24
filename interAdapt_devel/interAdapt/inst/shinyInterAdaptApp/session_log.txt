@@ -1,0 +1,28 @@
+2014-05-15 17:55:41 
+ 
+source'ing code... 
+found code locally... 
+...supplementary files found and loaded... 
+loaded table1... 
+Slider inputs 
+0 
+0 
+............ sliders updating 
+Box inputs 
+total regen calls = 1 
+null regen input -> out 
+power plot 
+H0C Boundary Plot 
+adaptive design table 
+performance table 
+H0C Boundary Plot 
+H0C standard trial table 
+total regen calls = 2 
+assigning Variables ... 
+making table1 ... 
+Done 
+ 
+H0C Boundary Plot 
+H0C standard trial table 
+power plot 
+performance table 
