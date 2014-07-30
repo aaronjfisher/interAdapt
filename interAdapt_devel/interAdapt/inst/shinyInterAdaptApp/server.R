@@ -538,7 +538,8 @@ shinyServer(function(input, output) {
 
 
 # x must be a list of length 3, with a digits and caption
-xtable <- function(x) {
+# S3 method for class "interAdapt"
+xtable.interAdapt <- function(x) {
 	xtable::xtable(x[[1]], digits=x$digits, caption=x$caption) 
 }
 
@@ -555,11 +556,11 @@ renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func =
         data <- func()
         if (is.null(data) || identical(data, data.frame())) 
             return("")
+	class(data) <- "interAdapt"	# force S3 class
         return(paste(capture.output(print(xtable(data, ...), include.colnames=include.colnames, 
             type = "html",sanitize.text.function=subH01sanitize,
             html.table.attributes = paste("class=\"", 
-                #htmlEscape(classNames, TRUE), "\"", sep = ""), 
-                shiny:::htmlEscape(classNames, TRUE), "\"", sep = ""), 
+                htmltools::htmlEscape(classNames, TRUE), "\"", sep = ""), 
             ...)), collapse = "\n"))
     }
 }
