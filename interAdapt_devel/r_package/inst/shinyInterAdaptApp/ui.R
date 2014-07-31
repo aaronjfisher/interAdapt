@@ -55,7 +55,7 @@ animationOptions(interval = 5000, loop = FALSE, playButton = NULL, pauseButton =
 
 
 
-cat('\n Running interAdapt...\n To exit interAdapt, click on the R window and press escape (or cntl-C if running from the terminal), then close interAdapt tab in the web browser')
+cat('\n Running interAdapt...\n To stop interAdapt, click on the R window and press escape or press the "STOP" button in the app, then close the interAdapt browser tab')
 
 shinyUI(pageWithSidebar(
 
@@ -75,6 +75,11 @@ shinyUI(pageWithSidebar(
 
   # "Advanced" forces batch mode
   sidebarPanel(
+
+	# Stop button
+	actionButton("stopButton", "STOP"),
+	br(), br(),
+
         #TOP PANEL
         selectInput("Which_params", "", c("Show Basic Parameters" = "1",
                 "Show Advanced Parameters" = "2", "Show All Parameters and Save/Load Option" = "3") ),
@@ -134,6 +139,9 @@ shinyUI(pageWithSidebar(
   mainPanel(
   #INITIALIZE PAGE BREAK CODE
   HTML('<STYLE TYPE=text/css> P.breakhere {page-break-before: always} </STYLE>'),
+
+  #STOP alert
+  h4(textOutput('stop')),
 
   #UPDATE MESSAGE
   conditionalPanel(need2update, 

@@ -7,8 +7,9 @@
 #' @export
 #' @import shiny RCurl mvtnorm knitr knitcitations
 runInterAdapt<-function(){
-	shiny::runApp(system.file('shinyInterAdaptApp', package='interAdapt'))
-	print('running application...')
+	cat('starting application...\n')
+	rtn <- shiny::runApp(system.file('shinyInterAdaptApp', package='interAdapt'))
+	if(rtn > 0)
+		cat('\napplication stopped\n')
 }
-
 

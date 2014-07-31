@@ -239,6 +239,17 @@ shinyServer(function(input, output) {
   #When advanced parameters are visible to user (which_params!=1), we force batch mode.
   effectivelyBatch<- reactive({input$Batch == "1" | input$Which_params != "1"})
 
+  # STOP alert
+  output$stop <- renderText({
+	x <- input$stopButton
+	if(x > 0) {
+		stopApp(x)
+		x <- "((( application stopped )))"
+	}
+	else
+		x <- ""
+	x
+  })
 
   #                          (_)                
   # __      ____ _ _ __ _ __  _ _ __   __ _ ___ 
