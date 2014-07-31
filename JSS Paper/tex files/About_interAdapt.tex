@@ -1,13 +1,5 @@
-\documentclass[article]{jss}
-%to make non JSS paper, uncomment the lines below
-%change above from \documentclass[article]{jss} -> {article}; \Abstract{} -> \begin{abstract}...\end{abstract}; Code -> verbatim; \code{...} -> \verb!...!
-%comment out Plaintitle, Shorttitle, Address, Keywords
-%in JSS version abstract is in preamble. In basic version, it's in the document
-%Add in line \bibliographystyle{plainnat} (take this out when converting back to JSS
-%change \author style
-%uncomment these lines:
-%\newcommand{\proglang}[1]{\textbf{#1}}
-%\newcommand{\pkg}[1]{\textbf{#1}}
+\documentclass[codesnippet]{jss}
+% **Hint**: If you want to use the JSS style for a non-JSS paper (or a modification of a JSS paper, e.g., in a vignette), you can set the option nojss in the \documentclass statement to suppress JSS-specific layout.
 
 
 \usepackage{graphicx, float, amsmath,mathrsfs, hyperref,color,listings}
@@ -143,8 +135,8 @@ We focus on testing the null hypothesis that, on average, the treatment is no be
 We define our two null hypotheses, respectively, as
 
 \begin{itemize}
-\item $H_{01}$: $p_{1t}-p_{1c}≤0$;%The treatment effect in subpopulation $1$ is less than or equal to zero.
-\item $H_{0C}$: $π_1(p_{1t}-p_{1c}) + π_2(p_{2t}-p_{2c}) ≤ 0$. %The average treatment effect in the combined population is less than or equal to zero.	
+\item $H_{01}$: $p_{1t}-p_{1c} \leq 0$;%The treatment effect in subpopulation $1$ is less than or equal to zero.
+\item $H_{0C}$: $π_1(p_{1t}-p_{1c}) + π_2(p_{2t}-p_{2c})  \leq  0$. %The average treatment effect in the combined population is less than or equal to zero.	
 \end{itemize}
 
 
@@ -274,10 +266,10 @@ As described in \citep{Rosenblum2013AdaptMISTIE}, the decision rule in $AD$ cons
  If $Z_{1,k}>u_{1,k}$, reject $H_{01}$.
    If $k\leq k^*$ and  $Z_{C,k} > u_{C,k}$, reject $H_{0C}$. 
  If $H_{01}$, $H_{0C}$, or both  are rejected, stop all enrollment and end the trial.
-\item 2. (Assess Futility of Entire Trial) Else, if $Z_{1,k} ≤ l_{1,k}$ or if this is the final stage of the trial, stop all enrollment and end the trial for futility, failing to reject  any null hypothesis.
-\item 3. (Assess Futility for $H_{0C}$) Else, if $Z_{2,k} ≤ l_{2,k}$, or if $k\geq k^*$, stop enrollment from subpopulation $2$ in all future stages. In this case, the following steps are iterated at each future stage:
+\item 2. (Assess Futility of Entire Trial) Else, if $Z_{1,k}  \leq  l_{1,k}$ or if this is the final stage of the trial, stop all enrollment and end the trial for futility, failing to reject  any null hypothesis.
+\item 3. (Assess Futility for $H_{0C}$) Else, if $Z_{2,k}  \leq  l_{2,k}$, or if $k\geq k^*$, stop enrollment from subpopulation $2$ in all future stages. In this case, the following steps are iterated at each future stage:
 	\subitem  3a. If $Z_{1,k} > u_{1,k}$, reject $H_{01}$ and stop all enrollment.
-	\subitem  3b. If $Z_{1,k} ≤ l_{1,k}$ or if this is the final stage of the trial, fail to reject any null hypothesis  and stop all enrollment.
+	\subitem  3b. If $Z_{1,k}  \leq  l_{1,k}$ or if this is the final stage of the trial, fail to reject any null hypothesis  and stop all enrollment.
 	\subitem  3c. Else, continue enrolling from only subpopulation $1$. If $k < k^*$ then $π_1n^{(1)}$ participants from subpopulation 1 should be enrolled in the next stage. If $k \geq k^*$, then $n^{(2)}$ participants from subpopulation 1 should be enrolled in the next stage. In all future stages, ignore steps 1, 2, 4, and use steps 3a--3c.
 \item  4. (Continue Enrollment from Combined Population) Else, continue by enrolling $\pi_1 n^{(1)}$ participants from subpopulation 1 and $\pi_2 n^{(1)}$ participants from subpopulation 2 for the next stage.
 \end{description}
@@ -285,7 +277,7 @@ As described in \citep{Rosenblum2013AdaptMISTIE}, the decision rule in $AD$ cons
 The motivation for Step 2 is that there is assumed to be prior evidence that if the treatment works, it will work for subpopulation 1. Therefore, if subpopulation 1 is stopped for futility, the whole trial is stopped. It is an area of future research to consider modifications to this rule, and to incorporate testing of a null hypothesis for only subpopulation 2.
 
 A consequence of the rule in Step 3 is that Steps 1, 2, and 4 are only carried out for stages $k\leq k^*$.  This occurs since 
- Step 3 restricts enrollment to subpopulation 1 if $Z_{2,k} ≤ l_{2,k}$ or  $k\geq k^*$, and if so runs Steps 3a--3c through the remainder of the trial.
+ Step 3 restricts enrollment to subpopulation 1 if $Z_{2,k}  \leq  l_{2,k}$ or  $k\geq k^*$, and if so runs Steps 3a--3c through the remainder of the trial.
 
 We next describe the algorithm used by  \pkg{interAdapt} to compute the proportionality constants $e_{AD,C}, e_{AD,1}$ that define the efficacy boundaries $u_{C,k},u_{1,k}$. These are selected to ensure the familywise Type I error rate is strongly controlled at level $\alpha$. By Theorem~5.1 of  \citep{Rosenblum2013AdaptMISTIE}, to guarantee such strong control of the familywise Type I error rate, it suffices to set $u_{C,k},u_{1,k}$ such that the familywise Type I error rate is at most $\alpha$ at the global null hypothesis defined in Section~\ref{sub:hypotheses}.
 The algorithm takes as input the following, which are set by the user as described in Section~\ref{sub:basic-params}: the per-stage sample sizes $n^{(1)},n^{(2)}$, the study-wide (i.e., familywise) Type I error rate $\alpha$, and a value $a_c$ in the interval $[0,1]$. 
@@ -300,7 +292,7 @@ Next,  \pkg{interAdapt} computes the smallest constant $e_{AD,1}$ such that the 
 \Prob \left(
 Z_{C,k}>e_{AD,C} \left\{\frac{\sum_{k'=1}^{K} n_{k'}}{\sum_{k'=1}^{k}n_{k'}}\right\}^{-δ} \text{  or  } 
 Z_{1,k}> e_{AD,1}\left\{\frac{\sum_{k'=1}^{K} n_{k'}}{\sum_{k'=1}^{k}n_{k'}}\right\}^{-δ}\text{  for any $k$}.
-\right) ≤ α  \nonumber.
+\right)  \leq  α  \nonumber.
 \end{equation}
 \fi
 All of the above computations use the approximation, based on the multivariate central limit theorem, that the joint distribution of the  z-statistics is multivariate normal  with covariance matrix as given, e.g., by \cite{JennisonTurnbullBook,Rosenblum2013AdaptMISTIE}.
@@ -309,12 +301,12 @@ All of the above computations use the approximation, based on the multivariate c
 %OlD RULES
 % \begin{description}
 % \item (1) Assess Efficacy in the Combined Population: If $Z_{C,k} > u_{C,k}$, reject $H_{0C}$ and stop all enrollment. If $Z_{1,k}>u_{1,k}$, reject $H_{01}$ as well. 
-% \item (2) Assess Futility in the Combined Population: Else, if $Z_{C,k} ≤ l_{C,k}$, stop enrolling from subpopulation $2$ in all future stages. In this case when $Z_{1,k}>l_{1,k}$, the following additional steps must be done:
+% \item (2) Assess Futility in the Combined Population: Else, if $Z_{C,k}  \leq  l_{C,k}$, stop enrolling from subpopulation $2$ in all future stages. In this case when $Z_{1,k}>l_{1,k}$, the following additional steps must be done:
 % %(stop enrolling in all future stages including current one? What does that mean?)
 % 	\subitem  (a) If $Z_{1,k} > u_{1,k}$, we reject $H_{01}$ and stop all enrollment.
-% 	\subitem  (b) If $Z_{1,k} ≤ l_{1,k}$, we fail to reject either $H_{0C}$ or $H_{01}$, and stop all enrollment.
+% 	\subitem  (b) If $Z_{1,k}  \leq  l_{1,k}$, we fail to reject either $H_{0C}$ or $H_{01}$, and stop all enrollment.
 % 	\subitem  (c) Else, we continue to enroll from subpopulation $1$, and re-evaluate steps (2)-(3) at the end of the next stage. 
-% \item  (3) If $l_{C,k} < Z_{C,k} ≤ u_{C,k}$, continue enrolling from both subpopulations.
+% \item  (3) If $l_{C,k} < Z_{C,k}  \leq  u_{C,k}$, continue enrolling from both subpopulations.
 % \end{description}
 
 
@@ -332,7 +324,7 @@ Finally, \pkg{interAdapt}  is cross-platform and open-source, while ADDPLAN PE i
 The \pkg{asd} package allows \proglang{R} users to generate  two-stage adaptive designs, which can be used to combine phase II and phase III clinical trials into a seamless design \citep{parsons2012r}. Unlike \pkg{interAdapt}, the \pkg{asd} package can generate  not only adaptive enrichment designs, but also adaptive designs that test multiple different treatments. Also in \pkg{asd}, decision rules at interim analyses can be based on short-term outcomes for each subject enrolled, if the long-term outcome is not yet available. However, \pkg{asd} does not allow more than two stages, unlike  \pkg{interAdapt} which allows up to 20 stages (though in practice fewer stages will probably be used, e.g., 5 stages). \pkg{asd} is an \proglang{R}  package, so is cross-platform and open-source. Using \pkg{asd}
  requires a working knowledge of \proglang{R}, while the GUI for \pkg{interAdapt} can be run in a web browser, with little to no interaction with the \proglang{R} console (see Section \ref{sec:running-interAdapt}), and so does not require knowledge of the \proglang{R} language.
 
-\section{Running interAdapt }
+\section[Running interAdapt]{Running \pkg{interAdapt}}
 \label{sec:running-interAdapt}
 
 
@@ -341,47 +333,28 @@ The \pkg{interAdapt} \proglang{R} package contains an interactive web browser ap
 To access the \pkg{shiny} application, \pkg{interAdapt} requires the user's default web browser to be set to either Firefox (\url{http://www.mozilla.org}) or Chrome (\url{http://www.google.com/chrome/}). Users can then run the application either by installing \proglang{R} and the \pkg{interAdapt} package locally on their computer, or by simply using Firefox or Google Chrome to view \pkg{interAdapt} online. Both options are free and quick to set up. However, because the online application will slow down noticeably if accessed by multiple users simultaneously, we encourage heavy users to install \pkg{interAdapt} locally.
 
 
-\subsection{Running interAdapt over the web}
+\subsection[Running interAdapt over the web]{Running \pkg{interAdapt} over the web}
 \label{sub:running-online}
 
 \pkg{interAdapt} is currently hosted on the RStudio webserver, and can be accessed at:\\
 \url{http://spark.rstudio.com/mrosenblum/interAdapt}
 %!!! General note to AF:  need to keep this link updated!
 
-\subsection{Running interAdapt locally}
+\subsection[Running interAdapt locally]{Running \pkg{interAdapt} locally}
 \label{sub:running-locally}
 
 
 
-To run \pkg{interAdapt} locally, one must first install the \proglang{R} programming language. \proglang{R} runs on both Windows \& MacOS, is available for download at (\url{http://www.r-project.org/}). After downloading and installing \proglang{R}, activating the \proglang{R} application will open an ``\proglang{R} console'' window where typed commands are executed by \proglang{R}. The \pkg{interAdapt} \proglang{R} package can be installed by typing the lines below into the \proglang{R} console, while connected to the internet. The return key must be pressed after each line of code. The first and third lines will cause \proglang{R} to give feedback on the installation's progress, which we do not show here.
+To run \pkg{interAdapt} locally, one must first install the \proglang{R} programming language. \proglang{R} runs on both Windows \& MacOS, is available for download at (\url{http://www.r-project.org/}). After downloading and installing \proglang{R}, activating the \proglang{R} application will open an ``\proglang{R} console'' window where typed commands are executed by \proglang{R}. The \pkg{interAdapt} \proglang{R} package can be installed by typing \code{install.packages("interAdapt")} into the \proglang{R} console, while connected to the internet. Once \pkg{interAdapt} has been installed, the \pkg{shiny} application can be run without an internet connection by typing \code{library(interAdapt)} into the \proglang{R} console, and then typing \code{"yes"} (with quotation marks) when prompted on whether the application should be launched.
 
-\vspace{5 mm}
-\begin{Code}
-install.packages('devtools')
-library('devtools')
-install_github(username='aaronjfisher',repo='interAdapt',subdir='r_package')
-\end{Code}
-\vspace{5 mm}
-
-Once \pkg{interAdapt} has been installed, the \pkg{shiny} application can be run without an internet connection by opening the \proglang{R} console and typing
-
-\vspace{5 mm}
-\begin{Code}
-library('interAdapt')
-runInterAdapt()
-\end{Code}
-\vspace{5 mm}
-
-
-The same calculations can be done directly in the \proglang{R} console, using the \code{compute_design_performance} function. Further details are provided in the \pkg{interAdapt} package documentation, which can be accessed by typing \code{help(package=interAdapt)} into the \proglang{R} console. 
+The same calculations that the application performs can also be done directly in the \proglang{R} console, with the \code{compute_design_performance} function. Further details are provided in the \pkg{interAdapt} package documentation, which can be accessed by typing \code{help(package = interAdapt)} into the \proglang{R} console. 
 The function's arguments are the same as the parameters available in the
 \pkg{shiny} application (see Section \ref{sub:inputs}).
-The function's value contains the output tables of the \pkg{shiny} application.
-These tables can be used to generate the plots made by the application
-(see Section \ref{sub:outputs}).
+The function's value contains the output tables of the \pkg{shiny} application, which can be used to generate the plots shown by the application
+(see Section \ref{sub:outputs}).%, and Appendix \hyperref[appendixLab]{A1}
 
 
-\section{User interface for the shiny application}
+\section[User interface for the shiny application]{User interface for the \pkg{shiny} application}
 \label{sec:UI}
 
 In this section, and in Section \ref{sec:example}, we will generally use the term \pkg{interAdapt} to refer to the \pkg{interAdapt} \pkg{shiny} application, although the inputs and outputs of the command line interface (see Section \ref{sub:running-locally}) have the same interpretation.
@@ -572,9 +545,90 @@ Current limitations of the software include that the outcome is assumed to be bi
 \label{sec:acknowledgements}
 This research was supported by U.S. National Institute of Neurological Disorders and Stroke (grant numbers 5R01 NS046309-07 and 5U01 NS062851-04), the U.S. Food and Drug Administration through the ``Partnership in Applied Comparative Effectiveness Science,'' (contract HHSF2232010000072C), and the National Institute of Environmental Health Sciences (grant number T32ES012871). This publication's contents are solely the responsibility of the authors and do not necessarily represent the official views of the above agencies.
 
-
 %\bibliographystyle{plainnat}
 \bibliography{interAdapt} 
+
+
+% \section*{Appendix A1. Command line code \phantomsection}
+% \label{appendixLab}
+
+
+% The same calculations that the \pkg{interAdapt} application performs can also be done directly in the \proglang{R} console, with the \code{compute_design_performance} function. The code below reproduces the figures shown by the application, for the default inputs. This code is also available in the examples section of the package documentation for the \code{compute_design_performance} function.
+
+% \begin{Code}
+% install.packages("interAdapt") #if needed
+% library(interAdapt) #type "no" when prompted on whether to launch the app
+
+% #Store function output
+% o <- compute_design_performance()
+
+% names(o)
+
+% #Decision rules for trial designs
+% print(o$SS[[1]])
+% print(o$SC[[1]])
+% print(o$AD[[1]])
+
+% #Plot decision rules
+% par(mfrow=c(1,3))
+% matplot(t(o$SS[[1]][2:3,]), type = "o", 
+% 	main = "Standard trial - subpop 1",  xlab = "stage", 
+% 	ylab = "Z-statistic", col = "blue", pch = 2:3, lty = 3)
+% legend("topright", c("H01 Efficacy", "H01 Futility"), col = "blue", 
+% 	pch = 2:3, lty = 3)
+% matplot(t(o$SC[[1]][4:5,]), type = "o", 
+% 	main = "Standard trial - combined pop", xlab = "stage", 
+% 	ylab = "Z-statistic", col = "red", pch = 0:1, lty = 3)
+% legend("topright", c("H0C Efficacy", "H0C Futility"), 
+% 	col = "red", pch = 0:1, lty = 3)
+% matplot(t(o$AD[[1]][4:7,]), type = "o", main = "Adaptive Enrollment", 
+% 	xlab = "stage", ylab = "Z-statistic", col = c("red", "red", "blue", "blue"), 
+% 	pch = 0:3, lty = 3)
+% legend("topright", c("H0C Efficacy", "H0C Futility", 
+% 	"H01 Efficacy", "H01 Futility"), col = c("red", "red", "blue", "blue"), 
+% 	pch = 0:3, lty = 3)
+
+% #Check performance
+% o$performance[[1]]
+
+
+% #Plot performance over a range of treatment effects for subpop2
+% col1<-c("black", "black", "black", "green", "blue")
+
+
+% perform_names <- rownames(o$performance[[1]])
+
+% #index for parts of the table corresponding to power
+% p_ind <- grep("Power", perform_names)
+% #index for parts of the table corresponding to sample size
+% s_ind <- grep("Sample Size", perform_names)
+% #index for parts of the table corresponding to trial duration
+% d_ind <- grep("DUR", perform_names)
+
+
+% par(mfrow = c(1, 3))
+
+% lty1 <- c(2, 3, 1, 4, 5)
+% matplot(x = t(o$performance[[1]][1,]), t(o$performance[[1]][p_ind,]), 
+% 	type = "l", lty = lty1, col = col1[1:5], xlab = "Subpop.2 Tx. Effect", 
+% 	ylab = "Power", main = "Power")
+% legend("bottomleft", perform_names[p_ind], col = col1[1:length(p_ind)], 
+% 	lty = lty1)
+
+
+% matplot(x = t(o$performance[[1]][1,]), t(o$performance[[1]][s_ind,])
+% 	, type = "l", lty = 1:3, col = col1[3:5], xlab = "Subpop.2 Tx. Effect", 
+% 	ylab = "Expected Sample Size", main = "Expected Sample Size")
+% legend("topright", substr(perform_names[d_ind], 1, 2), 
+% 	col = col1[3:5], lty = 1:3)
+
+
+% matplot(x = t(o$performance[[1]][1,]), t(o$performance[[1]][d_ind,])
+% 	, type = "l", lty = 1:3, col = col1[3:5], xlab = "Subpop.2 Tx. Effect", 
+% 	ylab = "Expected Duration", main = "Expected Duration")
+% legend("topright", substr(perform_names[d_ind], 1, 2), col = col1[3:5], 
+% 	lty = 1:3)
+% \end{Code}
 
 
 
