@@ -9,11 +9,9 @@ Depends:
     R (>= 3.0.1)
 Imports:
     shiny,
-	knitcitations,
+    knitcitations,
     RCurl,
     mvtnorm,
     knitr
-Suggests:
-    RColorBrewer
 License: GPL-2
 LazyData: true

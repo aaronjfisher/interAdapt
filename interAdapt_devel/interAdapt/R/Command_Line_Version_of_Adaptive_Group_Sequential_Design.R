@@ -163,18 +163,20 @@ NULL
 #' 
 #' #Plot decision rules
 #' par(mfrow=c(1,3))
-#' matplot(t(o$SS[[1]][2:3,]),type='o',pch=1,main='Standard trial - subpop 1',xlab='stage',ylab='Z-statistic')
-#' matplot(t(o$SC[[1]][4:5,]),type='o',pch=1,main='Standard trial - combined pop',xlab='stage',ylab='Z-statistic')
-#' matplot(t(o$AD[[1]][4:7,]),type='o',pch=1,main='Adaptive Enrollment',xlab='stage',ylab='Z-statistic')
+#' matplot(t(o$SS[[1]][2:3,]),type='o',main='Standard trial - subpop 1',xlab='stage',ylab='Z-statistic',col='blue',pch=2:3,lty=3)
+#' legend('topright',c('H01 Efficacy','H01 Futility'),col='blue',pch=2:3,lty=3)
+#' matplot(t(o$SC[[1]][4:5,]),type='o',main='Standard trial - combined pop',xlab='stage',ylab='Z-statistic',col='red',pch=0:1,lty=3)
+#' legend('topright',c('H0C Efficacy','H0C Futility'),col='red',pch=0:1,lty=3)
+#' matplot(t(o$AD[[1]][4:7,]),type='o',main='Adaptive Enrollment',xlab='stage',ylab='Z-statistic',col=c('red','red','blue','blue'),pch=0:3,lty=3)
+#' legend('topright',c('H0C Efficacy','H0C Futility','H01 Efficacy','H01 Futility'),col=c('red','red','blue','blue'),pch=0:3,lty=3)
 #' 
 #' #Check performance
 #' o$performance[[1]]
 #' 
 #' 
 #' #Plot performance over a range of treatment effects for subpop2
-#' library(RColorBrewer)
-#' colb<-brewer.pal(5,'Dark2')
-#' par(mfrow=c(1,3))
+#' col1<-c('black','black','black','green','blue')
+#' 
 #' 
 #' perform_names<-rownames(o$performance[[1]])
 #' 
@@ -182,17 +184,23 @@ NULL
 #' s_ind<- grep('Sample Size',perform_names)#index for parts of the table corresponding to sample size
 #' d_ind<- grep('DUR',perform_names)#index for parts of the table corresponding to trial duration
 #' 
-#'
-#' matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][p_ind,]),type='l',lty=1,col=colb[1:length(p_ind)],xlab='Subpop.2 Tx. Effect',ylab='Power',main='Power')
-#' legend('topright',perform_names[p_ind],col=colb[1:length(p_ind)],lty=1)
+#' 
+#' par(mfrow=c(1,3))
+#' 
+#' lty1<-c(2,3,1,4,5)
+#' matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][p_ind,]),
+#' 	type='l',lty=lty1,col=col1[1:5],xlab='Subpop.2 Tx. Effect',
+#' 	ylab='Power',main='Power')
+#' legend('bottomleft',perform_names[p_ind],col=col1[1:length(p_ind)],
+#' 	lty=lty1)
 #' 
 #' 
-#' matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][s_ind,]),type='l',lty=1,col=colb[1:length(s_ind)],xlab='Subpop.2 Tx. Effect',ylab='Expected Sample Size',main='Expected Sample Size')
-#' legend('topright',perform_names[s_ind],col=colb[1:length(s_ind)],lty=1)
+#' matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][s_ind,]),type='l',lty=1:3,col=col1[3:5],xlab='Subpop.2 Tx. Effect',ylab='Expected Sample Size',main='Expected Sample Size')
+#' legend('topright',substr(perform_names[d_ind],1,2),col=col1[3:5],lty=1:3)
 #' 
 #' 
-#' matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][d_ind,]),type='l',lty=1,col=colb[1:length(d_ind)],xlab='Subpop.2 Tx. Effect',ylab="Expected Duration",main='Expected Duration')
-#' legend('topright',perform_names[d_ind],col=colb[1:length(d_ind)],lty=1)
+#' matplot(x=t(o$performance[[1]][1,]),t(o$performance[[1]][d_ind,]),type='l',lty=1:3,col=col1[3:5],xlab='Subpop.2 Tx. Effect',ylab="Expected Duration",main='Expected Duration')
+#' legend('topright',substr(perform_names[d_ind],1,2),col=col1[3:5],lty=1:3)
 #' 
 #'
 compute_design_performance <- function(

@@ -5,9 +5,14 @@ Version: 0.1.1
 Author: Aaron Fisher <afisher@jhsph.edu>, Michael Rosenblum
     <mrosenbl@jhsph.edu>, Harris Jaffee<hj@jhu.edu>
 Maintainer: Michael Rosenblum <mrosenbl@jhsph.edu>
-Depends: R (>= 3.0.1)
-Imports: shiny, knitcitations, RCurl, mvtnorm, knitr
-Suggests: RColorBrewer
+Depends:
+    R (>= 3.0.1)
+Imports:
+    shiny,
+    knitcitations,
+    RCurl,
+    mvtnorm,
+    knitr
 License: GPL-2
 LazyData: true
 Packaged: 2014-06-18 17:18:15 UTC; hj
