@@ -9,17 +9,6 @@
 
 
 
-```
-## Error: there is no package called 'knitcitations'
-```
-
-```
-## Error: could not find function "read.bibtex"
-```
-
-```
-## Error: could not find function "cite_options"
-```
 
 
 
@@ -58,16 +47,7 @@ https://rawgithub.com/aaronjfisher/interAdapt/master/About_interAdapt.pdf
 
 In this report, we consider the scenario where we have prior evidence that the treatment might work better in a one subpopulation than another. We use the term "adaptive design" to refer to a group sequential design that starts by enrolling from both subpopulations, and then decides whether or not to continue enrolling from each subpopulation based on interim analyses.  We use the term "standard designs" to refer to group sequential designs where the enrollment criteria are fixed.
 
-Below, we describe an adaptive design in more detail, and compare the performance of this design to the performance of standard designs. Performance is compared in terms of expected sample size, expected trial duration, and power, with family-wise type I error rate set to be constant (
-
-```
-
-Error in eval(expr, envir, enclos) : 
-  object 'alpha_FWER_user_defined' not found
-
-```
-
-) for all trials.
+Below, we describe an adaptive design in more detail, and compare the performance of this design to the performance of standard designs. Performance is compared in terms of expected sample size, expected trial duration, and power, with family-wise type I error rate set to be constant (0.025) for all trials.
 
 
 
@@ -75,97 +55,116 @@ Error in eval(expr, envir, enclos) :
 
 # <a name="Full List of Inputs">Full List of Inputs</a>
 
-
-```
-## Error: object 'allVarNames' not found
-```
-
-```
-## Error: object 'allVarNames' not found
-```
-
-```
-## Error: object 'allVarLabels' not found
-```
-
-```
-## Error: object 'inputVec' not found
-```
+<!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
+<!-- Thu Jun 12 18:51:16 2014 -->
+<TABLE border=1>
+  <TR> <TD align="right"> Subpopulation 1 proportion </TD> <TD align="right"> 0.33 </TD> </TR>
+  <TR> <TD align="right"> Prob. outcome = 1 under control, subpopulation 1 </TD> <TD align="right"> 0.25 </TD> </TR>
+  <TR> <TD align="right"> Prob. outcome = 1 under control, subpopulation 2 </TD> <TD align="right"> 0.20 </TD> </TR>
+  <TR> <TD align="right"> Prob. outcome = 1 under treatment for subpopulation 1 </TD> <TD align="right"> 0.37 </TD> </TR>
+  <TR> <TD align="right"> Per stage sample size, combined population, for adaptive design </TD> <TD align="right"> 280.00 </TD> </TR>
+  <TR> <TD align="right"> Per stage sample size for stages where only subpopulation 1 is enrolled, for adaptive design </TD> <TD align="right"> 148.00 </TD> </TR>
+  <TR> <TD align="right"> Alpha (FWER) requirement for all designs  </TD> <TD align="right"> 0.03 </TD> </TR>
+  <TR> <TD align="right"> Proportion of Alpha allocated to H0C for adaptive design </TD> <TD align="right"> 0.09 </TD> </TR>
+  <TR> <TD align="right"> Delta </TD> <TD align="right"> -0.50 </TD> </TR>
+  <TR> <TD align="right"> # of Iterations for simulation </TD> <TD align="right"> 10000.00 </TD> </TR>
+  <TR> <TD align="right"> Time limit for simulation, in seconds </TD> <TD align="right"> 45.00 </TD> </TR>
+  <TR> <TD align="right"> Total number of stages </TD> <TD align="right"> 5.00 </TD> </TR>
+  <TR> <TD align="right"> Last stage subpopulation 2 is enrolled under adaptive design </TD> <TD align="right"> 3.00 </TD> </TR>
+  <TR> <TD align="right"> Participants enrolled per year from combined population </TD> <TD align="right"> 420.00 </TD> </TR>
+  <TR> <TD align="right"> Per stage sample size for standard group sequential design (SC) enrolling combined pop. </TD> <TD align="right"> 106.00 </TD> </TR>
+  <TR> <TD align="right"> Per stage sample size for standard group sequential design (SS) enrolling only subpop. 1 </TD> <TD align="right"> 100.00 </TD> </TR>
+  <TR> <TD align="right"> Stopping boundary proportionality constant for subpopulation 2 enrollment for adaptive design </TD> <TD align="right"> 0.00 </TD> </TR>
+  <TR> <TD align="right"> H01 futility boundary proportionality constant for adaptive design </TD> <TD align="right"> 0.00 </TD> </TR>
+  <TR> <TD align="right"> H0C futility boundary proportionality constant for standard design </TD> <TD align="right"> -0.10 </TD> </TR>
+  <TR> <TD align="right"> H01 futility boundary proportionality constant for standard design </TD> <TD align="right"> -0.10 </TD> </TR>
+  <TR> <TD align="right"> Lowest value to plot for treatment effect in subpopulation 2 </TD> <TD align="right"> -0.20 </TD> </TR>
+  <TR> <TD align="right"> Greatest value to plot for treatment effect in subpopulation 2 </TD> <TD align="right"> 0.20 </TD> </TR>
+   </TABLE>
 
 
 *******
 # <a name="Decision Boundaries">Decision Boundaries</a>
 
 
+![plot of chunk unnamed-chunk-4](tempFiguresForKnitrReport/unnamed-chunk-4.png) 
 
-```
-## Error: could not find function "boundary_adapt_plot"
-```
-
-
-```
-## Error: could not find function
-## "adaptive_design_sample_sizes_and_boundaries_table"
-```
-
-*******
-
-```
-## Error: could not find function "boundary_standard_H0C_plot"
-```
-
-
-```
-## Error: could not find function
-## "standard_H0C_design_sample_sizes_and_boundaries_table"
-```
+<!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
+<!-- Thu Jun 12 18:51:16 2014 -->
+<TABLE border=1>
+<CAPTION ALIGN="bottom"> </br> Cumulative Sample Sizes and Decision Boundaries for Adaptive Design. Each column corresponds to a stage. All thresholds are given on the z-statistic scale. </CAPTION>
+<TR> <TH>  </TH> <TH> 1 </TH> <TH> 2 </TH> <TH> 3 </TH> <TH> 4 </TH> <TH> 5 </TH>  </TR>
+  <TR> <TD align="right"> Cumulative Sample Size Subpop. 1 </TD> <TD align="right"> 92 </TD> <TD align="right"> 185 </TD> <TD align="right"> 277 </TD> <TD align="right"> 425 </TD> <TD align="right"> 573 </TD> </TR>
+  <TR> <TD align="right"> Cumulative Sample Size Subpop. 2 </TD> <TD align="right"> 188 </TD> <TD align="right"> 375 </TD> <TD align="right"> 563 </TD> <TD align="right"> 563 </TD> <TD align="right"> 563 </TD> </TR>
+  <TR> <TD align="right"> Cumulative Sample Size Combined Pop. </TD> <TD align="right"> 280 </TD> <TD align="right"> 560 </TD> <TD align="right"> 840 </TD> <TD align="right"> 988 </TD> <TD align="right"> 1136 </TD> </TR>
+  <TR> <TD align="right"> H0C Efficacy Boundaries u(C,k) for z-statistics Z(C,k) </TD> <TD align="right"> 4.95 </TD> <TD align="right"> 3.50 </TD> <TD align="right"> 2.86 </TD> <TD align="right">  </TD> <TD align="right">  </TD> </TR>
+  <TR> <TD align="right"> Boundaries l(2,k) for Z(2,k) to Stop Subpop. 2 Enrollment </TD> <TD align="right"> 0 </TD> <TD align="right"> 0 </TD> <TD align="right"> Inf </TD> <TD align="right">  </TD> <TD align="right">  </TD> </TR>
+  <TR> <TD align="right"> H01 Efficacy Boundaries u(1,k) for Z(1,k) </TD> <TD align="right"> 5.10 </TD> <TD align="right"> 3.61 </TD> <TD align="right"> 2.95 </TD> <TD align="right"> 2.38 </TD> <TD align="right"> 2.05 </TD> </TR>
+  <TR> <TD align="right"> Boundaries l(1,k) for Z(1,k) to Stop All Enrollment </TD> <TD align="right"> 0 </TD> <TD align="right"> 0 </TD> <TD align="right"> 0 </TD> <TD align="right"> 0 </TD> <TD align="right"> 2.05 </TD> </TR>
+   </TABLE>
 
 *******
+![plot of chunk unnamed-chunk-6](tempFiguresForKnitrReport/unnamed-chunk-6.png) 
 
-```
-## Error: could not find function "boundary_standard_H01_plot"
-```
+<!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
+<!-- Thu Jun 12 18:51:16 2014 -->
+<TABLE border=1>
+<CAPTION ALIGN="bottom"> </br> Cumulative Sample Sizes and Decision Boundaries for Standard Design Enrolling Combined Population. Each column corresponds to a stage. All thresholds are given on the z-statistic scale. </CAPTION>
+<TR> <TH>  </TH> <TH> 1 </TH> <TH> 2 </TH> <TH> 3 </TH> <TH> 4 </TH> <TH> 5 </TH>  </TR>
+  <TR> <TD align="right"> Cumulative Sample Size Subpop. 1 </TD> <TD align="right"> 35 </TD> <TD align="right"> 70 </TD> <TD align="right"> 105 </TD> <TD align="right"> 140 </TD> <TD align="right"> 175 </TD> </TR>
+  <TR> <TD align="right"> Cumulative Sample Size Subpop. 2 </TD> <TD align="right"> 71 </TD> <TD align="right"> 142 </TD> <TD align="right"> 213 </TD> <TD align="right"> 284 </TD> <TD align="right"> 355 </TD> </TR>
+  <TR> <TD align="right"> Cumulative Sample Size Combined Pop. </TD> <TD align="right"> 106 </TD> <TD align="right"> 212 </TD> <TD align="right"> 318 </TD> <TD align="right"> 424 </TD> <TD align="right"> 530 </TD> </TR>
+  <TR> <TD align="right"> H0C Efficacy Boundaries for z-statistics Z(C,k) </TD> <TD align="right"> 4.56 </TD> <TD align="right"> 3.23 </TD> <TD align="right"> 2.63 </TD> <TD align="right"> 2.28 </TD> <TD align="right"> 2.04 </TD> </TR>
+  <TR> <TD align="right"> H0C Futility Boundaries for z-statistics Z(C,k) </TD> <TD align="right"> -0.20 </TD> <TD align="right"> -0.14 </TD> <TD align="right"> -0.12 </TD> <TD align="right"> -0.10 </TD> <TD align="right"> 2.04 </TD> </TR>
+   </TABLE>
 
+*******
+![plot of chunk unnamed-chunk-8](tempFiguresForKnitrReport/unnamed-chunk-8.png) 
 
-```
-## Error: could not find function
-## "standard_H01_design_sample_sizes_and_boundaries_table"
-```
+<!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
+<!-- Thu Jun 12 18:51:17 2014 -->
+<TABLE border=1>
+<CAPTION ALIGN="bottom"> </br> Cumulative Sample Sizes and Decision Boundaries for Standard Design enrolling only Subpopulation 1. Each column corresponds to a stage. All thresholds are given on the z-statistic scale. </CAPTION>
+<TR> <TH>  </TH> <TH> 1 </TH> <TH> 2 </TH> <TH> 3 </TH> <TH> 4 </TH> <TH> 5 </TH>  </TR>
+  <TR> <TD align="right"> Cumulative Sample Size </TD> <TD align="right"> 100 </TD> <TD align="right"> 200 </TD> <TD align="right"> 300 </TD> <TD align="right"> 400 </TD> <TD align="right"> 500 </TD> </TR>
+  <TR> <TD align="right"> H01 Efficacy Boundaries for z-statistics Z(1,k) </TD> <TD align="right"> 4.56 </TD> <TD align="right"> 3.23 </TD> <TD align="right"> 2.63 </TD> <TD align="right"> 2.28 </TD> <TD align="right"> 2.04 </TD> </TR>
+  <TR> <TD align="right"> H01 Futility Boundaries for z-statistics Z(1,k) </TD> <TD align="right"> -0.20 </TD> <TD align="right"> -0.14 </TD> <TD align="right"> -0.12 </TD> <TD align="right"> -0.10 </TD> <TD align="right"> 2.04 </TD> </TR>
+   </TABLE>
 
 *******
 
 
 # <a name="Performance Comparison Plots">Performance Comparison Plots</a>
 
-
-```
-## Error: could not find function "power_curve_plot"
-```
+![plot of chunk unnamed-chunk-10](tempFiguresForKnitrReport/unnamed-chunk-10.png) 
 
 *******
-
-```
-## Error: could not find function "expected_sample_size_plot"
-```
+![plot of chunk unnamed-chunk-11](tempFiguresForKnitrReport/unnamed-chunk-11.png) 
 
 *******
-
-```
-## Error: could not find function "expected_duration_plot"
-```
+![plot of chunk unnamed-chunk-12](tempFiguresForKnitrReport/unnamed-chunk-12.png) 
 
 *******
 
 
 # <a name="Performance Comparison Table">Performance Comparison Table</a>
-
-```
-## Error: could not find function "transpose_performance_table"
-```
-
-```
-## Error: object 'ptab' not found
-```
+<!-- html table generated in R 3.1.0 by xtable 1.7-3 package -->
+<!-- Thu Jun 12 18:51:17 2014 -->
+<TABLE border=1>
+<CAPTION ALIGN="bottom"> </br> Comparison of avg sample size, avg duration (DUR), and power (as a percent), for the following designs: the Adaptive Design (AD), the Standard Design Enrolling Combined Population (SC), and the Standard Design Enrolling Subpop. 1 Only (SS). All designs strongly control the familywise Type I error rate at 0.025. </CAPTION>
+  <TR> <TD align="right"> Subpop.2 Tx. Effect </TD> <TD align="right"> -0.20 </TD> <TD align="right"> -0.16 </TD> <TD align="right"> -0.11 </TD> <TD align="right"> -0.07 </TD> <TD align="right"> -0.02 </TD> <TD align="right"> 0.02 </TD> <TD align="right"> 0.07 </TD> <TD align="right"> 0.11 </TD> <TD align="right"> 0.16 </TD> <TD align="right"> 0.20 </TD> </TR>
+  <TR> <TD align="right"> AD:Sample Size </TD> <TD align="right"> 583 </TD> <TD align="right"> 581 </TD> <TD align="right"> 582 </TD> <TD align="right"> 600 </TD> <TD align="right"> 671 </TD> <TD align="right"> 763 </TD> <TD align="right"> 778 </TD> <TD align="right"> 707 </TD> <TD align="right"> 612 </TD> <TD align="right"> 545 </TD> </TR>
+  <TR> <TD align="right"> AD:DUR </TD> <TD align="right"> 2.9 </TD> <TD align="right"> 2.8 </TD> <TD align="right"> 2.8 </TD> <TD align="right"> 2.8 </TD> <TD align="right"> 2.8 </TD> <TD align="right"> 2.7 </TD> <TD align="right"> 2.4 </TD> <TD align="right"> 1.9 </TD> <TD align="right"> 1.5 </TD> <TD align="right"> 1.3 </TD> </TR>
+  <TR> <TD align="right"> AD:Power H0C </TD> <TD align="right"> 0 </TD> <TD align="right"> 0 </TD> <TD align="right"> 0 </TD> <TD align="right"> 0 </TD> <TD align="right"> 1 </TD> <TD align="right"> 13 </TD> <TD align="right"> 43 </TD> <TD align="right"> 72 </TD> <TD align="right"> 86 </TD> <TD align="right"> 88 </TD> </TR>
+  <TR> <TD align="right"> AD:Power H01 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> <TD align="right"> 73 </TD> <TD align="right"> 51 </TD> <TD align="right"> 24 </TD> <TD align="right"> 8 </TD> <TD align="right"> 3 </TD> </TR>
+  <TR> <TD align="right"> AD:Power H0C or H01 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> <TD align="right"> 80 </TD> <TD align="right"> 82 </TD> <TD align="right"> 85 </TD> <TD align="right"> 88 </TD> <TD align="right"> 89 </TD> </TR>
+  <TR> <TD align="right"> SC:Sample Size </TD> <TD align="right"> 123 </TD> <TD align="right"> 149 </TD> <TD align="right"> 199 </TD> <TD align="right"> 272 </TD> <TD align="right"> 345 </TD> <TD align="right"> 402 </TD> <TD align="right"> 406 </TD> <TD align="right"> 384 </TD> <TD align="right"> 346 </TD> <TD align="right"> 304 </TD> </TR>
+  <TR> <TD align="right"> SC:DUR </TD> <TD align="right"> 0.3 </TD> <TD align="right"> 0.4 </TD> <TD align="right"> 0.5 </TD> <TD align="right"> 0.6 </TD> <TD align="right"> 0.8 </TD> <TD align="right"> 1.0 </TD> <TD align="right"> 1.0 </TD> <TD align="right"> 0.9 </TD> <TD align="right"> 0.8 </TD> <TD align="right"> 0.7 </TD> </TR>
+  <TR> <TD align="right"> SC:Power H0C </TD> <TD align="right"> 0 </TD> <TD align="right"> 0 </TD> <TD align="right"> 0 </TD> <TD align="right"> 1 </TD> <TD align="right"> 9 </TD> <TD align="right"> 28 </TD> <TD align="right"> 56 </TD> <TD align="right"> 80 </TD> <TD align="right"> 93 </TD> <TD align="right"> 98 </TD> </TR>
+  <TR> <TD align="right"> SS:Sample Size </TD> <TD align="right"> 362 </TD> <TD align="right"> 365 </TD> <TD align="right"> 364 </TD> <TD align="right"> 363 </TD> <TD align="right"> 364 </TD> <TD align="right"> 363 </TD> <TD align="right"> 366 </TD> <TD align="right"> 363 </TD> <TD align="right"> 362 </TD> <TD align="right"> 364 </TD> </TR>
+  <TR> <TD align="right"> SS:DUR </TD> <TD align="right"> 2.6 </TD> <TD align="right"> 2.6 </TD> <TD align="right"> 2.6 </TD> <TD align="right"> 2.6 </TD> <TD align="right"> 2.6 </TD> <TD align="right"> 2.6 </TD> <TD align="right"> 2.6 </TD> <TD align="right"> 2.6 </TD> <TD align="right"> 2.6 </TD> <TD align="right"> 2.6 </TD> </TR>
+  <TR> <TD align="right"> SS:Power H01 </TD> <TD align="right"> 79 </TD> <TD align="right"> 78 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> <TD align="right"> 78 </TD> <TD align="right"> 78 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> <TD align="right"> 79 </TD> </TR>
+   </TABLE>
 
 
 
@@ -196,29 +195,13 @@ We assume each of $p_{1c},p_{1t},p_{2c},p_{2t}$ is in the interval $(0,1)$.
 We define the true average treatment effect for a given population to be the difference in the probability of a successful outcome comparing treatment versus control.
 
 
-In the remainder of this section we give an overview of the relevant concepts needed to understand and use *interAdapt*. A more detailed discussion of the theoretical context, and of the efficacy boundary calculation procedure, is provided by 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-.
+In the remainder of this section we give an overview of the relevant concepts needed to understand and use *interAdapt*. A more detailed discussion of the theoretical context, and of the efficacy boundary calculation procedure, is provided by (Rosenblum et al. 2013).
  
  
  
 ## <a name="Hypotheses">Hypotheses</a>
 
-We focus on testing the null hypothesis that, on average, the treatment is no better than control for subpopulation $1$, and the analogous null hypothesis for the combined population. Simultaneous testing of null hypotheses for these two populations was also the goal for the two-stage, adaptive enrichment designs of 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-.
+We focus on testing the null hypothesis that, on average, the treatment is no better than control for subpopulation $1$, and the analogous null hypothesis for the combined population. Simultaneous testing of null hypotheses for these two populations was also the goal for the two-stage, adaptive enrichment designs of (Wang et al. 2007).
 We define our two null hypotheses, respectively, as
 
 
@@ -232,23 +215,7 @@ We define our two null hypotheses, respectively, as
 An adaptive design testing both null hypotheses (denoted $AD$) is compared to two standard designs. The first standard design, denoted $SC$, enrolls the combined population and only tests $H_{0C}$. The second standard design, denoted $SS$, only enrolls subpopulation 1 and tests $H_{01}$.
 All three trial designs consist of $K$ stages; the decision to entirely stop the trial early can be made at the end of any stage, based on a preplanned rule. The trials differ in that $SC$ and $SS$ never change their enrollment criteria, while $AD$ may switch from enrolling the combined population  to enrolling only participants from subpopulation $1$.
 
-The standard designs discussed here are not identical to those discussed in section 6.1 of 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-, which test both hypotheses simultaneously. Implementing standard designs such as those discussed in 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
- into the *interAdapt* software is an area of future research.
+The standard designs discussed here are not identical to those discussed in section 6.1 of (Rosenblum et al. 2013), which test both hypotheses simultaneously. Implementing standard designs such as those discussed in (Rosenblum et al. 2013) into the *interAdapt* software is an area of future research.
 
 Though it is not of primary interest, we occasionally refer below to the global null hypothesis, defined  to be that $p_{1t}-p_{1c}=p_{2t}-p_{2c}=0$, i.e., zero mean treatment effect in both subpopulations.
 
@@ -282,30 +249,14 @@ V_{C,k}=
 
 The term in square brackets is the difference in sample means between the treatment and control groups. The term in curly braces is the variance of this difference in sample means. $Z_{C,k}$ is only computed at stage $k$ if the combined population has been enrolled up through the end of stage $k$ (otherwise it is undefined). Our designs never use $Z_{C,k}$ after stages where the combined population has stopped being enrolled.
 Let $Z_{1,k}$ and $Z_{2,k}$ denote analogous z-statistics restricted to participants in subpopulation $1$ and subpopulation $2$, respectively. These are formally defined in
-
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-.
+(Rosenblum et al. 2013).
 
 ## <a name="Type I Error Control">Type I Error Control</a>
 
 The familywise (also called study-wide) Type I error rate is the probability of rejecting one or more true null hypotheses.
 For a given design, we say that the familywise Type I error rate is strongly controlled at level $α$ if 
 for any values of  $p_{1c},p_{1t},p_{2c},p_{2t}$ (assuming each is in the interval $(0,1)$), 
-the probability of rejecting at least one true null hypothesis (among $H_{0C}, H_{01}$) is at most $α$. To be precise, we mean such strong control holds asymptotically, as sample sizes in all stages go to infinity, as formally defined by 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-.
+the probability of rejecting at least one true null hypothesis (among $H_{0C}, H_{01}$) is at most $α$. To be precise, we mean such strong control holds asymptotically, as sample sizes in all stages go to infinity, as formally defined by (Rosenblum et al. 2013).
 For all three designs, $AD$, $SC$, and $SS$, we require the familywise Type I error rate to be strongly controlled at level $α$. 
 Since the two standard designs $SS$ and $SC$ each only test a single null hypothesis, the familywise Type I error rate for each design is equal to the  Type I error rate for the corresponding, single hypothesis test.
 
@@ -315,34 +266,10 @@ Since the two standard designs $SS$ and $SC$ each only test a single null hypoth
 
 The decision rules for the standard design $SC$ consist of efficacy and futility boundaries for $H_{0C}$, based on the statistics $Z_{C,k}$. At the end of each stage $k$,  the test statistic $Z_{C,k}$ is calculated. If $Z_{C,k}$ is above the efficacy boundary for stage $k$, the design $SC$ rejects $H_{0C}$ and stops the trial. If $Z_{C,k}$ is between the efficacy and futility boundaries for stage $k$, the trial is continued through the next stage (unless the last stage $k=K$ has been completed). If $Z_{C,k}$ is below the futility boundary for stage $k$, the design $SC$ stops the trial and fails to reject $H_{0C}$. *interAdapt* makes the simplification that the number of participants $n_k$ enrolled in each stage of $SC$ is a constant, denoted  $n_{SC}$, that the user can set.
 
-The efficacy boundaries for $SC$ are set to be proportional to those described by Wang and Tsiatis (1987). Specifically, the efficacy boundary for the $k^{th}$ stage is set to $e_{SC}(N_{C,k}/N_{C,K})^{\delta}$, where $K$ is the total number of stages, $δ$ is a constant in the range $[-.5,.5]$, and $e_{SC}$ is the constant computed by  *interAdapt*  to ensure the familywise Type I error rate is at most $\alpha$. Since $n_{k}$ is set equal to $n_{SC}$ for all values of $k$, the maximum cumulative sample size $N_{C,k}$ reduces to $\sum_{k'=1}^k n_{SC}=k n_{SC}$, and the boundary at stage $k$ reduces to the simpler form $e_{SC}(k/K)^\delta$. By default, *interAdapt* sets $\delta$ to be $-0.5$, which corresponds to the efficacy boundaries of 
+The efficacy boundaries for $SC$ are set to be proportional to those described by Wang and Tsiatis (1987). Specifically, the efficacy boundary for the $k^{th}$ stage is set to $e_{SC}(N_{C,k}/N_{C,K})^{\delta}$, where $K$ is the total number of stages, $δ$ is a constant in the range $[-.5,.5]$, and $e_{SC}$ is the constant computed by  *interAdapt*  to ensure the familywise Type I error rate is at most $\alpha$. Since $n_{k}$ is set equal to $n_{SC}$ for all values of $k$, the maximum cumulative sample size $N_{C,k}$ reduces to $\sum_{k'=1}^k n_{SC}=k n_{SC}$, and the boundary at stage $k$ reduces to the simpler form $e_{SC}(k/K)^\delta$. By default, *interAdapt* sets $\delta$ to be $-0.5$, which corresponds to the efficacy boundaries of (O'Brien & Fleming, 1979).
 
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-.
-
-In order to calculate $e_{SC}$, *interAdapt* makes use of the fact that the random vector of test statistics ($Z_{C,1},Z_{C,2},…Z_{C,K}$) converges asymptotically to a multivariate normal distribution with a known covariance structure 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-.
-Using the \pkg{mvtnorm} package 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
- in *R* to evaluate the multivariate normal distribution function, *interAdapt* computes the proportionality constant $e_{SC}$ to ensure the probability of $Z_{C,k}$ exceeding $e_{SC}(N_{C,k}/N_{C,K})^{\delta}$ at one or more stages $k$ is less than or equal to $α$ at the global null hypothesis defined in the <a href="#Hypotheses">Hypotheses section</a>.
+In order to calculate $e_{SC}$, *interAdapt* makes use of the fact that the random vector of test statistics ($Z_{C,1},Z_{C,2},…Z_{C,K}$) converges asymptotically to a multivariate normal distribution with a known covariance structure (Jennison & Turnbull, 1999).
+Using the \pkg{mvtnorm} package (Genz et al. 2013) in *R* to evaluate the multivariate normal distribution function, *interAdapt* computes the proportionality constant $e_{SC}$ to ensure the probability of $Z_{C,k}$ exceeding $e_{SC}(N_{C,k}/N_{C,K})^{\delta}$ at one or more stages $k$ is less than or equal to $α$ at the global null hypothesis defined in the <a href="#Hypotheses">Hypotheses section</a>.
 
 In $SC$, as well as in $SS$ and $AD$, *interAdapt* uses non-binding futility boundaries. That is, the familywise Type I error rate is controlled at level α regardless of whether the futility boundaries are adhered to or ignored. The motivation  is that regulatory agencies may prefer non-binding futility boundaries to ensure Type I error control even if a decision is made to continue the trial despite a futility boundary being crossed.
 
@@ -364,30 +291,14 @@ For the $AD$ design, the user can specify the following two types of per-stage s
 Because $AD$ simultaneously tests $H_{0C}$ and $H_{01}$ it has two sets of decision boundaries. For the $k^{th}$ stage of $AD$, let $u_{C,k}$ and $u_{1,k}$ denote the efficacy boundaries for $H_{0C}$ and $H_{01}$, respectively. The boundaries $u_{C,k}$ 
  are set equal to $e_{AD,C}(N_{C,k}/N_{C,K})^{\delta}$ for each $k\leq k^\star$; 
 the boundaries $u_{1,k}$ are set equal to  $e_{AD,1}(N_{1,k}/N_{1,K})^{\delta}$ for each $k \leq K$. 
-The constants $e_{AD,C}$  and $e_{AD,1}$ are set such that the probability of rejecting one or more null hypotheses under the global null hypothesis is $\alpha$ (ignoring futility boundaries). It is proved by 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
- that this strongly controls the familywise Type I error rate at level $\alpha$. The algorithm for computing the proportionality constants $e_{AD,C}, e_{AD,1}$ is described later in this section.
+The constants $e_{AD,C}$  and $e_{AD,1}$ are set such that the probability of rejecting one or more null hypotheses under the global null hypothesis is $\alpha$ (ignoring futility boundaries). It is proved by (Rosenblum et al. 2013) that this strongly controls the familywise Type I error rate at level $\alpha$. The algorithm for computing the proportionality constants $e_{AD,C}, e_{AD,1}$ is described later in this section.
 
 
 
 The boundaries for futility stopping of enrollment from certain population in the $AD$ design, at the end of stage $k$, are denoted by $l_{1,k}$ and $l_{2,k}$. These stopping boundaries are defined relative to the test statistics $Z_{1,k}$ and $Z_{2,k}$, respectively. The boundaries $l_{1,k}$ and $l_{2,k}$ are set equal to $f_{AD,1}(N_{1,k}/N_{1,K})^{\delta}$ (for $k\leq K$) and $f_{AD,2}(N_{2,k}/N_{2,K})^{\delta}$ (for $k < k^\star$), respectively, where $f_{AD,1}$ and $f_{AD,2}$ can be set by the user.  In stage $k^\star$, the futility boundary $l_{2,k^\star}$ is set to ''Inf'' (indicating $\infty$), to reflect that we stop enrollment in subpopulation 2. At the end of each stage, $AD$ may decide to continue enrolling from the combined population, enroll only from subpopulation 1 for the remainder of the trial, or stop the trial entirely.  Specific decision rules based on these boundaries for the z-statistics are described below.
 
 
-As described in 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-, the decision rule in $AD$ consists of the following steps carried out at the end of each stage $k$:
+As described in (Rosenblum et al. 2013), the decision rule in $AD$ consists of the following steps carried out at the end of each stage $k$:
 
 * 1. (Assess Efficacy) 
  If $Z_{1,k}>u_{1,k}$, reject $H_{01}$.
@@ -406,30 +317,14 @@ The motivation for Step 2 is that there is assumed to be prior evidence that if 
 A consequence of the rule in Step 3 is that Steps 1, 2, and 4 are only carried out for stages $k\leq k^\star$.  This occurs since 
  Step 3 restricts enrollment to subpopulation 1 if $Z_{2,k} ≤ l_{2,k}$ or  $k\geq k^\star$, and if so runs Steps 3a--3c through the remainder of the trial.
 
-We next describe the algorithm used by  *interAdapt* to compute the proportionality constants $e_{AD,C}, e_{AD,1}$ that define the efficacy boundaries $u_{C,k},u_{1,k}$. These are selected to ensure the familywise Type I error rate is strongly controlled at level $\alpha$. By Theorem~5.1 of  
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-, to guarantee such strong control of the familywise Type I error rate, it suffices to set $u_{C,k},u_{1,k}$ such that the familywise Type I error rate is at most $\alpha$ at the global null hypothesis defined in the <a href="#Hypotheses">Hypotheses section</a>.
+We next describe the algorithm used by  *interAdapt* to compute the proportionality constants $e_{AD,C}, e_{AD,1}$ that define the efficacy boundaries $u_{C,k},u_{1,k}$. These are selected to ensure the familywise Type I error rate is strongly controlled at level $\alpha$. By Theorem~5.1 of  (Rosenblum et al. 2013), to guarantee such strong control of the familywise Type I error rate, it suffices to set $u_{C,k},u_{1,k}$ such that the familywise Type I error rate is at most $\alpha$ at the global null hypothesis defined in the <a href="#Hypotheses">Hypotheses section</a>.
 The algorithm takes as input the following, which are set by the user as described in the <a href="#Basic Parameters">Basic Parameters section</a>: the per-stage sample sizes $n^{(1)},n^{(2)}$, the study-wide (i.e., familywise) Type I error rate $\alpha$, and a value $a_c$ in the interval $[0,1]$. 
 Roughly speaking, $a_c$ represents the fraction of the study-wide Type I error $\alpha$ initially allocated to testing $H_{0C}$, as described next.
 
 The algorithm temporarily sets $e_{AD,1}= \infty$ (effectively ruling out rejection of $H_{01}$)
 and computes (via binary search) the smallest value $e_{AD,C}$ such the probability of rejecting $H_{0C}$ is $a_c α$ under the global null hypothesis defined in the <a href="#Hypotheses">Hypotheses section</a>. This defines $e_{AD,C}$. 
 Next,  *interAdapt* computes the smallest constant $e_{AD,1}$ such that the probability of rejecting at least one null hypothesis under the global null hypothesis  is at most $\alpha$. 
-All of the above computations use the approximation, based on the multivariate central limit theorem, that the joint distribution of the  z-statistics is multivariate normal  with covariance matrix as given, e.g., by 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-.
+All of the above computations use the approximation, based on the multivariate central limit theorem, that the joint distribution of the  z-statistics is multivariate normal  with covariance matrix as given, e.g., by (Jennison & Turnbull, 1999; Rosenblum et al. 2013).
 
 
 
@@ -514,29 +409,20 @@ Active enrollment from one subpopulation is assumed to have no effect on the enr
 
 # <a name="References">References</a>
 
-This report was created using the *knitr* R package 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-, with citations created using the *knitcitations* R package 
-
-```
-
-Error in eval(expr, envir, enclos) : could not find function "citep"
-
-```
-
-.
+This report was created using the *knitr* R package (Xie, 2013), with citations created using the *knitcitations* R package (Boettiger, 2013).
 
 
 
-```
-## Error: could not find function "bibliography"
-```
+- Christopher Jennison, Bruce Turnbull,   (1999) Group Sequential Methods with Applications to Clinical Trials.
+- Carl Boettiger,   (2013) knitcitations: Citations for knitr Markdown Files.  [http://CRAN.R-project.org/package=knitcitations](http://CRAN.R-project.org/package=knitcitations)
+- Yihui Xie,   (2013) knitr: A General-Purpose Package for Dynamic Report Generation in R.  [http://yihui.name/knitr/](http://yihui.name/knitr/)
+- Alan Genz, Frank Bretz, Tetsuhisa Miwa, Xuefei Mi, Friedrich Leisch, Fabian Scheipl, Torsten Hothorn,   (2013) mvtnorm: Multivariate Normal and t Distributions.  [http://CRAN.R-project.org/package=mvtnorm](http://CRAN.R-project.org/package=mvtnorm)
+- P.C. O'Brien, T.R. Fleming,   (1979) A Multiple Testing Procedure for Clinical Trials.  *Biometrics*  **35**  549-556-NA
+- M Rosenblum, R Thompson, B Luber, D Hanley,   (2013) Adaptive Group Sequential Designs that Balance the Benefits and Risks of Expanding Inclusion Criteria.  *Johns
+Hopkins University, Dept. of Biostatistics Working Papers. Working
+Paper 250.*  [http://biostats.bepress.com/jhubiostat/paper250](http://biostats.bepress.com/jhubiostat/paper250)
+- S. Wang, R. O'Neill, H. Hung,   (2007) Approaches to evaluation of treatment effect in randomized clinical
+  trials with genomic subsets.  *Pharmaceut. Statist.*  **6**  227-244-NA
 
 
 

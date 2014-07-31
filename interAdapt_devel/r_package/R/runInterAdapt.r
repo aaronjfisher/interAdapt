@@ -5,7 +5,7 @@
 #' \code{runInterAdapt} Runs the interactive shiny application
 #' 
 #' @export
-#' @import shiny RCurl mvtnorm knitr
+#' @import shiny RCurl mvtnorm knitr knitcitations
 runInterAdapt<-function(){
 	shiny::runApp(system.file('shinyInterAdaptApp', package='interAdapt'))
 	print('running application...')
