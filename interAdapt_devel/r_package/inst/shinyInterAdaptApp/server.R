@@ -35,12 +35,13 @@ subH0 <- function(x){ #make a function that does the same thing as "strong()" bu
   return(x)
 }
 
-#To be used in our xtable function
+#To be used in xtable function
 subH01sanitize<-function(x){
   x <- gsub("H0C", "H<sub>0C</sub>", x)
   x <- gsub("H01", "H<sub>01</sub>", x)
   return(x)
 }
+options(xtable.sanitize.text.function=subH01sanitize)
 
 
 #To print2log stores errors that we can read in a log later, useful for checking sessions on RStudio (glimmer or spark)
@@ -532,64 +533,63 @@ shinyServer(function(input, output) {
   #   | |/ _` | '_ \| |/ _ \/ __|
   #   | | (_| | |_) | |  __/\__ \
   #   \_/\__,_|_.__/|_|\___||___/
-  # TABLES (plus new xtable and renderTable functions)
   #####
 
 
-# x must be a list of length 3, with a digits and caption
-xtable <- function(x) {
-	xtable::xtable(x[[1]], digits=x$digits, caption=x$caption) 
-}
-
-renderTable <- function (expr, ..., env = parent.frame(), quoted = FALSE, func = NULL, include.colnames=TRUE) 
-{
-    if (!is.null(func)) {
-        shinyDeprecated(msg = "renderTable: argument 'func' is deprecated. Please use 'expr' instead.")
-    }
-    else {
-        func <- exprToFunction(expr, env, quoted)
-    }
-    function() {
-        classNames <- getOption("shiny.table.class", "data table table-bordered table-condensed")
-        data <- func()
-        if (is.null(data) || identical(data, data.frame())) 
-            return("")
-        return(paste(capture.output(print(xtable(data, ...), include.colnames=include.colnames, 
-            type = "html",sanitize.text.function=subH01sanitize,
-            html.table.attributes = paste("class=\"", 
-                #htmlEscape(classNames, TRUE), "\"", sep = ""), 
-                shiny:::htmlEscape(classNames, TRUE), "\"", sep = ""), 
-            ...)), collapse = "\n"))
-    }
-}
   
-  #copies of all the tables have to be made to put in different panels of the shiny app.
+  #Adaptive_Group_Sequential_Design.R file table functions export lists with three elements:
+  #the data, a digits matrix for xtable, and a caption for xtable
+  #Since the digits matrix and caption are static, we 
+  #calculate them outside the reactive context.
+  #This is done be calling the table functions in 
+  #Adaptive_Group_Sequential_Design.R (once) and storing the output, which is passed to renderTable, 
+  #and from renderTable to xtable & print.xtable.
+  AD_table_static <- adaptive_design_sample_sizes_and_boundaries_table()
+  H0C_table_static <- standard_H0C_design_sample_sizes_and_boundaries_table()
+  H01_table_static <- standard_H01_design_sample_sizes_and_boundaries_table()
+  performance_table_static <- transpose_performance_table(performance_table())
+
+
+  #copies of all the tables have to be made to put in different panels of the shiny app (hence "[...]table.2")
+
   output$adaptive_design_sample_sizes_and_boundaries_table.2 <-
-  output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable({    
-	regen()
-  print2log('adaptive design table')
-	adaptive_design_sample_sizes_and_boundaries_table()
-  })
+  output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable(
+    {
+    	regen()
+      print2log('adaptive design table')
+    	adaptive_design_sample_sizes_and_boundaries_table()[[1]]
+    },digits=AD_table_static$digits,caption=AD_table_static$caption,caption.placement = getOption("xtable.caption.placement", "bottom"),
+  caption.width = getOption("xtable.caption.width", NULL))
+
+
 
   output$standard_H0C_design_sample_sizes_and_boundaries_table.2 <-
   output$standard_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
-	regen()
-  print2log('H0C standard trial table')
-	standard_H0C_design_sample_sizes_and_boundaries_table()
-  })
+    	regen()
+      print2log('H0C standard trial table')
+    	standard_H0C_design_sample_sizes_and_boundaries_table()[[1]]
+    },digits=H0C_table_static$digits,caption=H0C_table_static$caption,caption.placement = getOption("xtable.caption.placement", "bottom"),
+  caption.width = getOption("xtable.caption.width", NULL))
+
+
 
   output$standard_H01_design_sample_sizes_and_boundaries_table.2 <-
-  output$standard_H01_design_sample_sizes_and_boundaries_table <-renderTable({
-	regen()
-  print2log('H01 standard trial table')
-	standard_H01_design_sample_sizes_and_boundaries_table()
-  })
+  output$standard_H01_design_sample_sizes_and_boundaries_table <-renderTable(
+    {
+      regen()
+      print2log('H01 standard trial table')
+      standard_H01_design_sample_sizes_and_boundaries_table()[[1]]
+    },digits=H01_table_static$digits,caption=H01_table_static$caption,caption.placement = getOption("xtable.caption.placement", "bottom"),
+  caption.width = getOption("xtable.caption.width", NULL))
 
-  output$performance_table <- renderTable(expr={
-	regen()
-  print2log('performance table')
-	transpose_performance_table(performance_table())
-    },include.colnames=FALSE)
+
+  output$performance_table <- renderTable(expr=
+    {
+    	regen()
+      print2log('performance table')
+    	transpose_performance_table(performance_table())[[1]]
+    },digits=performance_table_static$digits,caption=performance_table_static$caption,caption.placement = getOption("xtable.caption.placement", "bottom"),
+  caption.width = getOption("xtable.caption.width", NULL),include.colnames=FALSE)
 
 
 
