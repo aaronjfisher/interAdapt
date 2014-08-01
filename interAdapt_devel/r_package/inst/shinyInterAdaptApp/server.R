@@ -539,18 +539,18 @@ shinyServer(function(input, output) {
 
 
   # In our code, the input to xtable has both a dynamic data value, and a dynamic digits arguemnt.
-  # We want to pass both of these reactively to xtable, but renderTable is set up to just take the data, and feed that to xtable's "x" argument.
-  # To adjust for this, we create a new xtable.list function, create an environment to enclose renderTable, and add our new function to that env. Then, our new function can intercept renderTable's calls to xtable.list. 
-  # Then: we pass a list to renderTable, renderTable passes that list to xtable.list, and that last call is intercepted by our_table_list (defined below).
-  our_xtable_list <- function(x, ...){
-    # out_xtable_list is a custom xtable function to be applied to be applied to objects of type 'list'.
-    # input, x, is a list of length three.
+  # We want to pass both of these reactively to xtable, but shiny's renderTable is set up to just take the data, and feed that data to xtable's "x" argument.
+  # To adjust for this, we create a new xtable.list function, create an environment to enclose a copy of renderTable, and add our new xtable function to that env. Then, our new function can intercept our new renderTable function's calls to xtable.list. (our_renderTable will look for xtable.list in the environment we specify).
+  # The result is that we pass a list to our_renderTable, our_renderTable passes that list to xtable.list, and that last call is intercepted by our_table.list within our new env.
+  our_xtable.list <- function(x, ...){
+    # our_xtable.list is a custom xtable function to be applied to be applied to objects of type 'list'.
+    # input to our_xtable.list is a list of length 3.
     xtable::xtable(x[[1]], digits=x$digits, caption=x$caption, ...) 
   }
-  env_for_renderTable <- new.env(parent = environment(shiny::renderTable)) #create a child of the shiny package env.
-  renderTable <- shiny::renderTable #redundant: make sure renderTable is coming from shiny, and not something we've created. This is not nessecary, but not harmful.
-  environment(renderTable) <- env_for_renderTable #change the environment of renderTable to our new custom env. Since this env. is a child of renderTable's natural env., and variables we haven't defined will still be found by renderTable.
-  env_for_renderTable$xtable.list <- our_xtable_list #within this env. we intercept calls to xtable (applied to list objects), and redirect them towards out our_table_list function.
+  env_for_our_renderTable <- new.env(parent = environment(shiny::renderTable)) #create a child of the shiny package env.
+  our_renderTable <- shiny::renderTable 
+  environment(our_renderTable) <- env_for_our_renderTable #change the environment of renderTable to our new custom env. Since this env. is a child of renderTable's natural env., any shiny objects we haven't defined will still be found by renderTable.
+  env_for_our_renderTable$xtable.list <- our_xtable.list #Bind our new xtable func within our new env.This intercepts calls to xtable (applied to list objects), and redirect them towards our_table.list function.
   #This code is adapted from:
   #http://stackoverflow.com/questions/8204008/redirect-intercept-function-calls-within-a-package-function
 
@@ -558,7 +558,7 @@ shinyServer(function(input, output) {
   #copies of all the tables have to be made to put in different panels of the shiny app (hence "[...]table.2")
 
   output$adaptive_design_sample_sizes_and_boundaries_table.2 <-
-  output$adaptive_design_sample_sizes_and_boundaries_table <- renderTable(
+  output$adaptive_design_sample_sizes_and_boundaries_table <- our_renderTable(
     {
     	regen()
       print2log('adaptive design table')
@@ -568,7 +568,7 @@ shinyServer(function(input, output) {
 
 
   output$standard_H0C_design_sample_sizes_and_boundaries_table.2 <-
-  output$standard_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
+  output$standard_H0C_design_sample_sizes_and_boundaries_table <- our_renderTable({
     	regen()
       print2log('H0C standard trial table')
     	standard_H0C_design_sample_sizes_and_boundaries_table()
@@ -577,7 +577,7 @@ shinyServer(function(input, output) {
 
 
   output$standard_H01_design_sample_sizes_and_boundaries_table.2 <-
-  output$standard_H01_design_sample_sizes_and_boundaries_table <-renderTable(
+  output$standard_H01_design_sample_sizes_and_boundaries_table <-our_renderTable(
     {
       regen()
       print2log('H01 standard trial table')
@@ -585,7 +585,7 @@ shinyServer(function(input, output) {
     })
 
 
-  output$performance_table <- renderTable(expr=
+  output$performance_table <- our_renderTable(expr=
     {
     	regen()
       print2log('performance table')
