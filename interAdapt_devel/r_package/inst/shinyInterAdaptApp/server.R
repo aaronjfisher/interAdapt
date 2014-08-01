@@ -536,18 +536,21 @@ shinyServer(function(input, output) {
   #####
 
 
-  
-  #Adaptive_Group_Sequential_Design.R file table functions export lists with three elements:
-  #the data, a digits matrix for xtable, and a caption for xtable
-  #Since the digits matrix and caption are static, we 
-  #calculate them outside the reactive context.
-  #This is done be calling the table functions in 
-  #Adaptive_Group_Sequential_Design.R (once) and storing the output, which is passed to renderTable, 
-  #and from renderTable to xtable & print.xtable.
-  AD_table_static <- adaptive_design_sample_sizes_and_boundaries_table()
-  H0C_table_static <- standard_H0C_design_sample_sizes_and_boundaries_table()
-  H01_table_static <- standard_H01_design_sample_sizes_and_boundaries_table()
-  performance_table_static <- transpose_performance_table(performance_table())
+  # In our code, the input to xtable has both a dynamic data value, and a dynamic digits arguemnt.
+  # We want to pass both of these reactively to xtable, but renderTable is set up to just take the data, and feed that to xtable's "x" argument.
+  # To adjust for this, we create a new xtable.list function, create an environment to enclose renderTable, and add our new function to that env. Then, our new function can intercept renderTable's calls to xtable.list. 
+  # Then: we pass a list to renderTable, renderTable passes that list to xtable.list, and that last call is intercepted by our_table_list (defined below).
+  our_xtable_list <- function(x, ...){
+    # out_xtable_list is a custom xtable function to be applied to be applied to objects of type 'list'.
+    # input, x, is a list of length three.
+    xtable::xtable(x[[1]], digits=x$digits, caption=x$caption, ...) 
+  }
+  env_for_renderTable <- new.env(parent = environment(shiny::renderTable)) #create a child of the shiny package env.
+  renderTable <- shiny::renderTable #redundant: make sure renderTable is coming from shiny, and not something we've created. This is not nessecary, but not harmful.
+  environment(renderTable) <- env_for_renderTable #change the environment of renderTable to our new custom env. Since this env. is a child of renderTable's natural env., and variables we haven't defined will still be found by renderTable.
+  env_for_renderTable$xtable.list <- our_xtable_list #within this env. we intercept calls to xtable (applied to list objects), and redirect them towards out our_table_list function.
+  #This code is adapted from:
+  #http://stackoverflow.com/questions/8204008/redirect-intercept-function-calls-within-a-package-function
 
 
   #copies of all the tables have to be made to put in different panels of the shiny app (hence "[...]table.2")
@@ -557,9 +560,8 @@ shinyServer(function(input, output) {
     {
     	regen()
       print2log('adaptive design table')
-    	adaptive_design_sample_sizes_and_boundaries_table()[[1]]
-    },digits=AD_table_static$digits,caption=AD_table_static$caption,caption.placement = getOption("xtable.caption.placement", "bottom"),
-  caption.width = getOption("xtable.caption.width", NULL))
+    	adaptive_design_sample_sizes_and_boundaries_table()
+    })
 
 
 
@@ -567,9 +569,8 @@ shinyServer(function(input, output) {
   output$standard_H0C_design_sample_sizes_and_boundaries_table <- renderTable({
     	regen()
       print2log('H0C standard trial table')
-    	standard_H0C_design_sample_sizes_and_boundaries_table()[[1]]
-    },digits=H0C_table_static$digits,caption=H0C_table_static$caption,caption.placement = getOption("xtable.caption.placement", "bottom"),
-  caption.width = getOption("xtable.caption.width", NULL))
+    	standard_H0C_design_sample_sizes_and_boundaries_table()
+    })
 
 
 
@@ -578,18 +579,16 @@ shinyServer(function(input, output) {
     {
       regen()
       print2log('H01 standard trial table')
-      standard_H01_design_sample_sizes_and_boundaries_table()[[1]]
-    },digits=H01_table_static$digits,caption=H01_table_static$caption,caption.placement = getOption("xtable.caption.placement", "bottom"),
-  caption.width = getOption("xtable.caption.width", NULL))
+      standard_H01_design_sample_sizes_and_boundaries_table()
+    })
 
 
   output$performance_table <- renderTable(expr=
     {
     	regen()
       print2log('performance table')
-    	transpose_performance_table(performance_table())[[1]]
-    },digits=performance_table_static$digits,caption=performance_table_static$caption,caption.placement = getOption("xtable.caption.placement", "bottom"),
-  caption.width = getOption("xtable.caption.width", NULL),include.colnames=FALSE)
+    	transpose_performance_table(performance_table())
+    },include.colnames=FALSE)
 
 
 
