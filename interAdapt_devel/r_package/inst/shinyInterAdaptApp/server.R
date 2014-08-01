@@ -12,8 +12,6 @@
                                               
                                               
 
-library(knitr)
-library(knitcitations)
 
 #Are we on the shiny server?
 onRStudioServer <- 'onRStudio.txt' %in% dir()
@@ -70,11 +68,14 @@ bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
 print2log("found code locally...")
 
 #If online, make sure the max time limit is not infinite
+#Also be sure to load kniter packages (which are imported in the local package version).
 # on the local version, it's OK for the time limit input max to be inf
 # but on the RStudio server this would crash things.
 if(onRStudioServer){
   time_limit_ind<-which(bt[,1]=='time_limit')
   bt[time_limit_ind,'max']<- min(90,bt[time_limit_ind,'max'])
+  library(knitr)
+  library(knitcitations)
 }
 
 print2log("...supplementary files found and loaded...")
