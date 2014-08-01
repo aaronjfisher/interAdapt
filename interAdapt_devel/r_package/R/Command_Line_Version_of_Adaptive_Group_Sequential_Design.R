@@ -130,7 +130,7 @@ NULL
 #' 
 #' 
 #' @return
-#' A list with 5 components:
+#' A list with 5 elements:
 #' 
 #' 		\item{performance_comparison}{A table comparing the performance of the three trials, in terms of power, expected sample size, and expected duration. See examples.}
 #' 		\item{AD_design}{Efficacy and futility boundaries for the group sequential design with adaptive enrollment}
