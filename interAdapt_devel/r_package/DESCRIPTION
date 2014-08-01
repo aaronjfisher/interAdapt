@@ -1,6 +1,7 @@
 Package: interAdapt
 Title: interAdapt
-Description: A shiny application for designing adaptive clinical trials
+Description: A shiny application for designing adaptive clinical trials. For
+    more details, see: http://arxiv.org/abs/1404.0734
 Version: 0.1
 Author: Aaron Fisher <afisher@jhsph.edu>, Michael Rosenblum
     <mrosenbl@jhsph.edu>, Harris Jaffee<hj@jhu.edu>
