@@ -13,6 +13,7 @@
                                               
 
 library(knitr)
+library(knitcitations)
 
 #Are we on the shiny server?
 onRStudioServer <- 'onRStudio.txt' %in% dir()
