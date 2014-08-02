@@ -298,7 +298,7 @@ Z_{1,k}> e_{AD,1}\left\{\frac{\sum_{k'=1}^{K} n_{k'}}{\sum_{k'=1}^{k}n_{k'}}\rig
 All of the above computations use the approximation, based on the multivariate central limit theorem, that the joint distribution of the  z-statistics is multivariate normal  with covariance matrix as given, e.g., by \cite{JennisonTurnbullBook,Rosenblum2013AdaptMISTIE}.
 
 
-%OlD RULES
+%Old RULES
 % \begin{description}
 % \item (1) Assess Efficacy in the Combined Population: If $Z_{C,k} > u_{C,k}$, reject $H_{0C}$ and stop all enrollment. If $Z_{1,k}>u_{1,k}$, reject $H_{01}$ as well. 
 % \item (2) Assess Futility in the Combined Population: Else, if $Z_{C,k}  \leq  l_{C,k}$, stop enrolling from subpopulation $2$ in all future stages. In this case when $Z_{1,k}>l_{1,k}$, the following additional steps must be done:
@@ -330,25 +330,17 @@ The \pkg{asd} package allows \proglang{R} users to generate  two-stage adaptive 
 
 The \pkg{interAdapt} \proglang{R} package contains an interactive web browser application, as well as a command line function which performs the same computations. The browser application is built on the R packages \pkg{shiny} \citep{shiny2013manual} and \pkg{RCurl} \citep{RCurlManual}, with the back-end calculations done in \proglang{R}.
 
-To access the \pkg{shiny} application, \pkg{interAdapt} requires the user's default web browser to be set to either Firefox (\url{http://www.mozilla.org}) or Chrome (\url{http://www.google.com/chrome/}). Users can then run the application either by installing \proglang{R} and the \pkg{interAdapt} package locally on their computer, or by simply using Firefox or Google Chrome to view \pkg{interAdapt} online. Both options are free and quick to set up. However, because the online application will slow down noticeably if accessed by multiple users simultaneously, we encourage heavy users to install \pkg{interAdapt} locally.
+To access the \pkg{shiny} application, \pkg{interAdapt} requires the user's default web browser to be set to either Firefox (\url{http://www.mozilla.org}) or Chrome (\url{http://www.google.com/chrome/}). Users can then run the \pkg{shiny} application locally by installing \proglang{R} and the \pkg{interAdapt} package from CRAN(CRAN LINK: \url{http://www.r-project.org/}). Loading the \pkg{interAdapt} package will automatically prompt the user on whether the \pkg{shiny} application should be loaded. 
 
+Users can also use the software without installing \proglang{R}, simply by accessing the link below. However, because the online application will slow down noticeably if accessed by multiple users simultaneously, we encourage heavy users to install \pkg{interAdapt} locally.
 
-\subsection[Running interAdapt over the web]{Running \pkg{interAdapt} over the web}
-\label{sub:running-online}
-
-\pkg{interAdapt} is currently hosted on the RStudio webserver, and can be accessed at:\\
 \url{http://spark.rstudio.com/mrosenblum/interAdapt}
 %!!! General note to AF:  need to keep this link updated!
 
-\subsection[Running interAdapt locally]{Running \pkg{interAdapt} locally}
-\label{sub:running-locally}
 
 
-
-To run \pkg{interAdapt} locally, one must first install the \proglang{R} programming language. \proglang{R} runs on both Windows \& MacOS, is available for download at (\url{http://www.r-project.org/}). After downloading and installing \proglang{R}, activating the \proglang{R} application will open an ``\proglang{R} console'' window where typed commands are executed by \proglang{R}. The \pkg{interAdapt} \proglang{R} package can be installed by typing \code{install.packages("interAdapt")} into the \proglang{R} console, while connected to the internet. Once \pkg{interAdapt} has been installed, the \pkg{shiny} application can be run without an internet connection by typing \code{library(interAdapt)} into the \proglang{R} console, and then typing \code{"yes"} (with quotation marks) when prompted on whether the application should be launched.
-
-The same calculations that the application performs can also be done directly in the \proglang{R} console, with the \code{compute_design_performance} function. Further details are provided in the \pkg{interAdapt} package documentation, which can be accessed by typing \code{help(package = interAdapt)} into the \proglang{R} console. 
-The function's arguments are the same as the parameters available in the
+The same calculations that the \pkg{shiny} application performs can also be done directly in the \proglang{R} console, with the \code{compute_design_performance} function. Further details are provided in the \pkg{interAdapt} package documentation.
+The arguments for \code{compute_design_performance} are the same as the parameters available in the
 \pkg{shiny} application (see Section \ref{sub:inputs}).
 The function's value contains the output tables of the \pkg{shiny} application, which can be used to generate the plots shown by the application
 (see Section \ref{sub:outputs}).%, and Appendix \hyperref[appendixLab]{A1}
