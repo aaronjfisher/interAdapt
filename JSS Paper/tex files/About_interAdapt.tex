@@ -60,9 +60,8 @@ criteria versus standard (non-adaptive) group sequential trial
 designs. Performance is compared in terms of power, expected trial
 duration, and expected sample size. Users can either work directly in
 the \proglang{R} console, or with a user-friendly \pkg{shiny} application that requires
-no programming experience. Several added features are available when
-using the \pkg{shiny} application. For example, the application allows
-users to immediately download the results of the performance
+no programming experience. The \pkg{shiny} application contains several features for saving and loading analysis progress. For example, the application allows
+users to download the results of the performance
 comparison as a csv-table, or as a printable, html-based report.
 }
 
@@ -84,7 +83,9 @@ We focus on the  class of designs introduced by \cite{Rosenblum2013AdaptMISTIE},
 These are contrasted with ``standard designs,'' 
 defined to  be group sequential designs where the enrollment criteria cannot be changed during the trial (except that the entire trial may be stopped early for efficacy or futility). 
 
-We introduce the \pkg{interAdapt} \proglang{R} package, a user friendly set of tools for exploring certain types of adaptive enrichment designs. The package contains a densely featured \pkg{shiny} application, ideal for users with little to no \proglang{R} programming experience, as well as an \proglang{R} function (\code{compute_design_performance}) which provides the same core computational functionality that underlies the \pkg{shiny} application. Several input parameters are available to allow the user to describe the context of his/her trial. Computations for generating output typically require less than 15 seconds on a standard commercial laptop. The \pkg{shiny} application is also hosted on the RStudio webserver (\url{http://spark.rstudio.com/mrosenblum/interAdapt}), and can be accessed online without installing the \proglang{R} programming language.
+We introduce the \pkg{interAdapt} \proglang{R} package, a user friendly set of tools for exploring certain types of adaptive enrichment designs. The package contains a densely featured \pkg{shiny} application, ideal for users with little to no \proglang{R} programming experience, as well as an \proglang{R} function (\code{compute_design_performance}) which provides the same core computational functionality that underlies the \pkg{shiny} application. Several input parameters are available to allow the user to describe the context of his/her trial. Computations for generating output typically require less than 15 seconds on a standard commercial laptop.
+
+The \pkg{shiny} application contains several features for saving and loading analysis progress. Users can upload data from previous studies, and the application will automatically compute the relevant parameters for the trial being planned. Once entered, the full set of input parameters can be saved to the user's computer for use in future sessions. Results of the design comparisons can be immediately downloaded in the form of either csv-tables, or printable, html-based reports. The \pkg{shiny} application is also hosted on the RStudio webserver (\url{http://spark.rstudio.com/mrosenblum/interAdapt}), and can be accessed online without installing the \proglang{R} programming language.
 
 
 To demonstrate our software, we consider the problem of 
