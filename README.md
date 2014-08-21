@@ -17,7 +17,8 @@ Usage
 The primary functions in this package are `runInterAdapt`, which opens a shiny application for interactive exploration of trial designs, and `compute_design_performance`, which can be used for similar explorations of trial designs directly in the command line.
 
 
-To install:
+<i>interAdapt</i> is available from CRAN, and can be installed via `install.packages('interAdapt')`. Alternatively, the development version in this repository can be installed via:
+
 ```S
 ## if needed
 install.packages("devtools")
