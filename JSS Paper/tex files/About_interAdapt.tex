@@ -1,4 +1,4 @@
-\documentclass[codesnippet]{jss}
+\documentclass[codesnippet,shortnames]{jss}
 % **** If you want to use the JSS style for a non-JSS paper (or a modification of a JSS paper, e.g., in a vignette), you can set the option nojss in the \documentclass statement to suppress JSS-specific layout.
 
 
@@ -56,17 +56,16 @@ trials.
 It can be used to determine whether certain adaptive designs offer
 tangible benefits compared to standard designs, in the context of
 investigators' specific trial goals and constraints.
-\pkg{interAdapt} compares the performance of trial designs with adaptive
+Specifically, \pkg{interAdapt} compares the performance of trial designs with adaptive
 enrollment criteria to that of standard (non-adaptive) group sequential
 designs.
 Performance is evaluated in terms of power, expected trial duration,
 and expected sample size.
-Users can work interactively in the \proglang{R} console or via a user
-friendly \pkg{shiny} application that requires no experience with the
-\proglang{R} programming language.
+Users can work interactively in the \proglang{R} console or with a user
+friendly \pkg{shiny} application that requires no programming experience.
 The \pkg{shiny} application contains several features for saving and
 re-loading the results of intermediate steps of the analysis.
-For example, the results of the performance comparison may be written to
+For example, the application allows users to save the results of the performance comparison as
 a tabular csv-file or as a printable, html-based report.
 }
 
