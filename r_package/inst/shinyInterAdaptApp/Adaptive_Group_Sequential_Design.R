@@ -596,6 +596,7 @@ p2 <- 1-p1
 
 H0C_efficacy_boundaries <- H0C_efficacy_boundary_proportionality_constant_adaptive_design*c(((1:k)/k)^Delta,rep(NA,total_number_stages-k))
 
+#AF: !!?? Possible error here: last_stage_subpop_2_enrolled_adaptive_design-1? Does this give an error when K=1? Will adding an extra [1:total_number_stages] to the end o this line of code fix it?
 subpopulation_2_stopping_boundaries_adaptive_design <<- c(subpopulation_2_stopping_boundary_proportionality_constant_adaptive_design*(((1:(last_stage_subpop_2_enrolled_adaptive_design-1))/(last_stage_subpop_2_enrolled_adaptive_design-1))^Delta),Inf,rep(NA,total_number_stages-last_stage_subpop_2_enrolled_adaptive_design))
 # Compute subpop. 1 cumulative sample size vector
 if(total_number_stages>last_stage_subpop_2_enrolled_adaptive_design){
@@ -644,6 +645,7 @@ p2 <- 1-p1
 
 H0C_efficacy_boundaries <- H0C_efficacy_boundary_proportionality_constant_standard_design*c(((1:k)/k)^Delta)
 
+#AF: !!?? Error when total number stages =1? Will adding an extra [1:total_number_stages] to the end o this line of code fix it?
 futility_boundaries_standard_design_H0C <<-c(H0C_futility_boundary_proportionality_constant_standard_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),H0C_efficacy_boundaries[total_number_stages])
 
 row1 <- c(p1*per_stage_sample_size_combined_standard_design_H0C*(1:k))
@@ -677,6 +679,7 @@ p2 <- 1-p1
 
 H01_efficacy_boundaries <- H01_efficacy_boundary_proportionality_constant_standard_design*c(((1:k)/k)^Delta)
 
+#AF: !!?? Error when total number of stages ==1? Will adding an extra [1:total_number_stages] to the end o this line of code fix it?
 futility_boundaries_standard_design_H01 <<-c(H01_futility_boundary_proportionality_constant_standard_design*(((1:(total_number_stages-1))/(total_number_stages-1))^Delta),H01_efficacy_boundaries[total_number_stages])
 
 
