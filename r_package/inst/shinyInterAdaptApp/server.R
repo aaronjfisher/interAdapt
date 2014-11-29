@@ -16,8 +16,8 @@
 #Are we on the shiny server?
 onRStudioServer <- 'onRStudio.txt' %in% dir()
 # The local and RStudio versions of the shiny app must differ in a few ways.
-# The onRStudioServer variable lets us copy paste from the local version to the RStudio
-# version without having to adjust files by hand.
+# The onRStudioServer variable lets us keep the same files on both systems.
+# Fewer files should mean fewer places for errors.
 
 
 ###########
@@ -58,11 +58,6 @@ print2log<-function(x,logFileName='session_log.txt',print2R=FALSE){ #takes a str
 print2log("source'ing code...")
 
 #Load initial inputs
-#Source code must be sourced inside the server input function for the
-#functions to look in the local user's environment 
-#for the relevant variables. If defined here, the functions
-#look in the global env.
-#See scoping information for shiny apps
 st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
 bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
 print2log("found code locally...")
@@ -117,7 +112,9 @@ shinyServer(function(input, output) {
       cat(paste(date(),'\n'),file='user_log.txt',append=TRUE)
   }
 
-  #Functions must be defined in local env. as they call user specific objects
+  #Functions must be defined in local env. as they call user specific objects.
+  # If defined instead in the preamble, the functions look in the global env.
+  # See scoping information for shiny apps
   source("Adaptive_Group_Sequential_Design.R", local=TRUE) #need local=TRUE for the functions to be loaded to the user-specific env.
 
   #####
@@ -155,6 +152,7 @@ shinyServer(function(input, output) {
     #we define them here so that their value is stored in the local env. when
     #we call table_constructor, next.
 
+    #Start of variable defining
     futility_boundaries_standard_design_H0C<-
     futility_boundaries_standard_design_H01<-
     H0C_efficacy_boundary_proportionality_constant_adaptive_design<-
@@ -165,6 +163,7 @@ shinyServer(function(input, output) {
     subpopulation_2_stopping_boundaries_adaptive_design<-
     subpop_1_futility_boundaries_adaptive_design<-
     risk_difference_list<-NULL
+    #End of variable defining
 
     table1<- table_constructor()
     lastBt<-bt
