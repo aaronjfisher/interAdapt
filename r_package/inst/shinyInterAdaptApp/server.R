@@ -206,6 +206,14 @@ shinyServer(function(input, output) {
     x<-c()
     for(i in 1:length(allVarNames)) x[allVarNames[i]]<- input[[allVarNames[i] ]]
 
+    if(input$binary_data){
+      x['var_s1_c'] <- input[['p10_user_defined']]*(input[['p10_user_defined']])
+      x['var_s1_t'] <- input[['p11_user_defined']]*(input[['p11_user_defined']])
+      x['var_s2_c'] <- input[['p20_user_defined']]*(input[['p20_user_defined']])
+      #!!?? Note, the var_s2_t argument will vary along with the treatment effect in group 2.
+      x['treat_effect_s1'] <- input[['p10_user_defined']]-input[['p11_user_defined']]
+    }
+
     #Check to make sure all box inputs are within the required ranges. 
     #Don't need to do this for sliders, since you can't set them past the min/max
     minMaxErrs<-rep('',dim(bt)[1]) #vector to store error/warnings messages. The ith entry is '' if allVars()[i] is valid
@@ -231,6 +239,9 @@ shinyServer(function(input, output) {
         warn2<-paste("Warning: the last stage sub population 2 is enrolled must be less than the total number of stages. Here the last stage in which sub population 2 is enrolled is set to",x['total_number_stages'],"the total number of stages")
     }
     output$warn2<-renderText({warn2})
+
+    #For debugging:
+    output$debug_input_list <- renderText({paste(as.character(x),collapse='  ')})
 
     #Done! Send back the error-checked list of inputs
     x
@@ -297,7 +308,8 @@ shinyServer(function(input, output) {
 
 
 
-  datasetVarNames<-c('p1_user_defined','p10_user_defined','p11_user_defined','p20_user_defined','p21_user_defined')
+  datasetVarNames<-c('p1_user_defined','p10_user_defined','p11_user_defined','p20_user_defined','p21_user_defined',
+    'treat_effect_s1','var_s1_c','var_s1_t','var_s2_c','var_s2_t')
 
   datasetUpload<-reactive({
     upFile <- input$uploadDataTable
@@ -308,10 +320,22 @@ shinyServer(function(input, output) {
       A <- tmp$A        # study arm, 0 or 1
       Y <- tmp$Y        # outcome, 0 or 1
       x['p1_user_defined'] <- mean(S==1)
-      x['p10_user_defined'] <- mean(Y*(S==1)*(A==0))/mean((S==1)*(A==0))
-      x['p11_user_defined'] <- mean(Y*(S==1)*(A==1))/mean((S==1)*(A==1))
-      x['p20_user_defined'] <- mean(Y*(S==2)*(A==0))/mean((S==2)*(A==0))
+      m1c <- mean(Y[S==1&A==0])
+      m1t <- mean(Y[S==1&A==1])
+      m2c <- mean(Y[S==2&A==0])
+      m2t <- mean(Y[S==2&A==1])
+      x['p10_user_defined'] <- m1c
+      x['p11_user_defined'] <- m1t
+      x['p20_user_defined'] <- m2c
+      #this next line is not used!!??
       x['p21_user_defined'] <- mean(Y*(S==2)*(A==1))/mean((S==2)*(A==1))
+
+      x['var_s1_c'] <- var(Y[[S==1&A==0]])
+      x['var_s1_t'] <- var(Y[[S==1&A==1]])
+      x['var_s2_c'] <- var(Y[[S==2&A==0]])
+      x['var_s2_t'] <- var(Y[[S==2&A==1]])
+      x['treat_effect_s1'] <- m1c-m1t
+
       uploadDatasetTicker<<-0
       print2log('new Data calculated from')
       print2log(x)
@@ -345,8 +369,6 @@ shinyServer(function(input, output) {
     csvUpload() #reactive input to uploaded file; sets uploadCsvTicker to zero when it's activated
     datasetUpload() #reactive input to uploaded file; sets uploadDatasetTicker to zero when it's activated
     labelSliderList<-list()
-    animate<-FALSE
-    if(input$Batch=='2' & input$Which_params=='1' ) animate<-TRUE # reactive input
     for(i in 1:dim(st)[1]){
       #each of these cases overrides the previous one
       #case1: upfile=null  & uploadCsvTicker=zero  (sliders haven't changed yet)
@@ -362,17 +384,32 @@ shinyServer(function(input, output) {
       #end of cases
 
       labelListi<-subH0(st[i,'label']) #Labels are stored as non slider text objects, so that we can apply subscript styling
-      sliderListi<-sliderInput(inputId=st[i,'inputId'], label='', min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'], animate=animate)
+      sliderListi<-numericInput(inputId=st[i,'inputId'], label='', min=st[i,'min'], max=st[i,'max'], value=value_i, step=st[i,'step'])
       ind<-length(labelSliderList) #starts at 0, grows on each repeat of this loop
       labelSliderList[[ind+1]]<-labelListi #alternate labels inbetween sliders
       labelSliderList[[ind+2]]<-sliderListi
-    }
+      labelSliderList[[ind+3]]<-br()
+
+      # Indeces to break labelSliderList into 3 parts: binary, nonbinary, and constant.
+      # Not all will show up at once
+      if('var_s1_c'==st[i,'inputId']) var_start_ind <- ind+1
+      if(grepl('lower_bound',st[i,'inputId'])) common_start_ind <- ind+1
+    } 
+
     uploadCsvTicker<<-uploadCsvTicker+1
     uploadDatasetTicker<<-uploadDatasetTicker+1
     print2log('............ sliders updating')
-    labelSliderList
+    
+    allBasic<-list()
+    allBasic[[1]]<-labelSliderList[1:(var_start_ind-1)]
+    allBasic[[2]]<-labelSliderList[var_start_ind:(common_start_ind-1)]
+    allBasic[[3]]<-labelSliderList[common_start_ind:length(labelSliderList)]
+
+    allBasic
   })
-  output$fullSliders<-renderUI({sliders()})
+  output$basic_prop_box<-renderUI({sliders()[[1]]})
+  output$basic_continuous_box<-renderUI({sliders()[[2]]})
+  output$basic_common_box<-renderUI({sliders()[[3]]})
 
 
   boxes <- reactive({ #NOTE: if you upload the same file again it won't update because nothing's techincally new
@@ -387,17 +424,17 @@ shinyServer(function(input, output) {
       ind<-length(labelBoxList)           
       #add extra text between boxes:
       #'Lower bound for...'
-      if(grepl('Lowest value to plot',bt[i,'label'])){
-        labelBoxList[[ind+1]]<-strong("For use in Plots of Power vs. Average Treatment Effect for Subpopulation 2:")
-        labelBoxList[[ind+2]]<-br()
-        ind<-length(labelBoxList)
-      }
+      # if(grepl('Lowest value to plot',bt[i,'label'])){
+      #   labelBoxList[[ind+1]]<-strong("For use in Plots of Power vs. Average Treatment Effect for Subpopulation 2:")
+      #   labelBoxList[[ind+2]]<-br()
+      #   ind<-length(labelBoxList)
+      # }
       #text to follow "Delta"
-      if(grepl('Delta',bt[i,'label'])){
-        labelBoxList[[ind+1]]<-strong("Applies to all Parameters:")
-        labelBoxList[[ind+2]]<-br()
-        ind<-length(labelBoxList)
-      }
+      # if(grepl('Delta',bt[i,'label'])){
+      #   labelBoxList[[ind+1]]<-strong("Applies to all Parameters:")
+      #   labelBoxList[[ind+2]]<-br()
+      #   ind<-length(labelBoxList)
+      # }
       labelBoxList[[ind+1]]<-boxLabeli
       labelBoxList[[ind+2]]<-boxListi
       labelBoxList[[ind+3]]<-br()      

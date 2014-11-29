@@ -107,13 +107,19 @@ shinyUI(pageWithSidebar(
           selectInput("Batch", "", c("Batch mode" = "1",
                 "Interactive mode" = "2"))
         ),
+
         #BASIC SLIDERS
         conditionalPanel(condition = "input.Which_params == '1' || input.Which_params == '3'",
           #show apply button if you're in batch mode, or if we're showing all inputs and batch mode is enforced
           conditionalPanel(condition='input.Batch== "1" || input.Which_params== "3" ',
             actionButton("Parameters1", "Apply")),
           br(), br(),
-          uiOutput('fullSliders')
+          checkboxInput('binary_data', 'Binary Data', value = FALSE),
+          conditionalPanel(condition= "input.binary_data",
+            {uiOutput('basic_prop_box')}),
+          conditionalPanel(condition="!input.binary_data",
+            {uiOutput('basic_continuous_box')}),
+          uiOutput('basic_common_box')
         ),
         #ADVANCED BOXES
         conditionalPanel(condition = "input.Which_params == '2' || input.Which_params == '3'",
@@ -142,6 +148,7 @@ shinyUI(pageWithSidebar(
 
   #STOP alert
   h4(textOutput('stop')),
+  #h4(textOutput('debug_input_list')),
 
   #UPDATE MESSAGE
   conditionalPanel(need2update, 
