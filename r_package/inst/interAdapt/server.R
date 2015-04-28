@@ -13,12 +13,6 @@
                                               
 
 
-#Are we on the shiny server?
-onRStudioServer <- 'onRStudio.txt' %in% dir()
-# The local and RStudio versions of the shiny app must differ in a few ways.
-# The onRStudioServer variable lets us keep the same files on both systems.
-# Fewer files should mean fewer places for errors.
-
 
 ###########
 #Functions
@@ -62,16 +56,7 @@ st<-read.csv(file= "sliderTable.csv",header=TRUE,as.is=TRUE)
 bt<-read.csv(file= "boxTable.csv",header=TRUE,as.is=TRUE)
 print2log("found code locally...")
 
-#If online, make sure the max time limit is not infinite
-#Also be sure to load kniter packages (which are imported in the local package version).
-# on the local version, it's OK for the time limit input max to be inf
-# but on the RStudio server this would crash things.
-if(onRStudioServer){
-  time_limit_ind<-which(bt[,1]=='time_limit')
-  bt[time_limit_ind,'max']<- min(90,bt[time_limit_ind,'max'])
-  library(knitr)
-  library(knitcitations)
-}
+
 
 print2log("...supplementary files found and loaded...")
 
@@ -105,12 +90,6 @@ shinyServer(function(input, output) {
   # Initialize some static & reactive variables
   ##########
 
-  if(onRStudioServer){
-    #make sure file size hasn't blown up.
-    #if not, write the current user time.
-    if(file.info("user_log.txt")$size < 1000000)
-      cat(paste(date(),'\n'),file='user_log.txt',append=TRUE)
-  }
 
   #Functions must be defined in local env. as they call user specific objects.
   # If defined instead in the preamble, the functions look in the global env.
@@ -656,6 +635,9 @@ shinyServer(function(input, output) {
     filename =  'report.html',
     contentType =  'text/html',
     content = function(filename) {
+      library(knitr)
+      library(knitcitations)
+
       if (file.exists('knitr_report.html')) file.remove('knitr_report.html')
       if (file.exists('knitr_report.md')) file.remove('knitr_report.md')
       htmlKnitted<-knit2html('knitr_report.Rmd',quiet=TRUE) #"plain" version, without knitrBootstrap
